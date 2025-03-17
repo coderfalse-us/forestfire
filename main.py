@@ -1,0 +1,3 @@
+
+from forestfire.optimizer.fitness import calc_distance_with_shortest_route
+calc_distance_with_shortest_route(picker_locations, item_locations, emptypop_position, orders_assign, picktasks, stage_result)
