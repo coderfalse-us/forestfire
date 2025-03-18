@@ -1,5 +1,5 @@
 from forestfire.optimizer.utils import e_d, walkway_from_condition
-def calc_distance_with_shortest_route(picker_locations, item_locations, emptypop_position, orders_assign, picktasks, stage_result):
+def calc_distance_with_shortest_route(picker_locations, emptypop_position, orders_assign, picktasks, stage_result):
 
       left_walkway=15
       right_walkway=105
