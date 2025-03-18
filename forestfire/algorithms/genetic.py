@@ -139,3 +139,10 @@ def genetic():
         empty_pop = sorted(empty_pop, key=lambda x: x[1])
         pop = empty_pop[:nPop]  # Only take the top `nPop` individuals
         new_best_solution = pop[0]
+
+
+def tournament_selection(population, TournmentSize):
+
+    tournament_contestants = random.sample(population, TournmentSize)
+    winner = sorted(tournament_contestants, key=lambda x: x[1])[0]
+    return winner[0]
