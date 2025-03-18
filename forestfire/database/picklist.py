@@ -23,17 +23,17 @@ def fetch_distinct_picktasks(connection=connect_to_db()):
         close_connection(connection)
 
 
-def mapping(rows,picktasks):
+def mapping():
     result = {}
 
-    fetch_picklist_data()
-    fetch_distinct_picktasks()
+    rows=fetch_picklist_data()
+    
 
 
     result = {}
     stage_result={}
 
-    for picktask_tuple in picktasks:
+    for picktask_tuple in fetch_distinct_picktasks():
         picktaskid = picktask_tuple[0] 
         
         filtered_values = [

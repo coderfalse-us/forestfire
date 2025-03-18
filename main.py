@@ -1,7 +1,9 @@
-from forestfire.optimizer.utils import calc_distance_with_shortest_route
+from forestfire.optimizer.fitness import calc_distance_with_shortest_route
 from forestfire.utils import config
 from forestfire.database.picklist import getdata
 from forestfire.algorithms.genetic import mutate_with_capacity, crossover, tournament_selection
+from forestfire.utils.config import *
+import random
 
 empty_pop = []
 
