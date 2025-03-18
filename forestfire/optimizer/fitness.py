@@ -1,160 +1,114 @@
-from forestfire.optimizer.utils import e_d, walkway_from_condition
-def calc_distance_with_shortest_route(picker_locations, item_locations, emptypop_position, orders_assign, picktasks, stage_result):
+from typing import List, Tuple, Dict
+from dataclasses import dataclass
+import numpy as np
+from ..utils.distance import euclidean_distance, walkway_from_condition
+from ..utils.config import (
+    NUM_PICKERS, 
+    STEP_BETWEEN_ROWS, 
+    LEFT_WALKWAY, 
+    RIGHT_WALKWAY
+)
 
-      left_walkway=15
-      right_walkway=105
+@dataclass
+class PathData:
+    """Data class to hold path information"""
+    points: List[Tuple[int, int]]
+    distance: float
+    picker_id: int
 
-      order_indices = [[] for _ in range(len(picker_locations))] 
-      assignments = [[] for _ in range(len(picker_locations))]
-      for index, picker_index in enumerate(emptypop_position):
-          assignments[picker_index].extend(orders_assign[index])
-          order_indices[picker_index].append(index) 
-      sorted_data = [[] for _ in range(NUM_PICKERS)]
+class FitnessCalculator:
+    def __init__(self, picker_locations: List[Tuple[int, int]], picker_capacities: List[int]):
+        self.picker_locations = picker_locations
+        self.picker_capacities = picker_capacities
+        self.left_walkway = LEFT_WALKWAY
+        self.right_walkway = RIGHT_WALKWAY
 
+    def evaluate(self, solution: List[int]) -> float:
+        """Evaluate fitness of a solution"""
+        total_cost, _, _ = self.calculate_solution_fitness(solution)
+        return total_cost
 
-      final_result = []
-      seen = set()  # A set to track duplicates
+    def calculate_solution_fitness(
+        self, 
+        solution: List[int]
+    ) -> Tuple[float, List[PathData], Dict[int, List[Tuple[int, int]]]]:
+        """Calculate fitness score and generate optimized paths"""
+        # Create assignments for each picker
+        assignments = [[] for _ in range(len(self.picker_locations))]
+        for item_idx, picker_id in enumerate(solution):
+            assignments[picker_id].append(item_idx)
 
-      for i in range(len(picker_locations)):
-          data = assignments[i]
-          indices = order_indices[i]
-          taskids = [picktasks[i] for i in indices]
-            
-
-          for taskid in taskids:
-            if taskid[0] not in seen:
-                seen.add(taskid[0])
-                final_result.extend(stage_result.get(taskid[0], None))
-          quotients = {}
-          for item in data:
-              quotient = item[1] // 10
-              if quotient not in quotients:
-                  quotients[quotient] = []
-              quotients[quotient].append(item)
-
-          for quotient in sorted(quotients.keys()):
-              group = quotients[quotient]
-              if quotient % 2 != 0:  # Even
-                  sorted_group = sorted(group, key=lambda x: x[0], reverse=True)
-              else:  # Odd
-                  sorted_group = sorted(group, key=lambda x: x[0])
-              sorted_data[i].extend(sorted_group)
+        # Sort paths for optimal routing
+        sorted_paths = self._sort_picker_paths(assignments)
         
+        # Generate actual walkway paths
+        optimized_paths = self._generate_walkway_paths(sorted_paths)
+        
+        # Calculate total distance
+        total_cost = sum(path.distance for path in optimized_paths)
+        
+        return total_cost, optimized_paths, assignments
 
-      r_flag=[0]*10
+    def _sort_picker_paths(self, assignments: List[List[int]]) -> List[List[Tuple[int, int]]]:
+        """Sort items for each picker to minimize travel distance"""
+        sorted_paths = []
+        
+        for picker_id, assigned_items in enumerate(assignments):
+            if not assigned_items:
+                continue
+                
+            picker_location = self.picker_locations[picker_id]
+            points = [picker_location]  # Start at picker location
+            
+            # Sort points by nearest neighbor
+            while assigned_items:
+                current = points[-1]
+                nearest_idx = min(
+                    range(len(assigned_items)),
+                    key=lambda i: euclidean_distance(current, assigned_items[i])
+                )
+                points.append(assigned_items.pop(nearest_idx))
+                
+            points.append(picker_location)  # Return to start
+            sorted_paths.append(points)
+            
+        return sorted_paths
 
-      for p in range(len(picker_locations)):
-        if not sorted_data[p]:
-          continue
-
-        dist1_walkway = walkway_from_condition(sorted_data[p][0][1], left_walkway, right_walkway)
-        dist2_walkway = walkway_from_condition(sorted_data[p][-1][1], left_walkway, right_walkway)
-
-        dist1 = e_d(picker_locations[p], (dist1_walkway, sorted_data[p][0][1]))
-        dist2 = e_d(picker_locations[p], (dist2_walkway, sorted_data[p][-1][1]))
-
-
-        if picker_locations[p][0] < 50:
-          if dist1<dist2:
-            sorted_data[p].insert(0,picker_locations[p])
-            if sorted_data[p][1][1]%20 == 0:
-              sorted_data[p].insert(1,(left_walkway,sorted_data[p][1][1]))
-            else :
-              sorted_data[p].insert(1,(left_walkway,sorted_data[p][1][1]-step_between_rows))
-          else:
-            sorted_data[p]=sorted_data[p][::-1]
-            r_flag[p]=1
-            sorted_data[p].insert(0,picker_locations[p])
-            if sorted_data[p][1][1]%20 ==0:
-              sorted_data[p].insert(1,(left_walkway,sorted_data[p][1][1]))
-            else:
-              sorted_data[p].insert(1,(left_walkway,sorted_data[p][1][1]+step_between_rows))
-        else:
-          if dist1<dist2:
-            if sorted_data[p][0][1]%20 != 0:
-              sorted_data[p].insert(0,picker_locations[p])
-              sorted_data[p].insert(1,(right_walkway,sorted_data[p][1][1]))
-            else:
-              sorted_data[p].insert(0,picker_locations[p])
-              sorted_data[p].insert(1,(right_walkway,sorted_data[p][1][1]-step_between_rows))
-          else:
-            r_flag[p]=1
-            if sorted_data[p][-1][1]%20 !=0:
-              sorted_data[p]=sorted_data[p][::-1]
-              sorted_data[p].insert(0,picker_locations[p])
-              sorted_data[p].insert(1,(right_walkway,sorted_data[p][1][1]))
-            else:
-              sorted_data[p]=sorted_data[p][::-1]
-              sorted_data[p].insert(0,picker_locations[p])
-              sorted_data[p].insert(1,(right_walkway,sorted_data[p][1][1]+step_between_rows))
-
-         # print(r_flag)
-      l=[]
-
-      for j,k in enumerate(sorted_data):
-        if not k:
-              l.append([])
-              continue
-        l1 = k.copy()
-
-        i = 1
-        while i < len(l1) - 1:
-            if l1[i][1] != l1[i + 1][1]:
-                if l1[i][1] % 20 == 0:
-                    if l1[i + 1][1] % 20 != 0:
-
-                        l1.insert(i + 1, (right_walkway, l1[i][1]))
-                        l1.insert(i + 2, (right_walkway, l1[i + 2][1]))
-                        i += 2
-                    else:
-                      if r_flag[j]==0:
-                        l1.insert(i + 1, (right_walkway, l1[i][1]))
-                        l1.insert(i + 2, (right_walkway, (l1[i + 1][1] + step_between_rows)))
-                        l1.insert(i + 3, (left_walkway, (l1[i + 2][1])))
-                        l1.insert(i + 4, (left_walkway, l1[i + 4][1]))
-                        i += 4
-                      else:
-                        l1.insert(i + 1, (right_walkway, l1[i][1]))
-                        l1.insert(i + 2, (right_walkway, (l1[i + 1][1] - step_between_rows)))
-                        l1.insert(i + 3, (left_walkway, (l1[i + 2][1])))
-                        l1.insert(i + 4, (left_walkway, l1[i + 4][1]))
-                        i += 4
-                else:
-                    if l1[i + 1][1] % 20 == 0:
-                        l1.insert(i + 1, (left_walkway, l1[i][1]))
-                        l1.insert(i + 2, (left_walkway, l1[i + 2][1]))
-                        i += 2
-                    else:
-                      if r_flag[j]==0:
-                        l1.insert(i + 1, (left_walkway, l1[i][1]))
-                        l1.insert(i + 2, (left_walkway, (l1[i + 1][1] + step_between_rows))) #i+1 needed
-                        l1.insert(i + 3, (right_walkway, (l1[i + 2][1])))#i+2
-                        l1.insert(i + 4, (right_walkway, l1[i + 4][1]))
-                        i += 4
-                      else:
-                        l1.insert(i + 1, (left_walkway, l1[i][1]))
-                        l1.insert(i + 2, (left_walkway, (l1[i + 1][1] - step_between_rows)))
-                        l1.insert(i + 3, (right_walkway, (l1[i + 2][1])))
-                        l1.insert(i + 4, (right_walkway, l1[i + 4][1]))
-                        i += 4
-            else:
-                i += 1
-        l1.extend(final_result)
-        print(final_result)
-        l.append(l1)
-
-      total_cost = 0
-      individual_costs = []
-      for points in l:
-          list_cost = 0
-
-          for i in range(len(points) - 1):
-              x1, y1 = points[i]
-              x2, y2 = points[i + 1]
-              distance = math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
-              list_cost += distance
-
-          individual_costs.append(list_cost)
-          total_cost += list_cost
-
-      return total_cost,l,assignments
+    def _generate_walkway_paths(self, sorted_paths: List[List[Tuple[int, int]]]) -> List[PathData]:
+        """Generate paths considering warehouse walkways"""
+        optimized_paths = []
+        
+        for picker_id, path in enumerate(sorted_paths):
+            walkway_points = []
+            total_distance = 0
+            
+            for i in range(len(path) - 1):
+                current = path[i]
+                next_point = path[i + 1]
+                
+                # Add walkway points and calculate distances
+                walkway_entry = (
+                    walkway_from_condition(current[1], self.left_walkway, self.right_walkway),
+                    current[1]
+                )
+                walkway_exit = (
+                    walkway_from_condition(next_point[1], self.left_walkway, self.right_walkway),
+                    next_point[1]
+                )
+                
+                segment_distance = (
+                    euclidean_distance(current, walkway_entry) +
+                    euclidean_distance(walkway_entry, walkway_exit) +
+                    euclidean_distance(walkway_exit, next_point)
+                )
+                
+                walkway_points.extend([current, walkway_entry, walkway_exit, next_point])
+                total_distance += segment_distance
+                
+            optimized_paths.append(PathData(
+                points=walkway_points,
+                distance=total_distance,
+                picker_id=picker_id
+            ))
+            
+        return optimized_paths
