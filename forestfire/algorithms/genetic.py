@@ -1,133 +1,141 @@
-from typing import List, Tuple, Optional
-import random
-import numpy as np
-from ..optimizer.fitness import FitnessCalculator
+def crossover(x1, x2):
 
-class GeneticAlgorithm:
-    def __init__(
-        self,
-        pop_size: int,
-        crossover_prob: float,
-        mutation_prob: float,
-        tournament_size: int
-    ):
-        self.pop_size = pop_size
-        self.pc = crossover_prob
-        self.pm = mutation_prob
-        self.tournament_size = tournament_size
+    q = random.uniform(0, 1)
 
-    def initialize_population(
-        self, 
-        num_items: int, 
-        num_pickers: int
-    ) -> List[List[int]]:
-        """Initialize random population with capacity constraints"""
-        population = []
-        
-        for _ in range(self.pop_size):
-            solution = []
-            assigned_counts = [0] * num_pickers
-            
-            for _ in range(num_items):
-                valid_pickers = [
-                    i for i, count in enumerate(assigned_counts) 
-                    if count < self.picker_capacities[i]
-                ]
-                picker = random.choice(valid_pickers)
-                assigned_counts[picker] += 1
-                solution.append(picker)
-                
-            population.append(solution)
-            
-        return population
+    if q <= pc:
 
-    def crossover(self, population: List[List[int]]) -> List[List[int]]:
-        """Perform crossover operations"""
-        offspring = []
-        
-        for _ in range(self.pop_size // 2):
-            if random.random() < self.pc:
-                parent1 = self._tournament_selection(population)
-                parent2 = self._tournament_selection(population)
-                
-                # Choose crossover type randomly
-                if random.random() < 0.5:
-                    child1, child2 = self._single_point_crossover(parent1, parent2)
-                else:
-                    child1, child2 = self._uniform_crossover(parent1, parent2)
-                    
-                offspring.extend([child1, child2])
-                
-        return offspring
+        g = random.randint(1, 2)
 
-    def mutate(self, population: List[List[int]]) -> List[List[int]]:
-        """Perform mutation operations"""
-        mutants = []
-        
-        for solution in population:
-            if random.random() < self.pm:
-                mutant = solution.copy()
-                
-                # Swap mutation with capacity constraints
-                attempts = 10
-                while attempts > 0:
-                    i = random.randint(0, len(mutant) - 1)
-                    new_picker = random.randint(0, len(self.picker_capacities) - 1)
-                    
-                    old_picker = mutant[i]
-                    mutant[i] = new_picker
-                    
-                    # Check capacity constraints
-                    counts = [mutant.count(p) for p in range(len(self.picker_capacities))]
-                    if all(counts[p] <= self.picker_capacities[p] for p in range(len(counts))):
-                        break
-                        
-                    mutant[i] = old_picker
-                    attempts -= 1
-                    
-                mutants.append(mutant)
-                
-        return mutants
+        if g == 1:
+            y1, y2 = single_point_crossover(x1, x2)
+        elif g == 2:
+            y1, y2 = uniform_crossover(x1, x2)
 
-    def select_next_generation(
-        self, 
-        combined_pop: List[List[int]], 
-        fitness: FitnessCalculator
-    ) -> List[List[int]]:
-        """Select next generation using elitism"""
-        sorted_pop = sorted(combined_pop, key=lambda x: fitness.evaluate(x))
-        return sorted_pop[:self.pop_size]
+        # Ensure offspring satisfy picker capacity constraints
+        y1 = enforce_capacity_constraints(y1, picker_capacities)
+        y2 = enforce_capacity_constraints(y2, picker_capacities)
 
-    def _tournament_selection(self, population: List[List[int]]) -> List[int]:
-        """Select individual using tournament selection"""
-        tournament = random.sample(population, self.tournament_size)
-        return min(tournament, key=lambda x: self.fitness.evaluate(x))
+    else:
 
-    def _single_point_crossover(
-        self, 
-        parent1: List[int], 
-        parent2: List[int]
-    ) -> Tuple[List[int], List[int]]:
-        """Perform single point crossover"""
-        point = random.randint(1, len(parent1) - 1)
-        child1 = parent1[:point] + parent2[point:]
-        child2 = parent2[:point] + parent1[point:]
-        return child1, child2
+        y1 = x1[:]
+        y2 = x2[:]
 
-    def _uniform_crossover(
-        self, 
-        parent1: List[int], 
-        parent2: List[int]
-    ) -> Tuple[List[int], List[int]]:
-        """Perform uniform crossover"""
-        child1, child2 = [], []
-        
-        for i in range(len(parent1)):
-            if random.random() < 0.5:
-                child1.append(parent1[i])
-                child2.append(parent2[i])
-            else:
-                child1.append(parent2[i])
-                child2.append(parent1[i])
-                
-        return child1, child2
+    return y1, y2
+
+
+def single_point_crossover(x1, x2):
+
+    n = len(x1)
+
+    crossover_point = random.randint(1, n - 1)
+
+    y1 = x1[:crossover_point] + x2[crossover_point:]
+    y2 = x2[:crossover_point] + x1[crossover_point:]
+
+    return y1, y2
+
+
+def uniform_crossover(x1, x2):
+
+    n = len(x1)
+    y1 = []
+    y2 = []
+
+    for i in range(n):
+        if random.random() < 0.5:
+            y1.append(x1[i])
+            y2.append(x2[i])
+        else:
+            y1.append(x2[i])
+            y2.append(x1[i])
+
+    return y1, y2
+
+
+def enforce_capacity_constraints(offspring, picker_capacities):
+
+    # Count how many items are currently assigned to each picker
+    assigned_counts = [0] * num_pickers
+    for picker_id in offspring:
+        assigned_counts[picker_id] += 1
+
+    # Identify pickers that are over their capacity
+    over_capacity = {picker_id: count - picker_capacities[picker_id]
+                     for picker_id, count in enumerate(assigned_counts) if count > picker_capacities[picker_id]}
+
+    # Reassign items from over-capacity pickers
+    for i, picker_id in enumerate(offspring):
+        if picker_id in over_capacity and over_capacity[picker_id] > 0:
+            # Find a valid picker with available capacity
+            valid_pickers = [p for p in range(num_pickers) if assigned_counts[p] < picker_capacities[p]]
+
+            if valid_pickers:
+                # Reassign the item to a valid picker
+                new_picker = random.choice(valid_pickers)
+                offspring[i] = new_picker
+
+                # Update counts
+                assigned_counts[picker_id] -= 1
+                assigned_counts[new_picker] += 1
+                over_capacity[picker_id] -= 1
+
+    return offspring
+
+def mutate_with_capacity(x, picker_capacities):
+    y = x[:]
+    attempts = 10
+
+    while attempts > 0:  # Try mutating while respecting capacity
+        j = np.random.randint(len(x))
+        assigned_picker = y[j]
+        new_picker = np.random.randint(num_pickers)
+
+        y[j] = new_picker
+
+        # Check capacity constraint
+        assigned_counts = [y.count(picker_id) for picker_id in range(num_pickers)]
+        if all(assigned_counts[picker_id] <= picker_capacities[picker_id] for picker_id in range(num_pickers)):
+            return y  # Valid mutation found
+
+        # Revert and try again
+        y[j] = assigned_picker
+        attempts -= 1
+
+    return x
+def genetic():
+        crossover_population = []
+
+        # Crossover
+        for c in range(nc // 2):
+            parent1 = tournament_selection(pop, TournmentSize)
+            parent2 = tournament_selection(pop, TournmentSize)
+
+            # parent1 = pop[0][0]
+            # parent2 = pop[0][0]
+
+            offspring1_position, offspring2_position = crossover(parent1, parent2)
+
+            offspring1_fitness, _,_ = calc_distance_with_shortest_route(picker_locations, item_locations, offspring1_position)
+            offspring2_fitness, _,_ = calc_distance_with_shortest_route(picker_locations, item_locations, offspring2_position)
+
+            crossover_population.append([offspring1_position, offspring1_fitness])
+            crossover_population.append([offspring2_position, offspring2_fitness])
+
+        empty_pop.extend(crossover_population)
+
+        # Mutation
+        mutation_population = []
+        for c in range(nm):
+            parent = random.choice(pop)[0]
+            offspring_position = mutate_with_capacity(parent, picker_capacities)
+
+            offspring_fitness, _,_ = calc_distance_with_shortest_route(picker_locations, item_locations, offspring_position)
+
+            mutation_population.append([offspring_position, offspring_fitness])
+
+        empty_pop.extend(mutation_population)
+
+        # Select the next generation
+        empty_pop = sorted(empty_pop, key=lambda x: x[1])
+        pop = empty_pop[:nPop]  # Only take the top `nPop` individuals
+        new_best_solution = pop[0]
