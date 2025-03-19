@@ -4,4 +4,3 @@ import random
 import math
 import numpy as np
 import random
-print("hi")

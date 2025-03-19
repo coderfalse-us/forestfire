@@ -61,7 +61,7 @@ for ant in range(NUM_ANTS):
         if valid_pickers:
             prob = np.array(prob)
             prob /= prob.sum()  # Normalize probabilities
-            chosen_picker = np.random.choice(valid_pickers, p=prob)  # Select picker based on probabilities
+            chosen_picker = int(np.random.choice(valid_pickers, p=prob))  # Select picker based on probabilities
             assignment[item] = chosen_picker
             picker_loads[chosen_picker] += 1
         else:

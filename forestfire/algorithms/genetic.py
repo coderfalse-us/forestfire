@@ -91,9 +91,9 @@ def mutate_with_capacity(x, picker_capacities):
     attempts = 10
 
     while attempts > 0:  # Try mutating while respecting capacity
-        j = np.random.randint(len(x))
+        j = int(np.random.randint(len(x)))
         assigned_picker = y[j]
-        new_picker = np.random.randint(NUM_PICKERS)
+        new_picker = int(np.random.randint(NUM_PICKERS))
 
         y[j] = new_picker
 
