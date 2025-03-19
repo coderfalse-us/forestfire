@@ -1,8 +1,13 @@
+import random
+import numpy as np
+from forestfire.utils.config import *
+from forestfire.optimizer.fitness import calc_distance_with_shortest_route
+
 def crossover(x1, x2):
 
     q = random.uniform(0, 1)
 
-    if q <= pc:
+    if q <= PC:
 
         g = random.randint(1, 2)
 
@@ -12,8 +17,8 @@ def crossover(x1, x2):
             y1, y2 = uniform_crossover(x1, x2)
 
         # Ensure offspring satisfy picker capacity constraints
-        y1 = enforce_capacity_constraints(y1, picker_capacities)
-        y2 = enforce_capacity_constraints(y2, picker_capacities)
+        y1 = enforce_capacity_constraints(y1, PICKER_CAPACITIES)
+        y2 = enforce_capacity_constraints(y2, PICKER_CAPACITIES)
 
     else:
 
@@ -55,7 +60,7 @@ def uniform_crossover(x1, x2):
 def enforce_capacity_constraints(offspring, picker_capacities):
 
     # Count how many items are currently assigned to each picker
-    assigned_counts = [0] * num_pickers
+    assigned_counts = [0] * NUM_PICKERS
     for picker_id in offspring:
         assigned_counts[picker_id] += 1
 
@@ -67,7 +72,7 @@ def enforce_capacity_constraints(offspring, picker_capacities):
     for i, picker_id in enumerate(offspring):
         if picker_id in over_capacity and over_capacity[picker_id] > 0:
             # Find a valid picker with available capacity
-            valid_pickers = [p for p in range(num_pickers) if assigned_counts[p] < picker_capacities[p]]
+            valid_pickers = [p for p in range(NUM_PICKERS) if assigned_counts[p] < PICKER_CAPACITIES[p]]
 
             if valid_pickers:
                 # Reassign the item to a valid picker
@@ -88,13 +93,13 @@ def mutate_with_capacity(x, picker_capacities):
     while attempts > 0:  # Try mutating while respecting capacity
         j = np.random.randint(len(x))
         assigned_picker = y[j]
-        new_picker = np.random.randint(num_pickers)
+        new_picker = np.random.randint(NUM_PICKERS)
 
         y[j] = new_picker
 
         # Check capacity constraint
-        assigned_counts = [y.count(picker_id) for picker_id in range(num_pickers)]
-        if all(assigned_counts[picker_id] <= picker_capacities[picker_id] for picker_id in range(num_pickers)):
+        assigned_counts = [y.count(picker_id) for picker_id in range(NUM_PICKERS)]
+        if all(assigned_counts[picker_id] <= PICKER_CAPACITIES[picker_id] for picker_id in range(NUM_PICKERS)):
             return y  # Valid mutation found
 
         # Revert and try again
@@ -107,8 +112,8 @@ def genetic():
 
         # Crossover
         for c in range(nc // 2):
-            parent1 = tournament_selection(pop, TournmentSize)
-            parent2 = tournament_selection(pop, TournmentSize)
+            parent1 = tournament_selection(pop, TOURNAMENT_SIZE)
+            parent2 = tournament_selection(pop, TOURNAMENT_SIZE)
 
             # parent1 = pop[0][0]
             # parent2 = pop[0][0]
@@ -127,7 +132,7 @@ def genetic():
         mutation_population = []
         for c in range(nm):
             parent = random.choice(pop)[0]
-            offspring_position = mutate_with_capacity(parent, picker_capacities)
+            offspring_position = mutate_with_capacity(parent, PICKER_CAPACITIES)
 
             offspring_fitness, _,_ = calc_distance_with_shortest_route(picker_locations, item_locations, offspring_position)
 
@@ -137,7 +142,7 @@ def genetic():
 
         # Select the next generation
         empty_pop = sorted(empty_pop, key=lambda x: x[1])
-        pop = empty_pop[:nPop]  # Only take the top `nPop` individuals
+        pop = empty_pop[:N_POP]  # Only take the top `nPop` individuals
         new_best_solution = pop[0]
 
 

@@ -4,6 +4,8 @@ from forestfire.database.picklist import getdata
 from forestfire.algorithms.genetic import mutate_with_capacity, crossover, tournament_selection
 from forestfire.utils.config import *
 import random
+import numpy as np
+import math
 
 empty_pop = []
 
