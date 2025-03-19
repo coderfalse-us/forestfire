@@ -1,3 +1,6 @@
+import math
+from forestfire.utils.config import *
+
 def e_d(picker_location,item_location):
         x1, y1 = picker_location
         x2, y2 = item_location
