@@ -3,6 +3,7 @@ from forestfire.utils import config
 from forestfire.database.picklist import getdata
 from forestfire.algorithms.genetic import mutate_with_capacity, crossover, tournament_selection
 from forestfire.utils.config import *
+from forestfire.plots.graph import graph_plot
 import random
 import numpy as np
 import math
@@ -126,3 +127,5 @@ final_solution = new_best_solution[0]
 
 # Final output
 print(f"\nFinal Best Solution (Pick Assignments): {final_solution}")
+
+#graph_plot(final_solution)
