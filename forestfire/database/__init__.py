@@ -5,7 +5,6 @@ from .exceptions import DatabaseError, ConnectionError, QueryError
 
 __all__ = [
     'DatabaseConnectionManager',
-    'BaseRepository',
     'FireIncidentRepository',
     'DatabaseError',
     'ConnectionError',

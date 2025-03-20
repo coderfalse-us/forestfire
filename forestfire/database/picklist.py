@@ -1,6 +1,7 @@
 from typing import Dict, List, Tuple, Any
 import logging
 from .connection import DatabaseConnectionManager
+from .repository import BaseRepository
 from .exceptions import QueryError
 
 logger = logging.getLogger(__name__)
@@ -10,6 +11,7 @@ class PicklistRepository:
 
     def __init__(self):
         self.connection_manager = DatabaseConnectionManager()
+        self.baserepository = BaseRepository()
 
     def fetch_picklist_data(self) -> List[Tuple]:
         """
@@ -23,10 +25,8 @@ class PicklistRepository:
         SELECT * FROM picklist;
         """
         try:
-            with self.connection_manager.get_connection() as conn:
-                with conn.cursor() as cursor:
-                    cursor.execute(query)
-                    return cursor.fetchall()
+            return self.baserepository.execute_query(query)
+            
         except Exception as e:
             logger.error(f"Error fetching picklist data: {e}")
             raise QueryError(f"Failed to fetch picklist data: {e}")
@@ -43,10 +43,8 @@ class PicklistRepository:
         SELECT DISTINCT picktaskid FROM picklist;
         """
         try:
-            with self.connection_manager.get_connection() as conn:
-                with conn.cursor() as cursor:
-                    cursor.execute(query)
-                    return [row[0] for row in cursor.fetchall()]
+            distinct_pictask = self.baserepository.execute_query(query)
+            return [row[0] for row in distinct_pictask]
         except Exception as e:
             logger.error(f"Error fetching distinct picktasks: {e}")
             raise QueryError(f"Failed to fetch distinct picktasks: {e}")
@@ -60,7 +58,13 @@ class PicklistRepository:
         """
         try:
             rows = self.fetch_picklist_data()
+            if not rows:
+                logger.error("No rows returned from fetch_picklist_data")
+                raise QueryError("No data found in picklist table")
             picktasks = self.fetch_distinct_picktasks()
+            if not picktasks:
+                logger.error("No picktasks returned from fetch_distinct_picktasks")
+                raise QueryError("No distinct picktasks found")
             
             task_result: Dict[str, List[Tuple]] = {}
             stage_result: Dict[str, List[Tuple]] = {}
