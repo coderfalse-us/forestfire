@@ -10,19 +10,19 @@ class DatabaseConnectionManager:
 
     @classmethod
     @contextmanager
-    def get_connection(cls) -> Generator[psycopg2.extensions.connection, None, None]:
+    def get_connection(self) -> Generator[psycopg2.extensions.connection, None, None]:
         try:
-            if not cls._connection or cls._connection.closed:
-                cls._connection = psycopg2.connect(
-                    host=cls._config.host,
-                    port=cls._config.port,
-                    database=cls._config.database,
-                    user=cls._config.user,
-                    password=cls._config.password
+            if not self._connection or self._connection.closed:
+                self._connection = psycopg2.connect(
+                    host=self._config.host,
+                    port=self._config.port,
+                    database=self._config.database,
+                    user=self._config.user,
+                    password=self._config.password
                 )
-            yield cls._connection
+            yield self._connection
         except Exception as e:
             raise ConnectionError(f"Failed to connect to database: {e}")
         finally:
-            if cls._connection and not cls._connection.closed:
-                cls._connection.close()
+            if self._connection and not self._connection.closed:
+                self._connection.close()
