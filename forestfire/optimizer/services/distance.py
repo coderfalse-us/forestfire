@@ -1,3 +1,4 @@
+# forestfire/optimizer/services/distance.py
 from typing import Tuple
 import math
 
@@ -7,6 +8,9 @@ class DistanceCalculator:
     @staticmethod
     def euclidean_distance(point1: Tuple[float, float], point2: Tuple[float, float]) -> float:
         """Calculate Euclidean distance between two points"""
-        x1, y1 = point1
-        x2, y2 = point2
-        return math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
+        try:
+            x1, y1 = float(point1[0]), float(point1[1])
+            x2, y2 = float(point2[0]), float(point2[1])
+            return math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
+        except (TypeError, ValueError) as e:
+            raise TypeError(f"Invalid point format: {e}. Point1: {point1}, Point2: {point2}")
