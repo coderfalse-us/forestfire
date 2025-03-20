@@ -1,18 +1,27 @@
 from forestfire.optimizer.fitness import calc_distance_with_shortest_route
-from forestfire.utils import config
-from forestfire.database.picklist import getdata
-from forestfire.algorithms.genetic import mutate_with_capacity, crossover, tournament_selection
 from forestfire.utils.config import *
-from forestfire.plots.graph import graph_plot
+from forestfire.database.picklist import PicklistRepository  # Updated import
+from forestfire.algorithms.genetic import mutate_with_capacity, crossover, tournament_selection
+# from forestfire.plots.graph import graph_plot
 import random
 import numpy as np
 import math
 
+# Initialize repository
+picklist_repo = PicklistRepository()
+
+# Get data using new repository pattern
+try:
+    picktasks, orders_assign, stage_result = picklist_repo.get_optimized_data()
+except Exception as e:
+    print(f"Error fetching data: {e}")
+    exit(1)
+
+# Rest of the code remains same
 empty_pop = []
 
 global orders
 
-picktasks,orders_assign,stage_result = getdata()
 # Initial Population
 for iteration in range(25-1):
     emptypop_position = []
