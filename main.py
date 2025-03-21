@@ -2,7 +2,7 @@ from forestfire.utils.config import *
 from forestfire.database.picklist import PicklistRepository
 from forestfire.optimizer.services.routing import RouteOptimizer
 from forestfire.algorithms.genetic import GeneticOperator
-# from forestfire.plots.graph import graph_plot
+from forestfire.plots.graph import PathVisualizer
 from typing import List, Tuple
 import random
 import numpy as np
@@ -54,7 +54,7 @@ def main():
     picklist_repo = PicklistRepository()
     route_optimizer = RouteOptimizer()
     genetic_op = GeneticOperator(route_optimizer)
-    
+    path_visualizer = PathVisualizer()
     try:
         # Get data using repository pattern
         picktasks, orders_assign, stage_result = picklist_repo.get_optimized_data()
@@ -163,7 +163,7 @@ def main():
         logger.info(f"\nFinal Best Solution: {final_solution}")
         
         # Visualize results
-        graph_plot(final_solution)
+        path_visualizer.plot_routes(final_solution)
         
     except Exception as e:
         logger.error(f"Error in optimization process: {e}")
