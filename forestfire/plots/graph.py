@@ -1,8 +1,12 @@
 import matplotlib
-# Use Agg backend if no display available
 import os
+import platform
+from datetime import datetime
+
+# Use Agg backend if no display available
 if os.environ.get('DISPLAY') is None:
     matplotlib.use('Agg')
+    
 import matplotlib.pyplot as plt
 from forestfire.optimizer.services.routing import RouteOptimizer
 from forestfire.utils.config import *
@@ -10,11 +14,27 @@ from forestfire.database.picklist import PicklistRepository
 import logging
 
 logger = logging.getLogger(__name__)
+
 class PathVisualizer:
     def __init__(self):
         self.picklist_repo = PicklistRepository()
         self.route_optimizer = RouteOptimizer()
+        self.output_dir = os.path.join(os.getcwd(), "output", "plots")
+        
+        # Ensure output directory exists
+        if not os.path.exists(self.output_dir):
+            os.makedirs(self.output_dir)
 
+    def save_plot(self, plot_name=None):
+        """Save the current plot with timestamp"""
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"route_visualization_{timestamp}.png" if plot_name is None else f"{plot_name}_{timestamp}.png"
+        filepath = os.path.join(self.output_dir, filename)
+        
+        plt.savefig(filepath, dpi=300, bbox_inches='tight')
+        logger.info(f"Plot saved to: {filepath}")
+        return filepath
+    
     def plot_routes(self, final_solution):
         """Plot optimized routes for each picker"""
         # Map orders to pickers
@@ -79,6 +99,10 @@ class PathVisualizer:
             ax.set_xlabel("X Coordinate", fontsize=10)
             ax.set_ylabel("Y Coordinate", fontsize=10)
             ax.grid(True)
+
+        filepath = self.save_plot()
+        plt.close()
+        return filepath
 
         try:
             plt.show()
