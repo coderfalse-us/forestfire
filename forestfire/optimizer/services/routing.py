@@ -2,14 +2,16 @@ from typing import List, Tuple, Dict
 from ..models.route import Route
 from ..utils.geometry import WalkwayCalculator
 from .distance import DistanceCalculator
+from forestfire.utils import *
 from forestfire.utils.config import *
 
 class RouteOptimizer:
     """Service for optimizing picker routes"""
     
-    def __init__(self, left_walkway: int = 15, right_walkway: int = 105):
+    def __init__(self, left_walkway: int = 15, right_walkway: int = 105,step_between_rows: int=10 ):
         self.left_walkway = left_walkway
         self.right_walkway = right_walkway
+        self.step_between_rows = step_between_rows
         self.distance_calculator = DistanceCalculator()
         self.walkway_calculator = WalkwayCalculator(left_walkway, right_walkway)
 
@@ -84,43 +86,31 @@ class RouteOptimizer:
                 final_result.extend(stage_result.get(taskid[0], []))
             return final_result
         
-    def _sort_locations(self, assignments: List[List[Tuple[float, float]]]) -> List[Tuple[float, float]]:
+    def _sort_locations(self, assignments: List[List[Tuple[float, float]]]) -> List[List[Tuple[float, float]]]:
         """Sort locations by aisle and position"""
         sorted_data = [[] for _ in range(NUM_PICKERS)]
-        # Group locations by aisle
+        
+        # Group locations by aisle for each picker
         for i in range(NUM_PICKERS):
             aisles = {}
-            locations=assignments[i]
+            locations = assignments[i]
+            
             for loc in locations:
                 aisle = loc[1] // 10
                 if aisle not in aisles:
                     aisles[aisle] = []
                 aisles[aisle].append(loc)
 
-            # Sort within each aisle
-
+            # Sort within each aisle and maintain picker-specific grouping
             for aisle in sorted(aisles.keys()):
                 if aisle % 2 == 0:  # Even aisles
                     sorted_aisle = sorted(aisles[aisle], key=lambda x: x[0])
                 else:  # Odd aisles
                     sorted_aisle = sorted(aisles[aisle], key=lambda x: x[0], reverse=True)
-                sorted_data.extend(sorted_aisle)
+                sorted_data[i].extend(sorted_aisle)
 
         return sorted_data
     
-    # def _get_walkway_points(
-    #     self,
-    #     sorted_data[p]: List[Tuple[float, float]],
-    # ) -> List[Tuple[float, float]]:
-    #     """Calculate intermediate walkway points between locations"""
-    #     dist1_walkway = self.walkway_calculator.get_walkway_position(sorted_data[p][0][1], left_walkway, right_walkway)
-    #     dist2_walkway = self.walkway_calculator.get_walkway_position(sorted_data[p][-1][1], left_walkway, right_walkway)
-
-    #     dist1 = self.distance_calculator.euclidean_distance(picker_locations[p], (dist1_walkway, sorted_data[p][0][1]))
-    #     dist2 = self.distance_calculator.euclidean_distance(picker_locations[p], (dist2_walkway, sorted_data[p][-1][1]))
-
-    #     return dist1, dist2
-
 
     def _calculate_route_cost(self, path: List[Tuple[float, float]]) -> float:
         """Calculate total distance of route"""
@@ -209,7 +199,7 @@ class RouteOptimizer:
                 if route[1][1] % 20 == 0:
                     route.insert(1, (self.left_walkway, route[1][1]))
                 else:
-                    route.insert(1, (self.left_walkway, route[1][1] - self.config.step_between_rows))
+                    route.insert(1, (self.left_walkway, route[1][1] - self.step_between_rows))
             else:
                 route = route[::-1]
                 r_flag[p] = 1
@@ -217,7 +207,7 @@ class RouteOptimizer:
                 if route[1][1] % 20 == 0:
                     route.insert(1, (self.left_walkway, route[1][1]))
                 else:
-                    route.insert(1, (self.left_walkway, route[1][1] + self.config.step_between_rows))
+                    route.insert(1, (self.left_walkway, route[1][1] + self.step_between_rows))
         
         # Logic for right side of warehouse
         else:
@@ -227,7 +217,7 @@ class RouteOptimizer:
                     route.insert(1, (self.right_walkway, route[1][1]))
                 else:
                     route.insert(0, picker_location)
-                    route.insert(1, (self.right_walkway, route[1][1] - self.config.step_between_rows))
+                    route.insert(1, (self.right_walkway, route[1][1] - self.step_between_rows))
             else:
                 route = route[::-1]
                 r_flag[p] = 1
@@ -236,7 +226,7 @@ class RouteOptimizer:
                     route.insert(1, (self.right_walkway, route[1][1]))
                 else:
                     route.insert(0, picker_location)
-                    route.insert(1, (self.right_walkway, route[1][1] + self.config.step_between_rows))
+                    route.insert(1, (self.right_walkway, route[1][1] + self.step_between_rows))
         
         return route
 
@@ -285,57 +275,57 @@ class RouteOptimizer:
         
         return processed_routes
 
-def _handle_aisle_transition(
-    self,
-    route: List[Tuple[float, float]],
-    index: int,
-    r_flag: int
-) -> int:
-    """
-    Handle transitions between aisles in serpentine routing
-    
-    Args:
-        route: Current route being processed
-        index: Current position in route
-        r_flag: Route direction flag
+    def _handle_aisle_transition(
+        self,
+        route: List[Tuple[float, float]],
+        index: int,
+        r_flag: int
+    ) -> int:
+        """
+        Handle transitions between aisles in serpentine routing
         
-    Returns:
-        Updated index position after handling transition
-    """
-    current_pos = route[index]
-    next_pos = route[index + 1]
-    
-    # Current position on main aisle
-    if current_pos[1] % 20 == 0:
-        if next_pos[1] % 20 != 0:
-            # Add right walkway points
-            route.insert(index + 1, (self.right_walkway, current_pos[1]))
-            route.insert(index + 2, (self.right_walkway, route[index + 2][1]))
-            return index + 2
-        else:
-            # Both positions on main aisle
-            step = -self.config.step_between_rows if r_flag else self.config.step_between_rows
-            route.insert(index + 1, (self.right_walkway, current_pos[1]))
-            route.insert(index + 2, (self.right_walkway, route[index + 1][1] + step))
-            route.insert(index + 3, (self.left_walkway, route[index + 2][1]))
-            route.insert(index + 4, (self.left_walkway, route[index + 4][1]))
-            return index + 4
+        Args:
+            route: Current route being processed
+            index: Current position in route
+            r_flag: Route direction flag
             
-    # Current position on regular aisle
-    else:
-        if next_pos[1] % 20 == 0:
-            # Add left walkway points
-            route.insert(index + 1, (self.left_walkway, current_pos[1]))
-            route.insert(index + 2, (self.left_walkway, route[index + 2][1]))
-            return index + 2
+        Returns:
+            Updated index position after handling transition
+        """
+        current_pos = route[index]
+        next_pos = route[index + 1]
+        
+        # Current position on main aisle
+        if current_pos[1] % 20 == 0:
+            if next_pos[1] % 20 != 0:
+                # Add right walkway points
+                route.insert(index + 1, (self.right_walkway, current_pos[1]))
+                route.insert(index + 2, (self.right_walkway, route[index + 2][1]))
+                return index + 2
+            else:
+                # Both positions on main aisle
+                step = -self.step_between_rows if r_flag else self.step_between_rows
+                route.insert(index + 1, (self.right_walkway, current_pos[1]))
+                route.insert(index + 2, (self.right_walkway, route[index + 1][1] + step))
+                route.insert(index + 3, (self.left_walkway, route[index + 2][1]))
+                route.insert(index + 4, (self.left_walkway, route[index + 4][1]))
+                return index + 4
+                
+        # Current position on regular aisle
         else:
-            # Neither position on main aisle
-            step = -self.config.step_between_rows if r_flag else self.config.step_between_rows
-            route.insert(index + 1, (self.left_walkway, current_pos[1]))
-            route.insert(index + 2, (self.left_walkway, route[index + 1][1] + step))
-            route.insert(index + 3, (self.right_walkway, route[index + 2][1]))
-            route.insert(index + 4, (self.right_walkway, route[index + 4][1]))
-            return index + 4
+            if next_pos[1] % 20 == 0:
+                # Add left walkway points
+                route.insert(index + 1, (self.left_walkway, current_pos[1]))
+                route.insert(index + 2, (self.left_walkway, route[index + 2][1]))
+                return index + 2
+            else:
+                # Neither position on main aisle
+                step = -self.step_between_rows if r_flag else self.step_between_rows
+                route.insert(index + 1, (self.left_walkway, current_pos[1]))
+                route.insert(index + 2, (self.left_walkway, route[index + 1][1] + step))
+                route.insert(index + 3, (self.right_walkway, route[index + 2][1]))
+                route.insert(index + 4, (self.right_walkway, route[index + 4][1]))
+                return index + 4
 
  
 
