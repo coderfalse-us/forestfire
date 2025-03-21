@@ -2,6 +2,7 @@ from forestfire.utils.config import *
 from forestfire.database.picklist import PicklistRepository
 from forestfire.optimizer.services.routing import RouteOptimizer
 from forestfire.algorithms.genetic import GeneticOperator
+from forestfire.algorithms.ant_colony import AntColonyOptimizer
 from forestfire.plots.graph import PathVisualizer
 from typing import List, Tuple
 import random
@@ -54,7 +55,9 @@ def main():
     picklist_repo = PicklistRepository()
     route_optimizer = RouteOptimizer()
     genetic_op = GeneticOperator(route_optimizer)
+    aco = AntColonyOptimizer(route_optimizer)
     path_visualizer = PathVisualizer()
+    
     try:
         # Get data using repository pattern
         picktasks, orders_assign, stage_result = picklist_repo.get_optimized_data()
@@ -76,30 +79,17 @@ def main():
         
         # Initialize ACO components
         pheromone = np.ones((len(orders_assign), NUM_PICKERS))
-        heuristic = calculate_heuristic(orders_assign, PICKER_LOCATIONS)
+        heuristic = aco.calculate_heuristic(orders_assign, PICKER_LOCATIONS)
         
         # Ant Colony Optimization
         for ant in range(NUM_ANTS):
-            assignment = [-1] * len(orders_assign)
-            picker_loads = [0] * NUM_PICKERS
-            
-            # Build solution
-            for item in range(len(orders_assign)):
-                valid_pickers = []
-                prob = []
-                
-                for picker in range(NUM_PICKERS):
-                    if picker_loads[picker] < PICKER_CAPACITIES[picker]:
-                        valid_pickers.append(picker)
-                        prob.append((pheromone[item][picker] ** ALPHA) * 
-                                  (heuristic[item][picker] ** BETA))
-                
-                if valid_pickers:
-                    prob = np.array(prob)
-                    prob /= prob.sum()
-                    chosen_picker = np.random.choice(valid_pickers, p=prob)
-                    assignment[item] = chosen_picker
-                    picker_loads[chosen_picker] += 1
+            # Build solution using ACO
+            assignment = aco.build_solution(
+                pheromone,
+                heuristic, 
+                len(orders_assign),
+                PICKER_CAPACITIES
+            )
             
             # Evaluate solution
             fitness_score, routes, _ = route_optimizer.calculate_shortest_route(
@@ -108,10 +98,8 @@ def main():
             empty_pop.append([assignment, fitness_score])
             
             # Update pheromone trails
-            for item in range(len(orders_assign)):
-                if assignment[item] != -1:
-                    pheromone[item][assignment[item]] *= (1 - RHO)
-                    pheromone[item][assignment[item]] += 1 / fitness_score
+            aco.update_pheromone(pheromone, assignment, fitness_score, len(orders_assign))
+
         
         # Genetic Algorithm Optimization
         pop = sorted(empty_pop, key=lambda x: x[1])
