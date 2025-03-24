@@ -1,6 +1,7 @@
 from forestfire.utils.config import *
 from forestfire.database.services.picklist import PicklistRepository
 from forestfire.database.services.batch_service import BatchService
+from forestfire.database.services.pick_sequence_service import PickSequenceService
 from forestfire.optimizer.services.routing import RouteOptimizer
 from forestfire.algorithms.genetic import GeneticOperator
 from forestfire.algorithms.ant_colony import AntColonyOptimizer
@@ -59,6 +60,7 @@ def main():
     aco = AntColonyOptimizer(route_optimizer)
     path_visualizer = PathVisualizer()
     batch_service=BatchService()
+    picksequence_service=PickSequenceService()
     
     try:
         # Get data using repository pattern
@@ -157,6 +159,14 @@ def main():
         
         # Visualize results
         path_visualizer.plot_routes(final_solution)
+
+        # Update pick sequences
+        picksequence_service.update_pick_sequences(
+            final_solution, 
+            picklistids, 
+            orders_assign, 
+            picktasks, 
+            stage_result)
         
     except Exception as e:
         logger.error(f"Error in optimization process: {e}")
