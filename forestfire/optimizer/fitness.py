@@ -2,7 +2,6 @@ from forestfire.optimizer.utils import e_d, walkway_from_condition
 from forestfire.utils.config import *
 import math
 def calc_distance_with_shortest_route(picker_locations, emptypop_position, orders_assign, picktasks, stage_result):
-
       left_walkway=15
       right_walkway=105
 
@@ -55,6 +54,7 @@ def calc_distance_with_shortest_route(picker_locations, emptypop_position, order
         dist1 = e_d(picker_locations[p], (dist1_walkway, sorted_data[p][0][1]))
         dist2 = e_d(picker_locations[p], (dist2_walkway, sorted_data[p][-1][1]))
 
+      #entry logic code below
 
         if picker_locations[p][0] < 50:
           if dist1<dist2:
@@ -90,7 +90,7 @@ def calc_distance_with_shortest_route(picker_locations, emptypop_position, order
               sorted_data[p].insert(0,picker_locations[p])
               sorted_data[p].insert(1,(right_walkway,sorted_data[p][1][1]+STEP_BETWEEN_ROWS))
 
-         # print(r_flag)
+      # serpentine logic code below
       l=[]
 
       for j,k in enumerate(sorted_data):
