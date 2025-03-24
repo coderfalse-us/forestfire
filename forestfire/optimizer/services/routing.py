@@ -26,6 +26,8 @@ class RouteOptimizer:
         """
         Calculate shortest routes for all pickers
         """
+
+        
         order_indices = [[] for _ in range(len(picker_locations))]
         assignments = [[] for _ in range(len(picker_locations))]
         
@@ -182,14 +184,15 @@ class RouteOptimizer:
         dist2_walkway = self.walkway_calculator.get_walkway_position(route[-1][1])
         
         point1 = tuple(picker_location) if not isinstance(picker_location, tuple) else picker_location
-        point2 = tuple((dist1_walkway, route[0][1])) if not isinstance((dist1_walkway, route[0][1]), tuple) else (dist2_walkway, route[0][1])
+        point2 = tuple((dist1_walkway, route[0][1]))
+        point3= tuple((dist2_walkway, route[-1][1]))
 
         dist1 = self.distance_calculator.euclidean_distance(
             point1, 
             point2
         )
         dist2 = self.distance_calculator.euclidean_distance(
-            point1,point2
+            point1,point3
         )
 
         # Logic for left side of warehouse
