@@ -1,27 +1,28 @@
+from contextlib import contextmanager
+from typing import Generator
 import psycopg2
+from .config import DatabaseConfig
+from .exceptions import ConnectionError
 
-def connect_to_db():
-    DB_HOST = "alspgbdvit01q.ohl.com"
-    DB_NAME = "vite_picking_d_qa"
-    DB_USER = "usr_synpick"
-    DB_PASSWORD = "Niermftyg934"
-    DB_PORT = "6432"
+class DatabaseConnectionManager:
+    _config = DatabaseConfig()
+    _connection = None
 
-    try:
-        connection = psycopg2.connect(
-            host=DB_HOST,
-            database=DB_NAME,
-            user=DB_USER,
-            password=DB_PASSWORD,
-            port=DB_PORT
-        )
-        print("Database connection successful!")
-        return connection
-    except Exception as e:
-        raise RuntimeError(f"Database connection failed: {e}")
-
-
-def close_connection(connection):
-    """Safely close database connection"""
-    if connection:
-        connection.close()
+    @classmethod
+    @contextmanager
+    def get_connection(self) -> Generator[psycopg2.extensions.connection, None, None]:
+        try:
+            if not self._connection or self._connection.closed:
+                self._connection = psycopg2.connect(
+                    host=self._config.host,
+                    port=self._config.port,
+                    database=self._config.database,
+                    user=self._config.user,
+                    password=self._config.password
+                )
+            yield self._connection
+        except Exception as e:
+            raise ConnectionError(f"Failed to connect to database: {e}")
+        finally:
+            if self._connection and not self._connection.closed:
+                self._connection.close()
