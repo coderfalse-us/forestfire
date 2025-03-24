@@ -1,5 +1,6 @@
 from forestfire.utils.config import *
-from forestfire.database.picklist import PicklistRepository
+from forestfire.database.services.picklist import PicklistRepository
+from forestfire.database.services.batch_service import BatchService
 from forestfire.optimizer.services.routing import RouteOptimizer
 from forestfire.algorithms.genetic import GeneticOperator
 from forestfire.algorithms.ant_colony import AntColonyOptimizer
@@ -57,10 +58,11 @@ def main():
     genetic_op = GeneticOperator(route_optimizer)
     aco = AntColonyOptimizer(route_optimizer)
     path_visualizer = PathVisualizer()
+    batch_service=BatchService()
     
     try:
         # Get data using repository pattern
-        picktasks, orders_assign, stage_result = picklist_repo.get_optimized_data()
+        picktasks, orders_assign, stage_result,picklistids = picklist_repo.get_optimized_data()
         
         # Initialize population
         empty_pop = []
@@ -149,6 +151,9 @@ def main():
         # Final solution
         final_solution = pop[0][0]
         logger.info(f"\nFinal Best Solution: {final_solution}")
+
+        # Update batch assignments
+        batch_service.update_batch_assignments(final_solution, picklistids)
         
         # Visualize results
         path_visualizer.plot_routes(final_solution)
