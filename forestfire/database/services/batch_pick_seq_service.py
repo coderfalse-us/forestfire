@@ -6,7 +6,7 @@ from forestfire.utils.config import *
 
 logger = logging.getLogger(__name__)
 
-class PickSequenceService:
+class BatchPickSequenceService:
     """Service for handling pick sequence updates"""
     
     def __init__(self):
