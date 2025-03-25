@@ -34,7 +34,7 @@ class PickSequenceService:
             # Get all picklist-picktask relationships in one query
             query = """
             SET search_path TO nifiapp;
-            SELECT p.id, p.picktaskid, p.pickerlocation_x, p.pickerlocation_y 
+            SELECT p.id, p.picktaskid, p.xcoordinate, p.ycoordinate 
             FROM picklist p 
             WHERE p.picktaskid = ANY(%s);
             """
