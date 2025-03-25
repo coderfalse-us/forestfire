@@ -3,6 +3,7 @@ import logging
 from ..connection import DatabaseConnectionManager
 from ..repository import BaseRepository
 from ..exceptions import QueryError
+from forestfire.utils.config import WAREHOUSE_NAME
 
 logger = logging.getLogger(__name__)
 
@@ -21,11 +22,13 @@ class PicklistRepository:
             List[Tuple]: All picklist records
         """
         query = """
-        SET search_path TO nifiapp;
-        SELECT * FROM picklist;
+        SELECT p.*
+        FROM nifiapp.picklist p
+        JOIN synob_tabr.warehouses w ON p.warehouseid = w.id
+        WHERE w.name = %s;
         """
         try:
-            return self.baserepository.execute_query(query)
+            return self.baserepository.execute_query(query, (WAREHOUSE_NAME,))
             
         except Exception as e:
             logger.error(f"Error fetching picklist data: {e}")
