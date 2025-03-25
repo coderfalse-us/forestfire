@@ -10,7 +10,7 @@ if os.environ.get('DISPLAY') is None:
 import matplotlib.pyplot as plt
 from forestfire.optimizer.services.routing import RouteOptimizer
 from forestfire.utils.config import *
-from forestfire.database.picklist import PicklistRepository 
+from forestfire.database.services.picklist import PicklistRepository 
 import logging
 
 logger = logging.getLogger(__name__)
@@ -39,7 +39,7 @@ class PathVisualizer:
         """Plot optimized routes for each picker"""
         # Map orders to pickers
         orders = {picker_id: [] for picker_id in range(NUM_PICKERS)}
-        picktasks, orders_assign, stage_result = self.picklist_repo.get_optimized_data()
+        picktasks, orders_assign, stage_result,_ = self.picklist_repo.get_optimized_data()
         
         for item_id, picker_id in enumerate(final_solution):
             orders[picker_id].append(item_id)
