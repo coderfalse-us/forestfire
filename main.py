@@ -6,6 +6,8 @@ from forestfire.algorithms.genetic import GeneticOperator
 from forestfire.algorithms.ant_colony import AntColonyOptimizer
 from forestfire.plots.graph import PathVisualizer
 from typing import List, Tuple
+from forestfire.algorithms.reinforcement.environment import WarehouseEnvironment
+from forestfire.algorithms.reinforcement.agent import WarehouseAgent
 import random
 import numpy as np
 import math
@@ -51,6 +53,84 @@ def calculate_heuristic(
             
     return heuristic
 
+def train_rl_agent(
+    orders_assign: List[List[Tuple[float, float]]], 
+    picker_locations: List[Tuple[float, float]]
+) -> List[int]:
+    """Train RL agent and get optimized picker assignments"""
+    
+    # Create environment
+    env = WarehouseEnvironment(
+        orders_assign=orders_assign,
+        picker_locations=picker_locations,
+        picker_capacities=PICKER_CAPACITIES
+    )
+    
+    # Initialize agent
+    state_size = (len(orders_assign) + NUM_PICKERS + 1)  # Combined size of observation space
+    agent = WarehouseAgent(
+        state_size=state_size,
+        action_size=NUM_PICKERS,
+        hidden_size=128
+    )
+    
+    # Training parameters
+    n_episodes = 1000
+    batch_size = 32
+    best_reward = float('-inf')
+    best_assignment = None
+    
+    # Training loop
+    for episode in range(n_episodes):
+        state = env.reset()
+        total_reward = 0
+        done = False
+        
+        while not done:
+            # Get valid actions (pickers with remaining capacity)
+            valid_actions = [
+                i for i in range(NUM_PICKERS)
+                if env.picker_loads[i] < PICKER_CAPACITIES[i]
+            ]
+            
+            # Convert state dict to array
+            state_array = np.concatenate([
+                state['remaining_items'],
+                state['picker_loads'],
+                state['current_item']
+            ])
+            
+            # Choose and execute action
+            action = agent.act(state_array, valid_actions)
+            next_state, reward, done, _ = env.step(action)
+            
+            # Store experience
+            next_state_array = np.concatenate([
+                next_state['remaining_items'],
+                next_state['picker_loads'],
+                next_state['current_item']
+            ])
+            agent.remember(state_array, action, reward, next_state_array, done)
+            
+            # Train agent
+            agent.train(batch_size)
+            
+            state = next_state
+            total_reward += reward
+            
+        # Update target network periodically
+        if episode % 10 == 0:
+            agent.update_target_network()
+            
+        # Track best solution
+        if total_reward > best_reward:
+            best_reward = total_reward
+            best_assignment = env.assignment.copy()
+            
+        logger.info(f"Episode {episode}, Total Reward: {total_reward}")
+    
+    return best_assignment
+
 def main():
     # Initialize services
     picklist_repo = PicklistRepository()
@@ -82,6 +162,13 @@ def main():
         # Initialize ACO components
         pheromone = np.ones((len(orders_assign), NUM_PICKERS))
         heuristic = aco.calculate_heuristic(orders_assign, PICKER_LOCATIONS)
+
+        rl_solution = train_rl_agent(orders_assign, PICKER_LOCATIONS)
+        # Evaluate RL solution
+        rl_fitness, rl_routes, _ = route_optimizer.calculate_shortest_route(
+            PICKER_LOCATIONS, rl_solution, orders_assign, picktasks, stage_result
+        )
+        print(f"RL Solution, Fitness: {rl_solution,rl_fitness}")
         
         # Ant Colony Optimization
         for ant in range(NUM_ANTS):
@@ -151,6 +238,9 @@ def main():
         # Final solution
         final_solution = pop[0][0]
         logger.info(f"\nFinal Best Solution: {final_solution}")
+
+        if rl_fitness < final_solution[1]:
+            final_solution = [rl_solution, rl_fitness]
 
         
         # Visualize results
