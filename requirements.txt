@@ -1,0 +1,23 @@
+# Core dependencies
+numpy==1.24.3
+pandas==2.0.2
+matplotlib==3.7.1
+scikit-learn==1.2.2
+
+# Database dependencies
+sqlalchemy==2.0.19
+psycopg2-binary==2.9.6
+python-dotenv==1.0.0
+
+# Web dependencies
+flask==2.3.2
+requests==2.31.0
+gunicorn==21.2.0
+
+# Testing dependencies
+pytest==7.3.1
+pytest-cov==4.1.0
+
+# Utility dependencies
+tqdm==4.65.0
+pyyaml==6.0.1
