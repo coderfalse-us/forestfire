@@ -1,5 +1,8 @@
+"""
+Module containing dataclass definitions for route optimization models.
+"""
 from dataclasses import dataclass
-from typing import List, Tuple, Optional
+from typing import List, Tuple
 
 @dataclass
 class Route:

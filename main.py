@@ -1,4 +1,17 @@
-from forestfire.utils.config import *
+"""
+Main module for the Forest Fire Optimization System.
+Implements a hybrid optimization approach combining Genetic Algorithms
+and Ant Colony Optimization for warehouse picker routing.
+"""
+import math
+import logging
+from typing import List, Tuple
+import random
+import numpy as np
+from forestfire.utils.config import (
+    N_POP, NUM_PICKERS, PICKER_CAPACITIES, PICKER_LOCATIONS,
+    NUM_ANTS, MAX_IT, TOURNAMENT_SIZE, NC, NM
+)
 # Import the new ORM-based repositories and services
 from forestfire.database.orm.repositories import PicklistRepository
 from forestfire.database.orm.services import BatchPickSequenceService
@@ -6,11 +19,7 @@ from forestfire.optimizer.services.routing import RouteOptimizer
 from forestfire.algorithms.genetic import GeneticOperator
 from forestfire.algorithms.ant_colony import AntColonyOptimizer
 from forestfire.plots.graph import PathVisualizer
-from typing import List, Tuple
-import random
-import numpy as np
-import math
-import logging
+
 
 logger = logging.getLogger(__name__)
 
@@ -75,7 +84,7 @@ def main():
 
         # Evaluate initial population
         for position in initial_population:
-            fitness_score, routes, _ = route_optimizer.calculate_shortest_route(
+            fitness_score, _, _ = route_optimizer.calculate_shortest_route(
                 PICKER_LOCATIONS, position, orders_assign, picktasks, stage_result
             )
             empty_pop.append([position, fitness_score])
@@ -85,7 +94,7 @@ def main():
         heuristic = aco.calculate_heuristic(orders_assign, PICKER_LOCATIONS)
 
         # Ant Colony Optimization
-        for ant in range(NUM_ANTS):
+        for _ in range(NUM_ANTS):
             # Build solution using ACO
             assignment = aco.build_solution(
                 pheromone,
@@ -95,7 +104,7 @@ def main():
             )
 
             # Evaluate solution
-            fitness_score, routes, _ = route_optimizer.calculate_shortest_route(
+            fitness_score, _, _ = route_optimizer.calculate_shortest_route(
                 PICKER_LOCATIONS, assignment, orders_assign, picktasks, stage_result
             )
             empty_pop.append([assignment, fitness_score])
@@ -106,7 +115,7 @@ def main():
 
         # Genetic Algorithm Optimization
         pop = sorted(empty_pop, key=lambda x: x[1])
-        best_solution = pop[0]
+        #best_solution = pop[0]
 
         for iteration in range(MAX_IT):
             # Crossover phase
@@ -147,11 +156,11 @@ def main():
             pop = empty_pop[:N_POP]
 
             new_best_solution = pop[0]
-            logger.info(f"Iteration {iteration}: Best Solution = {new_best_solution[1]}")
+            logger.info("Iteration %d: Best Solution = %f", iteration, new_best_solution[1])
 
         # Final solution
         final_solution = pop[0][0]
-        logger.info(f"\nFinal Best Solution: {final_solution}")
+        logger.info("\nFinal Best Solution: %d", final_solution)
 
 
         # Visualize results
@@ -168,7 +177,7 @@ def main():
         )
 
     except Exception as e:
-        logger.error(f"Error in optimization process: {e}")
+        logger.error("Error in optimization process: %s", e)
         raise
 
 if __name__ == "__main__":
