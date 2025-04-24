@@ -1,4 +1,10 @@
-from typing import Dict, List, Tuple, Any
+"""Repository for picklist data operations.
+
+This module provides functionality for fetching and manipulating picklist data
+from the database for warehouse order picking optimization.
+"""
+
+from typing import Dict, List, Tuple
 import logging
 from ..connection import DatabaseConnectionManager
 from ..repository import BaseRepository
@@ -17,7 +23,7 @@ class PicklistRepository:
     def fetch_picklist_data(self) -> List[Tuple]:
         """
         Fetch all picklist data from the database
-        
+
         Returns:
             List[Tuple]: All picklist records
         """
@@ -29,15 +35,15 @@ class PicklistRepository:
         """
         try:
             return self.baserepository.execute_query(query, (WAREHOUSE_NAME,))
-            
+
         except Exception as e:
-            logger.error(f"Error fetching picklist data: {e}")
-            raise QueryError(f"Failed to fetch picklist data: {e}")
+            logger.error("Error fetching picklist data: %s", e)
+            raise QueryError("Failed to fetch picklist data: %s" % e) from e
 
     def fetch_distinct_picktasks(self) -> List[str]:
         """
         Fetch distinct picktask IDs
-        
+
         Returns:
             List[str]: List of unique picktask IDs
         """
@@ -49,13 +55,17 @@ class PicklistRepository:
             distinct_pictask = self.baserepository.execute_query(query)
             return [row[0] for row in distinct_pictask]
         except Exception as e:
-            logger.error(f"Error fetching distinct picktasks: {e}")
-            raise QueryError(f"Failed to fetch distinct picktasks: {e}")
+            logger.error("Error fetching distinct picktasks: %s", e)
+            raise QueryError(
+                "Failed to fetch distinct picktasks: %s" % e
+            ) from e
 
-    def map_picklist_data(self) -> Tuple[Dict[str, List[Tuple]], Dict[str, List[Tuple]], Dict[str, int]]:
+    def map_picklist_data(
+        self
+    ) -> Tuple[Dict[str, List[Tuple]], Dict[str, List[Tuple]], Dict[str, int]]:
         """
         Map picklist data by picktask ID
-        
+
         Returns:
             Tuple containing:
                 - Dict[str, List[Tuple]]: Staging locations mapping
@@ -69,9 +79,11 @@ class PicklistRepository:
                 raise QueryError("No data found in picklist table")
             picktasks = self.fetch_distinct_picktasks()
             if not picktasks:
-                logger.error("No picktasks returned from fetch_distinct_picktasks")
+                logger.error(
+                    "No picktasks returned from fetch_distinct_picktasks"
+                )
                 raise QueryError("No distinct picktasks found")
-            
+
             task_result: Dict[str, List[Tuple]] = {}
             stage_result: Dict[str, List[Tuple]] = {}
             id_mapping: Dict[str, int] = {}  # New mapping for database IDs
@@ -83,10 +95,12 @@ class PicklistRepository:
                     for row in rows
                     if row[3] == picktaskid
                 ]
-                
+
                 # Get database ID for picktask
-                db_id = next((row[0] for row in rows if row[3] == picktaskid), None)
-                
+                db_id = next(
+                    (row[0] for row in rows if row[3] == picktaskid), None
+                )
+
                 # Filter staging locations
                 staging_loc = [
                     (row[67], row[68])
@@ -102,36 +116,38 @@ class PicklistRepository:
             return stage_result, task_result, id_mapping
 
         except Exception as e:
-            logger.error(f"Error mapping picklist data: {e}")
-            raise QueryError(f"Failed to map picklist data: {e}")
+            logger.error("Error mapping picklist data: %s", e)
+            raise QueryError("Failed to map picklist data: %s" % e) from e
 
 
-        
+
     def update_batchid(self, batch_id: str, picklist_id: str) -> None:
         """
         Update batch ID for a picktask
-        
+
         Args:
             batch_id (str): New batch ID
             picktask_id (str): Picktask ID to update
         """
-        query = f"""
+        query = """
         SET search_path TO nifiapp;
         UPDATE picklist
-        SET batchid = '{batch_id}'
-        WHERE picktaskid = '{picklist_id}';
+        SET batchid = %s
+        WHERE picktaskid = %s;
         """
         try:
-            self.baserepository.execute_query(query)
+            self.baserepository.execute_query(query, (batch_id, picklist_id))
         except Exception as e:
-            logger.error(f"Error updating batch ID: {e}")
-            raise QueryError(f"Failed to update batch ID: {e}")
+            logger.error("Error updating batch ID: %s", e)
+            raise QueryError("Failed to update batch ID: %s" % e) from e
 
 
-    def get_optimized_data(self) -> Tuple[List[str], List[List[Tuple]], Dict[str, List[Tuple]], List[int]]:
+    def get_optimized_data(
+        self
+    ) -> Tuple[List[str], List[List[Tuple]], Dict[str, List[Tuple]], List[int]]:
         """
         Get optimized picklist data for order assignment
-        
+
         Returns:
             Tuple containing:
                 - List[str]: Task IDs
@@ -141,14 +157,16 @@ class PicklistRepository:
         """
         try:
             staging, taskid, id_mapping = self.map_picklist_data()
-            
+
             # Convert to required format for optimization
             task_keys = list(taskid.keys())
-            locations = [[item] for sublist in taskid.values() for item in sublist]
+            locations = [
+                [item] for sublist in taskid.values() for item in sublist
+            ]
             picklistids = [id_mapping.get(task_id) for task_id in task_keys]
-            
+
             return task_keys, locations, staging, picklistids
 
         except Exception as e:
-            logger.error(f"Error getting optimized data: {e}")
-            raise QueryError(f"Failed to get optimized data: {e}")
+            logger.error("Error getting optimized data: %s", e)
+            raise QueryError("Failed to get optimized data: %s" % e) from e

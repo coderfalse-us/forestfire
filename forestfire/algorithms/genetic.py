@@ -1,16 +1,25 @@
+"""Genetic algorithm implementation for warehouse order picking optimization.
+
+This module provides genetic operators for crossover, mutation, and selection
+to optimize picker routes in a warehouse environment.
+"""
+
 import random
 import numpy as np
-from typing import List, Tuple, Any
-from forestfire.utils.config import *
+from typing import List, Tuple
+from forestfire.utils.config import (
+    NUM_PICKERS, PICKER_CAPACITIES, PC
+)
 from forestfire.optimizer.services.routing import RouteOptimizer
 
 class GeneticOperator:
     """Class for genetic algorithm operations"""
-    
     def __init__(self, route_optimizer: RouteOptimizer):
         self.route_optimizer = route_optimizer
 
-    def crossover(self, x1: List[int], x2: List[int]) -> Tuple[List[int], List[int]]:
+    def crossover(
+        self, x1: List[int], x2: List[int]
+    ) -> Tuple[List[int], List[int]]:
         """Perform crossover between two parent solutions"""
         q = random.uniform(0, 1)
 
@@ -30,17 +39,20 @@ class GeneticOperator:
 
         return y1, y2
 
-    def _single_point_crossover(self, x1: List[int], x2: List[int]) -> Tuple[List[int], List[int]]:
+    def _single_point_crossover(
+        self, x1: List[int], x2: List[int]
+    ) -> Tuple[List[int], List[int]]:
         """Perform single point crossover"""
         n = len(x1)
         crossover_point = random.randint(1, n - 1)
-        
+
         y1 = x1[:crossover_point] + x2[crossover_point:]
         y2 = x2[:crossover_point] + x1[crossover_point:]
-        
         return y1, y2
 
-    def _uniform_crossover(self, x1: List[int], x2: List[int]) -> Tuple[List[int], List[int]]:
+    def _uniform_crossover(
+        self, x1: List[int], x2: List[int]
+    ) -> Tuple[List[int], List[int]]:
         """Perform uniform crossover"""
         n = len(x1)
         y1 = []
@@ -56,7 +68,9 @@ class GeneticOperator:
 
         return y1, y2
 
-    def _enforce_capacity_constraints(self, offspring: List[int], picker_capacities: List[int]) -> List[int]:
+    def _enforce_capacity_constraints(
+        self, offspring: List[int], picker_capacities: List[int]
+    ) -> List[int]:
         """Ensure solution satisfies picker capacity constraints"""
         assigned_counts = [0] * NUM_PICKERS
         for picker_id in offspring:
@@ -64,15 +78,15 @@ class GeneticOperator:
 
         over_capacity = {
             picker_id: count - picker_capacities[picker_id]
-            for picker_id, count in enumerate(assigned_counts) 
+            for picker_id, count in enumerate(assigned_counts)
             if count > picker_capacities[picker_id]
         }
 
         for i, picker_id in enumerate(offspring):
             if picker_id in over_capacity and over_capacity[picker_id] > 0:
                 valid_pickers = [
-                    p for p in range(NUM_PICKERS) 
-                    if assigned_counts[p] < PICKER_CAPACITIES[p]
+                    p for p in range(NUM_PICKERS)
+                    if assigned_counts[p] < picker_capacities[p]
                 ]
 
                 if valid_pickers:
@@ -84,7 +98,9 @@ class GeneticOperator:
 
         return offspring
 
-    def mutate_with_capacity(self, x: List[int], picker_capacities: List[int]) -> List[int]:
+    def mutate_with_capacity(
+        self, x: List[int], picker_capacities: List[int]
+    ) -> List[int]:
         """Mutate solution while respecting capacity constraints"""
         y = x[:]
         attempts = 10
@@ -96,9 +112,13 @@ class GeneticOperator:
 
             y[j] = new_picker
 
-            assigned_counts = [y.count(picker_id) for picker_id in range(NUM_PICKERS)]
-            if all(assigned_counts[picker_id] <= PICKER_CAPACITIES[picker_id] 
-                  for picker_id in range(NUM_PICKERS)):
+            assigned_counts = [
+                y.count(picker_id) for picker_id in range(NUM_PICKERS)
+            ]
+            if all(
+                assigned_counts[picker_id] <= picker_capacities[picker_id]
+                for picker_id in range(NUM_PICKERS)
+            ):
                 return y
 
             y[j] = assigned_picker
@@ -107,8 +127,8 @@ class GeneticOperator:
         return x
 
     def tournament_selection(
-        self, 
-        population: List[Tuple[List[int], float]], 
+        self,
+        population: List[Tuple[List[int], float]],
         tournament_size: int
     ) -> List[int]:
         """Select parent using tournament selection"""
@@ -122,12 +142,16 @@ def crossover(x1: List[int], x2: List[int]) -> Tuple[List[int], List[int]]:
     genetic_op = GeneticOperator(RouteOptimizer())
     return genetic_op.crossover(x1, x2)
 
-def mutate_with_capacity(x: List[int], picker_capacities: List[int]) -> List[int]:
+def mutate_with_capacity(
+    x: List[int], picker_capacities: List[int]
+) -> List[int]:
     """Legacy mutation function"""
     genetic_op = GeneticOperator(RouteOptimizer())
     return genetic_op.mutate_with_capacity(x, picker_capacities)
 
-def tournament_selection(population: List[Tuple[List[int], float]], tournament_size: int) -> List[int]:
+def tournament_selection(
+    population: List[Tuple[List[int], float]], tournament_size: int
+) -> List[int]:
     """Legacy tournament selection function"""
     genetic_op = GeneticOperator(RouteOptimizer())
     return genetic_op.tournament_selection(population, tournament_size)
