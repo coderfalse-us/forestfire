@@ -1,131 +1,225 @@
-from forestfire.optimizer.fitness import calc_distance_with_shortest_route
-from forestfire.utils import config
-from forestfire.database.picklist import getdata
-from forestfire.algorithms.genetic import mutate_with_capacity, crossover, tournament_selection
-from forestfire.utils.config import *
-from forestfire.plots.graph import graph_plot
+"""Main module for warehouse order picking
+   optimization using hybrid ACO-GA approach."""
+
+import logging
+from typing import List, Any
 import random
+
 import numpy as np
-import math
 
-empty_pop = []
+from forestfire.utils.config import (
+    NUM_PICKERS, PICKER_CAPACITIES, PICKER_LOCATIONS,
+    N_POP, NUM_ANTS, MAX_IT, NC, NM, TOURNAMENT_SIZE
+)
+from forestfire.database.services.picklist import PicklistRepository
+from forestfire.database.services.batch_pick_seq_service import BatchPickSequenceService
+from forestfire.optimizer.services.routing import RouteOptimizer
+from forestfire.algorithms.genetic import GeneticOperator
+from forestfire.algorithms.ant_colony import AntColonyOptimizer
+from forestfire.plots.graph import PathVisualizer
 
-global orders
 
-picktasks,orders_assign,stage_result = getdata()
-# Initial Population
-for iteration in range(25-1):
-    emptypop_position = []
+logger = logging.getLogger(__name__)
 
-    assigned_counts = [0] * NUM_PICKERS
-    
-    for f in range(len(orders_assign)):
-        valid_pickers = [i for i in range(NUM_PICKERS) if assigned_counts[i] < PICKER_CAPACITIES[i]]
 
-        picker_id = random.choice(valid_pickers)
-        assigned_counts[picker_id] += 1
-        emptypop_position.append(picker_id)
+def initialize_population(
+    num_pickers: int,
+    orders_size: int,
+    picker_capacities: List[int]
+) -> List[List[int]]:
+    """Initialize population with valid picker assignments.
 
-    random.shuffle(emptypop_position)
+    Args:
+        num_pickers: Number of available pickers
+        orders_size: Number of orders to assign
+        picker_capacities: List of picker capacity constraints
 
-    fitness_score, sorted_paths,_ = calc_distance_with_shortest_route(PICKER_LOCATIONS, emptypop_position, orders_assign, picktasks, stage_result)
-    empty_pop.append([emptypop_position, fitness_score])  # Append individuals with their fitness
+    Returns:
+        List of valid picker assignments
+    """
+    population = []
+    for _ in range(N_POP - 1):
+        assignment = []
+        assigned_counts = [0] * num_pickers
+        for _ in range(orders_size):
+            valid_pickers = [
+                i for i in range(num_pickers)
+                if assigned_counts[i] < picker_capacities[i]
+            ]
+            picker_id = random.choice(valid_pickers)
+            assigned_counts[picker_id] += 1
+            assignment.append(picker_id)
+        random.shuffle(assignment)
+        population.append(assignment)
+    return population
 
-pheromone = np.ones((len(orders_assign), NUM_PICKERS))  # Orders_assign defines the number of items
 
-heuristic = np.zeros((len(orders_assign), NUM_PICKERS))
-for item_idx, item_locs in enumerate(orders_assign):  # Each order is a list of tuple locations
-    for picker_idx, picker_loc in enumerate(PICKER_LOCATIONS):
-        # Calculate distance from picker to each location in the current order
-        # Assuming that each order contains one or more tuple locations
-        min_distance = float('inf')
-        for loc in item_locs:
-            distance = math.sqrt((loc[0] - picker_loc[0]) ** 2 + (loc[1] - picker_loc[1]) ** 2)
-            min_distance = min(min_distance, distance)
-        heuristic[item_idx][picker_idx] = 1 / (min_distance + 1e-6)
+def run_aco_optimization(
+    aco: AntColonyOptimizer,
+    route_optimizer: RouteOptimizer,
+    orders_assign: List[Any],
+    picktasks: List[Any],
+    stage_result: Any
+) -> List[List[Any]]:
+    """Run Ant Colony Optimization phase.
 
-# Ant colony optimization
-for ant in range(NUM_ANTS):
-    assignment = [-1] * len(orders_assign)  # Assignment of pickers to orders
-    picker_loads = [0] * NUM_PICKERS  # Track picker loads (capacity used)
+    Args:
+        aco: Ant Colony Optimizer instance
+        route_optimizer: Route Optimizer instance
+        orders_assign: List of orders to assign
+        picktasks: List of picking tasks
+        stage_result: Staging area result data
 
-    for item in range(len(orders_assign)):
-        valid_pickers = []
-        prob = []
+    Returns:
+        List of solutions with their fitness scores
+    """
+    empty_pop = []
+    pheromone = np.ones((len(orders_assign), NUM_PICKERS))
+    heuristic = aco.calculate_heuristic(orders_assign, PICKER_LOCATIONS)
+    for _ in range(NUM_ANTS):
+        assignment = aco.build_solution(
+            pheromone, heuristic, len(orders_assign), PICKER_CAPACITIES
+        )
+        fitness_score, _, _ = route_optimizer.calculate_shortest_route(
+            PICKER_LOCATIONS,
+            assignment,
+            orders_assign,
+            picktasks,
+            stage_result
+        )
+        empty_pop.append([assignment, fitness_score])
+        aco.update_pheromone(pheromone,
+                            assignment,
+                            fitness_score,
+                            len(orders_assign))
+    return empty_pop
 
-        # Identify pickers who can take the order without exceeding capacity
-        for picker in range(NUM_PICKERS):
-            if picker_loads[picker] < PICKER_CAPACITIES[picker]:
-                valid_pickers.append(picker)
-                prob.append((pheromone[item][picker] ** ALPHA) * (heuristic[item][picker] ** BETA))
 
-        if valid_pickers:
-            prob = np.array(prob)
-            prob /= prob.sum()  # Normalize probabilities
-            chosen_picker = np.random.choice(valid_pickers, p=prob)  # Select picker based on probabilities
-            assignment[item] = chosen_picker
-            picker_loads[chosen_picker] += 1
-        else:
-            # If no picker can handle the order, leave it unassigned
-            # Optional: Handle unassigned orders later
-            assignment[item] = -1  # '-1' indicates the order was not assigned
+def run_genetic_optimization(
+    genetic_op: GeneticOperator,
+    route_optimizer: RouteOptimizer,
+    pop: List[List[Any]],
+    orders_assign: List[Any],
+    picktasks: List[Any],
+    stage_result: Any
+) -> List[int]:
+    """Run Genetic Algorithm optimization phase.
 
-    # Evaluate the solution
-    fitness_score, sorted_paths, _ = calc_distance_with_shortest_route(PICKER_LOCATIONS, emptypop_position, orders_assign, picktasks, stage_result)
-    empty_pop.append([assignment, fitness_score])
+    Args:
+        genetic_op: Genetic Operator instance
+        route_optimizer: Route Optimizer instance
+        pop: Initial population
+        orders_assign: List of orders to assign
+        picktasks: List of picking tasks
+        stage_result: Staging area result data
 
-    # Update pheromone trails
-    for item in range(len(orders_assign)):
-        if assignment[item] != -1:
-            pheromone[item][assignment[item]] *= (1 - RHO)
-            pheromone[item][assignment[item]] += 1 / fitness_score
-
-pop = sorted(empty_pop, key=lambda x: x[1])  # Sort population by fitness
-best_solution = pop[0]
-
-for iteration in range(MAX_IT):
+    Returns:
+        Best solution found
+    """
+    for iteration in range(MAX_IT):
         crossover_population = []
+        for _ in range(NC // 2):
+            parent1 = genetic_op.tournament_selection(pop, TOURNAMENT_SIZE)
+            parent2 = genetic_op.tournament_selection(pop, TOURNAMENT_SIZE)
+            offspring1, offspring2 = genetic_op.crossover(parent1, parent2)
+            fitness1, _, _ = route_optimizer.calculate_shortest_route(
+                PICKER_LOCATIONS,
+                offspring1,
+                orders_assign,
+                picktasks,
+                stage_result
+            )
+            fitness2, _, _ = route_optimizer.calculate_shortest_route(
+                PICKER_LOCATIONS,
+                offspring2,
+                orders_assign,
+                picktasks,
+                stage_result
+            )
+            crossover_population.extend([[offspring1, fitness1],
+                                        [offspring2, fitness2]])
 
-        # Crossover
-        for c in range(NC // 2):
-            parent1 = tournament_selection(pop, TOURNAMENT_SIZE)
-            parent2 = tournament_selection(pop, TOURNAMENT_SIZE)
-
-            # parent1 = pop[0][0]
-            # parent2 = pop[0][0]
-
-            offspring1_position, offspring2_position = crossover(parent1, parent2)
-
-            offspring1_fitness, _,_ = calc_distance_with_shortest_route(PICKER_LOCATIONS, offspring1_position, orders_assign, picktasks, stage_result)
-            offspring2_fitness, _,_ = calc_distance_with_shortest_route(PICKER_LOCATIONS, offspring2_position, orders_assign, picktasks, stage_result)
-
-            crossover_population.append([offspring1_position, offspring1_fitness])
-            crossover_population.append([offspring2_position, offspring2_fitness])
-
-        empty_pop.extend(crossover_population)
-
-        # Mutation
         mutation_population = []
-        for c in range(NM):
+        for _ in range(NM):
             parent = random.choice(pop)[0]
-            offspring_position = mutate_with_capacity(parent, PICKER_CAPACITIES)
+            offspring = genetic_op.mutate_with_capacity(
+                        parent,
+                        PICKER_CAPACITIES
+                        )
+            fitness, _, _ = route_optimizer.calculate_shortest_route(
+                PICKER_LOCATIONS,
+                offspring,
+                orders_assign,
+                picktasks,
+                stage_result
+            )
+            mutation_population.append([offspring, fitness])
 
-            offspring_fitness, _,_ = calc_distance_with_shortest_route(PICKER_LOCATIONS, offspring_position, orders_assign, picktasks, stage_result)
+        pop.extend(crossover_population + mutation_population)
+        pop.sort(key=lambda x: x[1])
+        pop = pop[:N_POP]
+        logger.info('Iteration %d: Best Solution = %f', iteration, pop[0][1])
+    return pop[0][0]
 
-            mutation_population.append([offspring_position, offspring_fitness])
 
-        empty_pop.extend(mutation_population)
+def main() -> None:
+    """Main execution function."""
+    services = {
+        'picklist_repo': PicklistRepository(),
+        'route_optimizer': RouteOptimizer(),
+        'genetic_op': GeneticOperator(RouteOptimizer()),
+        'aco': AntColonyOptimizer(RouteOptimizer()),
+        'path_visualizer': PathVisualizer(),
+        'picksequence_service': BatchPickSequenceService()
+    }
 
-        # Select the next generation
-        empty_pop = sorted(empty_pop, key=lambda x: x[1])
-        pop = empty_pop[:N_POP]  # Only take the top `nPop` individuals
-        new_best_solution = pop[0]
+    # Get optimization data
+    picktasks, orders_assign, stage_result, picklistids = (
+        services['picklist_repo'].get_optimized_data()
+    )
 
-        print(f"Iteration:{iteration} Best Solution:", new_best_solution[0],new_best_solution[1])
+    # Initialize and evaluate population
+    initial_population = initialize_population(
+        NUM_PICKERS, len(orders_assign), PICKER_CAPACITIES
+    )
+    empty_pop = []
+    for position in initial_population:
+        route_optimizer = services['route_optimizer']
+        fitness_score, _, _ = route_optimizer.calculate_shortest_route(
+            PICKER_LOCATIONS,
+            position,
+            orders_assign,
+            picktasks,
+            stage_result
+        )
+        empty_pop.append([position, fitness_score])
 
-final_solution = new_best_solution[0]
+    # Run ACO optimization
+    aco_solutions = run_aco_optimization(
+        services['aco'], services['route_optimizer'],
+        orders_assign, picktasks, stage_result
+    )
+    empty_pop.extend(aco_solutions)
 
-# Final output
-print(f"\nFinal Best Solution (Pick Assignments): {final_solution}")
+    # Run GA optimization
+    pop = sorted(empty_pop, key=lambda x: x[1])
+    final_solution = run_genetic_optimization(
+        services['genetic_op'], services['route_optimizer'],
+        pop, orders_assign, picktasks, stage_result
+    )
+    logger.info('\nFinal Best Solution: %s', final_solution)
 
-#graph_plot(final_solution)
+    # Visualize and update results
+    services['path_visualizer'].plot_routes(final_solution)
+    services['picksequence_service'].update_pick_sequences(
+        final_solution, picklistids, orders_assign, picktasks, stage_result
+    )
+
+
+if __name__ == '__main__':
+    logging.basicConfig(level=logging.INFO)
+    try:
+        main()
+    except Exception as e:
+        logger.error('Error in optimization process: %s', e)
+        raise
