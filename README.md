@@ -1,10 +1,10 @@
-# Picker Order Optimization System
+# ForestFire - Warehouse Order Picking Optimization
 
 ## Overview
 
-This project provides an implementation of a picker order optimization system to efficiently address the **Warehouse Picker Routing Problem**. It uses a combination of **Genetic Algorithms (GA)** and **Ant Colony Optimization (ACO)** to assign items to pickers while ensuring optimized paths.
+ForestFire is a robust implementation of a warehouse order picking optimization system that efficiently addresses the **Warehouse Picker Routing Problem**. It uses a combination of **Genetic Algorithms (GA)** and **Ant Colony Optimization (ACO)** to assign items to pickers while ensuring optimized paths.
 
-The designed system minimizes total distance traveled by pickers in a warehouse by selecting the best assignments of items to pickers, incorporating picker capacities, and producing warehouse routes in a structured and logical manner. 
+The system minimizes total distance traveled by pickers in a warehouse by selecting the best assignments of items to pickers, incorporating picker capacities, and producing warehouse routes in a structured and logical manner. The codebase follows clean architecture principles with high test coverage (>90%) and adheres to the Google style guide for Python.
 
 ## Objectives
 
@@ -20,7 +20,7 @@ The designed system minimizes total distance traveled by pickers in a warehouse 
 - **Picker Assignment:** Assigns items to warehouse pickers.
 - **Fitness Function:** Evaluates picker assignments by computing total distances traveled, considering warehouse constraints.
 - **Path Optimization:** Sorts picker paths to minimize unnecessary travel.
-- **Genetic Algorithm:** 
+- **Genetic Algorithm:**
   - Crossover and mutation operators to evolve solutions over iterations.
   - Capacity-based picker constraints in mutation and crossover.
   - Tournament selection for selecting parents.
@@ -34,8 +34,8 @@ The designed system minimizes total distance traveled by pickers in a warehouse 
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/your-repository.git
-   cd your-repository
+   git clone https://github.com/forestfire.git
+   cd forestfire
    ```
 
 2. **Install dependencies**:
@@ -44,21 +44,30 @@ The designed system minimizes total distance traveled by pickers in a warehouse 
    pip install -r requirements.txt
    ```
    Required libraries:
-   - `random`: To generate random initial populations and item assignments.
-   - `math`: For mathematical calculations like Euclidean distance.
-   - `numpy`: To handle arrays and perform calculations efficiently.
-   - `scipy`: To compute spatial distances.
-   - `matplotlib`: To visualize picker assignments and routing paths.
-   - `psycopg2`: For extracting pick tasks and item details from PostgreSQL.
+   - `numpy`: For efficient array operations and calculations
+   - `matplotlib`: For visualizing picker assignments and routing paths
+   - `psycopg2`: For PostgreSQL database connectivity
+   - `pytest`: For running unit tests
+   - `pytest-cov`: For measuring test coverage
 
-3. **Database configuration**:  
-   Update the PostgreSQL connection details in `db_c()`:
+3. **Database configuration**:
+   Update the PostgreSQL connection details in `forestfire/database/config.py`:
    ```python
    DB_HOST = "<your-db-host>"
    DB_NAME = "<your-db-name>"
    DB_USER = "<your-db-user>"
    DB_PASSWORD = "<your-db-password>"
    DB_PORT = "<your-db-port>"
+   ```
+
+4. **Run tests**:
+   ```bash
+   python -m pytest
+   ```
+
+   To check test coverage:
+   ```bash
+   python -m pytest --cov=forestfire
    ```
 
 ---
@@ -92,53 +101,94 @@ The designed system minimizes total distance traveled by pickers in a warehouse 
 
 ---
 
-## Files and Structure
+## Project Structure
 
-### Key Files
+### Key Directories
 
-1. **picker_optimization.py**:  
-   Main code that implements the optimization pipeline.
+1. **`forestfire/`**:
+   Main package containing all modules.
 
-2. **requirements.txt**:  
+   - **`algorithms/`**: Implementation of optimization algorithms
+     - `ant_colony.py`: Ant Colony Optimization algorithm
+     - `genetic.py`: Genetic Algorithm implementation
+
+   - **`database/`**: Database connectivity and repository pattern
+     - `config.py`: Database configuration
+     - `connection.py`: Database connection management
+     - `repository.py`: Base repository class
+     - `services/`: Service layer for database operations
+       - `picklist.py`: Repository for picklist data
+       - `batch_pick_seq_service.py`: Service for batch pick sequences
+
+   - **`optimizer/`**: Core optimization logic
+     - `models/`: Data models
+       - `route.py`: Route representation
+     - `services/`: Optimization services
+       - `routing.py`: Route optimization logic
+       - `distance.py`: Distance calculation utilities
+
+   - **`plots/`**: Visualization utilities
+     - `graph.py`: Path visualization
+
+   - **`utils/`**: Utility functions and configuration
+     - `config.py`: Global configuration parameters
+
+2. **`tests/`**:
+   Comprehensive test suite with >90% coverage.
+
+3. **`main.py`**:
+   Entry point that orchestrates the optimization process.
+
+4. **`requirements.txt`**:
    List of dependencies used in the project.
 
-3. **README.md**:  
+5. **`README.md`**:
    Documentation (this file).
 
-### Key Functions
+### Key Classes and Functions
 
-1. **`db_c()`**:  
-   Fetches item picking tasks and picker details from PostgreSQL database.
+1. **`AntColonyOptimizer`**:
+   Implements ant colony optimization for item-to-picker assignment.
 
-2. **`calc_distance_with_shortest_route()`**:  
-   Calculates the fitness (distance traveled) for picker orders based on sorted paths.
+2. **`GeneticOperator`**:
+   Provides genetic algorithm operations like crossover and mutation.
 
-3. **`tournament_selection()`**:  
-   Selects parent solutions at each generation based on tournament size.
+3. **`RouteOptimizer`**:
+   Calculates optimal routes for pickers based on assigned items.
 
-4. **`crossover()`**:  
-   Combines two parent solutions to create offspring.
+4. **`PicklistRepository`**:
+   Fetches and processes picklist data from the database.
 
-5. **`mutate_with_capacity()`**:  
-   Mutates a solution while ensuring picker capacities are respected.
+5. **`PathVisualizer`**:
+   Visualizes picker routes and assignments.
 
 ---
 
 ## Usage
 
-1. **Run the Script**:
-   Execute the script via terminal:
+1. **Run the Optimization**:
+   Execute the main script via terminal:
    ```bash
-   python picker_optimization.py
+   python main.py
    ```
 
 2. **View Outputs**:
-   - Picker assignments for items.
-   - Total distance traveled after optimization.
-   - Visual plots of picker paths per picker.
+   - Picker assignments for items
+   - Total distance traveled after optimization
+   - Visual plots of picker paths in the `output` directory
 
 3. **Modify Parameters**:
-   Customize parameters like picker locations, capacities, ACO/GA hyperparameters (`pc`, `pm`, `num_ants`, etc.), or warehouse layout (starting rows, walkway step).
+   Customize parameters in `forestfire/utils/config.py`:
+   - `NUM_PICKERS`: Number of pickers in the warehouse
+   - `PICKER_CAPACITIES`: Capacity constraints for each picker
+   - `MAX_ITERATIONS`: Maximum number of iterations for optimization
+   - `POPULATION_SIZE`: Size of the population for genetic algorithm
+   - `CROSSOVER_RATE`: Probability of crossover in genetic algorithm
+   - `MUTATION_RATE`: Probability of mutation in genetic algorithm
+   - `NUM_ANTS`: Number of ants in ACO algorithm
+   - `ALPHA`: Pheromone importance factor in ACO
+   - `BETA`: Heuristic importance factor in ACO
+   - `RHO`: Pheromone evaporation rate in ACO
 
 ---
 
@@ -173,12 +223,20 @@ The designed system minimizes total distance traveled by pickers in a warehouse 
 
 ---
 
-## Improvements & Future Work
+## Recent Improvements
 
-1. **Dynamic Layout Adaptability:** Extend the system to adapt different warehouse layouts (e.g., uneven rows, zones).
+1. **Code Architecture:** Refactored to follow clean architecture principles with proper separation of concerns.
+2. **Test Coverage:** Achieved >90% test coverage with comprehensive unit tests.
+3. **Code Quality:** Implemented Google style guide for consistent code formatting.
+4. **Database Access:** Implemented repository pattern with read-only database sessions to prevent accidental data insertion.
+
+## Future Work
+
+1. **Dynamic Layout Adaptability:** Extend the system to adapt to different warehouse layouts (e.g., uneven rows, zones).
 2. **Multi-Objective Optimization:** Incorporate additional objectives such as picker workload balancing or time-based constraints.
 3. **Real-Time Integration:** Connect to warehouse systems for real-time item locations and route updates.
-4. **Improved Crossover & Mutation:** Use more sophisticated crossovers and adaptive mutation rates.
+4. **Improved Crossover & Mutation:** Implement more sophisticated crossovers and adaptive mutation rates.
+5. **Performance Optimization:** Enhance algorithm performance for larger warehouses and more complex scenarios.
 
 ---
 
@@ -191,7 +249,17 @@ This project is licensed under the MIT License. Feel free to use or modify it fo
 ## Contact & Support
 
 For any questions or support, please reach out to:
-- **Email**: [youremail@example.com](mailto:youremail@example.com)
-- **GitHub Issues**: [Submit an Issue](https://github.com/your-repository/issues)
+- **GitHub Issues**: [Submit an Issue](https://github.com/forestfire/issues)
 
-Happy Optimizing! 🚀
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Make your changes and ensure tests pass (`python -m pytest`)
+4. Commit your changes (`git commit -m 'Add some amazing feature'`)
+5. Push to the branch (`git push origin feature/amazing-feature`)
+6. Open a Pull Request
+
+Happy Optimizing! 🚀🚢
