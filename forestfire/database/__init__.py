@@ -1,12 +1,17 @@
+"""Database module for warehouse order picking optimization.
+
+This module provides database connectivity and repository functionality
+for interacting with the warehouse database.
+"""
+
 from .connection import DatabaseConnectionManager
 from .repository import BaseRepository
-# from .fire_repository import FireIncidentRepository
-from .exceptions import DatabaseError, ConnectionError, QueryError
+from .exceptions import DatabaseError, DBConnectionError, QueryError
 
 __all__ = [
     'DatabaseConnectionManager',
-    'FireIncidentRepository',
+    'BaseRepository',
     'DatabaseError',
-    'ConnectionError',
+    'DBConnectionError',
     'QueryError'
 ]

@@ -1,5 +1,8 @@
+"""
+Picker route
+"""
 from dataclasses import dataclass
-from typing import List, Tuple, Optional
+from typing import List, Tuple
 
 @dataclass
 class Route:
