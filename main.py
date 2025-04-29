@@ -162,7 +162,7 @@ def run_genetic_optimization(
     return pop[0][0]
 
 
-def main() -> None:
+async def main() -> None:
     """Main execution function."""
     services = {
         'picklist_repo': PicklistRepository(),
@@ -211,7 +211,7 @@ def main() -> None:
 
     # Visualize and update results
     services['path_visualizer'].plot_routes(final_solution)
-    services['picksequence_service'].update_pick_sequences(
+    await services['picksequence_service'].update_pick_sequences(
         final_solution, picklistids, orders_assign, picktasks, stage_result
     )
 
@@ -219,7 +219,8 @@ def main() -> None:
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
     try:
-        main()
+        import asyncio
+        asyncio.run(main())
     except Exception as e:
         logger.error('Error in optimization process: %s', e)
         raise

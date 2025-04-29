@@ -6,6 +6,9 @@ based on optimized routes for warehouse order picking.
 
 from typing import List, Dict, Tuple
 import logging
+import httpx
+from pydantic import BaseModel
+
 from .picklist import PicklistRepository
 from forestfire.optimizer.services.routing import RouteOptimizer
 from forestfire.utils.config import (
@@ -14,14 +17,50 @@ from forestfire.utils.config import (
 
 logger = logging.getLogger(__name__)
 
+class PickSequenceUpdate(BaseModel):
+    """Model representing a pick sequence update"""
+    picklist_id: str
+    batch_id: str
+    pick_sequence: int
+
 class BatchPickSequenceService:
     """Service for handling pick sequence updates"""
 
     def __init__(self):
         self.picklist_repo = PicklistRepository()
         self.route_optimizer = RouteOptimizer()
+        self.api_url = 'https://api.example.com/picksequences'
+        self.api_key = '****'
 
-    def update_pick_sequences(
+    async def send_sequence_update(
+        self,
+        updates: List[PickSequenceUpdate]
+    ) -> None:
+        """Send pick sequence updates to the API"""
+        async with httpx.AsyncClient() as client:
+            try:
+                response = await client.post(
+                    self.api_url,
+                    json=[update.dict() for update in updates],
+                    headers={
+                        'Authorization': f'Bearer {self.api_key}',
+                        'Content-Type': 'application/json'
+                        },
+                        timeout=30.0
+                )
+                response.raise_for_status()
+                logger.info(
+                    'Successfully sent %d updates to Domain',
+                    len(updates)
+                    )
+            except httpx.RequestError as e:
+                logger.error('API request failed: %s', e)
+                raise
+            except Exception as e:
+                logger.error('Error sending updates: %s', e)
+                raise
+
+    async def update_pick_sequences(
         self,
         final_solution: List[int],
         picklistids: List[str],  # pylint: disable=unused-argument
@@ -97,24 +136,18 @@ class BatchPickSequenceService:
 
                                 if item_key not in processed_items:
                                     processed_items.add(item_key)
-                                    updates.append((
-                                        """
-                                        SET search_path TO nifiapp;
-                                        UPDATE picklist
-                                        SET picksequence = %s, batchid = %s
-                                        WHERE id = %s;
-                                        """,
-                                        (sequence_tracking[batch_id],
-                                         batch_id,
-                                         entry['picklist_id'])
+                                    updates.append(PickSequenceUpdate(
+                                        picklist_id=entry['picklist_id'],
+                                        batch_id=batch_id,
+                                        pick_sequence=sequence_tracking[batch_id],
                                     ))
                                     sequence_tracking[batch_id] += 1
 
             # Execute all updates in single transaction
             if updates:
-                self.picklist_repo.baserepository.execute_transaction(updates)
+                await self.send_sequence_update(updates)
                 logger.info(
-                    'Updated %d picklists across %d batches',
+                    'Sent %d picklists across %d batches',
                     len(processed_items), len(sequence_tracking)
                 )
             else:
