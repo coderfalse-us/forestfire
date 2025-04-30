@@ -7,8 +7,8 @@ based on optimized routes for warehouse order picking.
 from typing import List, Dict, Tuple
 import logging
 import httpx
-from pydantic import BaseModel
 
+from .picksequencemodel import PickSequenceUpdate
 from .picklist import PicklistRepository
 from forestfire.optimizer.services.routing import RouteOptimizer
 from forestfire.utils.config import (
@@ -16,12 +16,6 @@ from forestfire.utils.config import (
 )
 
 logger = logging.getLogger(__name__)
-
-class PickSequenceUpdate(BaseModel):
-    """Model representing a pick sequence update"""
-    picklist_id: str
-    batch_id: str
-    pick_sequence: int
 
 class BatchPickSequenceService:
     """Service for handling pick sequence updates"""
