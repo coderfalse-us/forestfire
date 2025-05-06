@@ -8,3 +8,7 @@ class PickSequenceUpdate(BaseModel):
     picklist_id: str
     batch_id: str
     pick_sequence: int
+    picktask_id: str = None
+    account_id: str = None
+    business_unit_id: str = None
+    warehouse_id: str = None

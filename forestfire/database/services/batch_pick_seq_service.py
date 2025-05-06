@@ -4,7 +4,7 @@ This module provides functionality for updating pick sequences in the database
 based on optimized routes for warehouse order picking.
 """
 
-from typing import List, Dict, Tuple
+from typing import List, Dict, Tuple, Any
 import logging
 import httpx
 
@@ -23,36 +23,150 @@ class BatchPickSequenceService:
     def __init__(self):
         self.picklist_repo = PicklistRepository()
         self.route_optimizer = RouteOptimizer()
-        self.api_url = 'https://api.example.com/picksequences'
-        self.api_key = '****'
+        self.api_url = ('https://picking-api.wms-core-pg.npaz.ohl.com/'
+                        '2025-18/api/picking/task/batchassign')
+        self.api_key = (
+                        '8FZ3usPmCKkqDhd6OKWAvezM-1KEIKmOwjYtrba79PQPzpi8Rkt9eSGNmvHl'
+                        'Upnptk0wrXnUJGrBK46xKLgp3tGxiULXZaLhGxHcwhXB')
+
+    def _transform_updates_to_api_format(
+        self,
+        updates: List[PickSequenceUpdate]
+    ) -> Dict[str, List[Dict[str, Any]]]:
+        """
+        Transform pick sequence updates to the required API format.
+
+        The API expects data in the following format:
+        {
+            "AccountId": "account_id",
+            "BusinessunitId": "business_unit_id",
+            "WarehouseId": "warehouse_id",
+            "PickTasks": [
+                {
+                    "TaskId": "task_id",
+                    "UserAssigned": "user",
+                    "Batch": "batch_id",
+                    "AdditionalProperties": {},
+                    "PickLists": [
+                        {
+                            "PickListId": "picklist_id",
+                            "Sequence": sequence_number,
+                            "Test": "PF03"
+                        }
+                    ]
+                }
+            ]
+        }
+        """
+        # Group updates by batch_id
+        grouped_updates = {}
+
+        for update in updates:
+            # Create a key for grouping by account, business unit, and warehouse
+            org_key = (
+                update.account_id,
+                update.business_unit_id,
+                update.warehouse_id
+            )
+
+            batch_id = update.batch_id.strip()
+
+            # Initialize nested dictionaries if they don't exist
+            if org_key not in grouped_updates:
+                grouped_updates[org_key] = {}
+
+            if batch_id not in grouped_updates[org_key]:
+                grouped_updates[org_key][batch_id] = []
+
+            # Add the picklist to the appropriate batch
+            grouped_updates[org_key][batch_id].append({
+                'PickListId': update.picklist_id,
+                'Sequence': update.pick_sequence,
+                'Test': 'PF03'
+            })
+
+        # Create the final API payload structure
+        api_payload = []
+
+        for (account_id, business_unit_id, warehouse_id), batches in (
+                grouped_updates.items()):
+            pick_tasks = []
+
+            for batch_id, pick_lists in batches.items():
+                # Use the actual picktask_id if available,
+                # Find an update with this batch_id to get its picktask_id
+                task_id = next(
+                    (u.picktask_id for u in updates
+                    if u.batch_id.strip() == batch_id and u.picktask_id),
+                    f'{batch_id}_{len(pick_lists)}'
+                )
+
+                pick_tasks.append({
+                    'TaskId': task_id,
+                    'UserAssigned': 'BOB',  # Default user
+                    'Batch': batch_id,
+                    'AdditionalProperties': {},
+                    'PickLists': pick_lists
+                })
+
+            api_payload.append({
+                'AccountId': account_id,
+                'BusinessunitId': business_unit_id,
+                'WarehouseId': warehouse_id,
+                'PickTasks': pick_tasks
+            })
+        return api_payload
 
     async def send_sequence_update(
         self,
         updates: List[PickSequenceUpdate]
     ) -> None:
         """Send pick sequence updates to the API"""
-        async with httpx.AsyncClient() as client:
-            try:
-                response = await client.post(
-                    self.api_url,
-                    json=[update.dict() for update in updates],
-                    headers={
-                        'Authorization': f'Bearer {self.api_key}',
-                        'Content-Type': 'application/json'
+        if not updates:
+            logger.warning('No updates to send')
+            return
+
+        # Transform the updates to the required API format
+        api_payloads = self._transform_updates_to_api_format(updates)
+
+        # Disable SSL verification for development/testing
+        # In production, use proper certificate verification
+        async with httpx.AsyncClient(verify=False) as client:
+            for payload in api_payloads:
+                try:
+                    logger.info('Sending API request with payload: %s', payload)
+                    response = await client.put(
+                        self.api_url,
+                        json=payload,
+                        headers={
+                            'Authorization': f'Bearer {self.api_key}',
+                            'Content-Type': 'application/json',
+                            'App-User-Id': 'Forestfire',
+                            'App-Environment': 'Environment1',
+                            'App-Account-id': 'STB',
+                            'App-BU-Id': '60176',
+                            'App-WareHouse-Id': 'STB' 
                         },
                         timeout=30.0
-                )
-                response.raise_for_status()
-                logger.info(
-                    'Successfully sent %d updates to Domain',
-                    len(updates)
                     )
-            except httpx.RequestError as e:
-                logger.error('API request failed: %s', e)
-                raise
-            except Exception as e:
-                logger.error('Error sending updates: %s', e)
-                raise
+                    # Log the response for debugging
+                    logger.info('API response status: %s', response.status_code)
+                    response.raise_for_status()
+                    logger.info(
+                        'Successfully sent updates to Domain for account %s',
+                        payload.get('accountid', 'unknown')
+                    )
+                except httpx.RequestError as e:
+                    logger.error('API request failed: %s', e)
+                    raise
+                except httpx.HTTPStatusError as e:
+                    logger.error('API returned error status: %s, Response: %s',
+                            e, e.response.text if hasattr(e, 'response')
+                            else 'No response')
+                    raise
+                except Exception as e:
+                    logger.error('Error sending updates: %s', e)
+                    raise
 
     async def update_pick_sequences(
         self,
@@ -78,7 +192,7 @@ class BatchPickSequenceService:
             # Get all picklist-picktask relationships in one query
             query = """
             SET search_path TO nifiapp;
-            SELECT p.id, p.picktaskid, p.xcoordinate, p.ycoordinate
+            SELECT p.id, p.picktaskid, p.xcoordinate, p.ycoordinate,p.accountid,p.businessunitid,p.warehouseid
             FROM picklist p
             WHERE p.picktaskid = ANY(%s);
             """
@@ -95,7 +209,8 @@ class BatchPickSequenceService:
             }
 
             # Process all picklists and their locations
-            for picklist_id, picktask_id, x, y in picklist_data:
+            for (picklist_id, picktask_id, x, y, accountid,
+                 businessunitid, warehouseid) in picklist_data:
                 if picktask_id in picktask_assignments:
                     picker_id = picktask_assignments[picktask_id]
                     batch_id = f'BATCH_{picker_id}'
@@ -107,7 +222,10 @@ class BatchPickSequenceService:
                     location_to_picklists[location].append({
                         'picklist_id': picklist_id,
                         'batch_id': batch_id,
-                        'picktask': picktask_id
+                        'picktask': picktask_id,
+                        'accountid': accountid,
+                        'businessunitid': businessunitid,
+                        'warehouseid': warehouseid
                     })
 
             # Process routes and generate updates
@@ -130,10 +248,16 @@ class BatchPickSequenceService:
 
                                 if item_key not in processed_items:
                                     processed_items.add(item_key)
+                                    seq = sequence_tracking[batch_id]
                                     updates.append(PickSequenceUpdate(
                                         picklist_id=entry['picklist_id'],
                                         batch_id=batch_id,
-                                        pick_sequence=sequence_tracking[batch_id],
+                                        pick_sequence=seq,
+                                        picktask_id=entry['picktask'],
+                                        account_id=entry['accountid'],
+                                        business_unit_id=entry[
+                                            'businessunitid'],
+                                        warehouse_id=entry['warehouseid']
                                     ))
                                     sequence_tracking[batch_id] += 1
 
