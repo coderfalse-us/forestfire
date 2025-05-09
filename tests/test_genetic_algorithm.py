@@ -6,6 +6,7 @@ warehouse order picking optimization.
 
 from forestfire.utils.config import PICKER_CAPACITIES, NUM_PICKERS
 
+
 class TestGeneticOperator:
     """Test cases for the GeneticOperator class."""
 
@@ -34,12 +35,15 @@ class TestGeneticOperator:
         # Act
         # pylint: disable=protected-access
         result = genetic_operator._enforce_capacity_constraints(
-            assignment, picker_capacities)
+            assignment, picker_capacities
+        )
 
         # Assert
         picker_counts = [result.count(i) for i in range(NUM_PICKERS)]
-        assert all(count <= capacity
-                   for count, capacity in zip(picker_counts, picker_capacities))
+        assert all(
+            count <= capacity
+            for count, capacity in zip(picker_counts, picker_capacities)
+        )
 
     def test_mutate_with_capacity(self, genetic_operator):
         """Test mutation with capacity constraints."""
@@ -48,7 +52,8 @@ class TestGeneticOperator:
 
         # Act
         result = genetic_operator.mutate_with_capacity(
-            assignment, PICKER_CAPACITIES)
+            assignment, PICKER_CAPACITIES
+        )
 
         # Assert
         assert len(result) == len(assignment)
@@ -56,8 +61,10 @@ class TestGeneticOperator:
 
         # Check that capacity constraints are respected
         picker_counts = [result.count(i) for i in range(NUM_PICKERS)]
-        assert all(count <= capacity
-                   for count, capacity in zip(picker_counts, PICKER_CAPACITIES))
+        assert all(
+            count <= capacity
+            for count, capacity in zip(picker_counts, PICKER_CAPACITIES)
+        )
 
     def test_tournament_selection(self, genetic_operator, sample_population):
         """Test tournament selection."""
@@ -66,7 +73,8 @@ class TestGeneticOperator:
 
         # Act
         selected = genetic_operator.tournament_selection(
-            sample_population, tournament_size)
+            sample_population, tournament_size
+        )
 
         # Assert
         assert selected in [item[0] for item in sample_population]
@@ -80,7 +88,8 @@ class TestGeneticOperator:
         # Act
         # pylint: disable=protected-access
         offspring1, offspring2 = genetic_operator._single_point_crossover(
-            parent1, parent2)
+            parent1, parent2
+        )
 
         # Assert
         assert len(offspring1) == len(parent1)
@@ -99,7 +108,8 @@ class TestGeneticOperator:
         # Act
         # pylint: disable=protected-access
         offspring1, offspring2 = genetic_operator._uniform_crossover(
-            parent1, parent2)
+            parent1, parent2
+        )
 
         # Assert
         assert len(offspring1) == len(parent1)

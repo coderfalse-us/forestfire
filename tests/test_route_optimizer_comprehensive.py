@@ -53,7 +53,7 @@ class TestRouteOptimizerComprehensive:
         # Assert
         assert cost == 0  # Empty path, so cost is 0
 
-    @patch('forestfire.optimizer.services.routing.NUM_PICKERS', 2)
+    @patch("forestfire.optimizer.services.routing.NUM_PICKERS", 2)
     def test_calculate_shortest_route_with_valid_assignment(self):
         """Test calculating shortest route with a valid assignment."""
         # Arrange
@@ -62,28 +62,24 @@ class TestRouteOptimizerComprehensive:
         # 3 orders to picker 0, 2 orders to picker 1
         assignment = [0, 1, 0, 1, 0]
         orders_assign = [
-            [(0, 0)],    # Order 0 location
+            [(0, 0)],  # Order 0 location
             [(10, 10)],  # Order 1 location
             [(20, 20)],  # Order 2 location
             [(30, 30)],  # Order 3 location
-            [(40, 40)]   # Order 4 location
+            [(40, 40)],  # Order 4 location
         ]
-        picktasks = ['task1', 'task2', 'task3', 'task4', 'task5']
+        picktasks = ["task1", "task2", "task3", "task4", "task5"]
         stage_result = {
-            'task1': [(5, 5)],
-            'task2': [(15, 15)],
-            'task3': [(25, 25)],
-            'task4': [(35, 35)],
-            'task5': [(45, 45)]
+            "task1": [(5, 5)],
+            "task2": [(15, 15)],
+            "task3": [(25, 25)],
+            "task4": [(35, 35)],
+            "task5": [(45, 45)],
         }
 
         # Act
         total_cost, routes, paths = optimizer.calculate_shortest_route(
-            picker_locations,
-            assignment,
-            orders_assign,
-            picktasks,
-            stage_result
+            picker_locations, assignment, orders_assign, picktasks, stage_result
         )
 
         # Assert
@@ -103,7 +99,7 @@ class TestRouteOptimizerComprehensive:
         assert len(paths) == len(picker_locations)
         assert all(isinstance(path, list) for path in paths)
 
-    @patch('forestfire.optimizer.services.routing.NUM_PICKERS', 2)
+    @patch("forestfire.optimizer.services.routing.NUM_PICKERS", 2)
     def test_calculate_shortest_route_with_empty_assignment(self):
         """Test calculating shortest route with an empty assignment."""
         # Arrange
@@ -116,11 +112,7 @@ class TestRouteOptimizerComprehensive:
 
         # Act
         total_cost, routes, paths = optimizer.calculate_shortest_route(
-            picker_locations,
-            assignment,
-            orders_assign,
-            picktasks,
-            stage_result
+            picker_locations, assignment, orders_assign, picktasks, stage_result
         )
 
         # Assert
@@ -130,7 +122,7 @@ class TestRouteOptimizerComprehensive:
         assert all(len(route.assigned_orders or []) == 0 for route in routes)
         assert len(paths) == len(picker_locations)
 
-    @patch('forestfire.optimizer.services.routing.NUM_PICKERS', 2)
+    @patch("forestfire.optimizer.services.routing.NUM_PICKERS", 2)
     def test_calculate_shortest_route_with_single_picker(self):
         """Test calculating shortest route with all orders to one picker."""
         # Arrange
@@ -138,28 +130,24 @@ class TestRouteOptimizerComprehensive:
         picker_locations = [(0, 0), (10, 10)]  # Locations for 2 pickers
         assignment = [0, 0, 0, 0, 0]  # All orders to picker 0
         orders_assign = [
-            [(0, 0)],    # Order 0 location
+            [(0, 0)],  # Order 0 location
             [(10, 10)],  # Order 1 location
             [(20, 20)],  # Order 2 location
             [(30, 30)],  # Order 3 location
-            [(40, 40)]   # Order 4 location
+            [(40, 40)],  # Order 4 location
         ]
-        picktasks = ['task1', 'task2', 'task3', 'task4', 'task5']
+        picktasks = ["task1", "task2", "task3", "task4", "task5"]
         stage_result = {
-            'task1': [(5, 5)],
-            'task2': [(15, 15)],
-            'task3': [(25, 25)],
-            'task4': [(35, 35)],
-            'task5': [(45, 45)]
+            "task1": [(5, 5)],
+            "task2": [(15, 15)],
+            "task3": [(25, 25)],
+            "task4": [(35, 35)],
+            "task5": [(45, 45)],
         }
 
         # Act
         total_cost, routes, _ = optimizer.calculate_shortest_route(
-            picker_locations,
-            assignment,
-            orders_assign,
-            picktasks,
-            stage_result
+            picker_locations, assignment, orders_assign, picktasks, stage_result
         )
 
         # Assert
@@ -173,7 +161,7 @@ class TestRouteOptimizerComprehensive:
         for i in range(1, len(picker_locations)):
             assert len(routes[i].assigned_orders or []) == 0
 
-    @patch('forestfire.optimizer.services.routing.NUM_PICKERS', 2)
+    @patch("forestfire.optimizer.services.routing.NUM_PICKERS", 2)
     def test_calculate_shortest_route_with_complex_paths(self):
         """Test route calculation with complex paths and staging areas."""
         # Arrange
@@ -182,28 +170,24 @@ class TestRouteOptimizerComprehensive:
         # 3 orders to picker 0, 2 orders to picker 1
         assignment = [0, 1, 0, 1, 0]
         orders_assign = [
-            [(0, 0), (5, 5)],      # Order 0 has multiple locations
+            [(0, 0), (5, 5)],  # Order 0 has multiple locations
             [(10, 10), (15, 15)],  # Order 1 has multiple locations
-            [(20, 20)],            # Order 2 has a single location
+            [(20, 20)],  # Order 2 has a single location
             [(30, 30), (35, 35)],  # Order 3 has multiple locations
-            [(40, 40)]             # Order 4 has a single location
+            [(40, 40)],  # Order 4 has a single location
         ]
-        picktasks = ['task1', 'task2', 'task3', 'task4', 'task5']
+        picktasks = ["task1", "task2", "task3", "task4", "task5"]
         stage_result = {
-            'task1': [(50, 50), (55, 55)],  # Multiple staging locations
-            'task2': [(60, 60)],
-            'task3': [(70, 70), (75, 75)],  # Multiple staging locations
-            'task4': [(80, 80)],
-            'task5': [(90, 90)]
+            "task1": [(50, 50), (55, 55)],  # Multiple staging locations
+            "task2": [(60, 60)],
+            "task3": [(70, 70), (75, 75)],  # Multiple staging locations
+            "task4": [(80, 80)],
+            "task5": [(90, 90)],
         }
 
         # Act
         total_cost, routes, paths = optimizer.calculate_shortest_route(
-            picker_locations,
-            assignment,
-            orders_assign,
-            picktasks,
-            stage_result
+            picker_locations, assignment, orders_assign, picktasks, stage_result
         )
 
         # Assert
@@ -219,7 +203,7 @@ class TestRouteOptimizerComprehensive:
         assert len(paths[0]) > 0
         assert len(paths[1]) > 0
 
-    @patch('forestfire.optimizer.services.routing.NUM_PICKERS', 2)
+    @patch("forestfire.optimizer.services.routing.NUM_PICKERS", 2)
     def test_calculate_shortest_route_with_multiple_pickers(self):
         """Test calculating shortest route with multiple pickers."""
         # Arrange
@@ -231,24 +215,20 @@ class TestRouteOptimizerComprehensive:
             [(10, 10)],
             [(20, 20)],
             [(30, 30)],
-            [(40, 40)]
+            [(40, 40)],
         ]
-        picktasks = ['task1', 'task2', 'task3', 'task4', 'task5']
+        picktasks = ["task1", "task2", "task3", "task4", "task5"]
         stage_result = {
-            'task1': [(5, 5)],
-            'task2': [(15, 15)],
-            'task3': [(25, 25)],
-            'task4': [(35, 35)],
-            'task5': [(45, 45)]
+            "task1": [(5, 5)],
+            "task2": [(15, 15)],
+            "task3": [(25, 25)],
+            "task4": [(35, 35)],
+            "task5": [(45, 45)],
         }
 
         # Act
         total_cost, routes, paths = optimizer.calculate_shortest_route(
-            picker_locations,
-            assignment,
-            orders_assign,
-            picktasks,
-            stage_result
+            picker_locations, assignment, orders_assign, picktasks, stage_result
         )
 
         # Assert

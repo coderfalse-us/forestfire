@@ -14,13 +14,13 @@ from forestfire.utils.config import WAREHOUSE_NAME
 class TestPicklistRepositoryComprehensive:
     """Comprehensive test cases for the PicklistRepository class."""
 
-    @patch('forestfire.database.repository.BaseRepository.execute_query')
+    @patch("forestfire.database.repository.BaseRepository.execute_query")
     def test_fetch_picklist_data_with_warehouse(self, mock_execute_query):
         """Test fetching picklist data with warehouse filter."""
         # Arrange
         mock_execute_query.return_value = [
-            (1, 'task1', 10, 20, 'account1', 'business1', 'warehouse1'),
-            (2, 'task2', 30, 40, 'account1', 'business1', 'warehouse1')
+            (1, "task1", 10, 20, "account1", "business1", "warehouse1"),
+            (2, "task2", 30, 40, "account1", "business1", "warehouse1"),
         ]
         repo = PicklistRepository()
 
@@ -36,49 +36,46 @@ class TestPicklistRepositoryComprehensive:
         JOIN synob_tabr.warehouses w ON p.warehouseid = w.id
         WHERE w.name = %s;
         """,
-            (WAREHOUSE_NAME,)
+            (WAREHOUSE_NAME,),
         )
 
-    @patch('forestfire.database.repository.BaseRepository.execute_query')
+    @patch("forestfire.database.repository.BaseRepository.execute_query")
     def test_fetch_distinct_picktasks(self, mock_execute_query):
         """Test fetching distinct picktasks."""
         # Arrange
-        mock_execute_query.return_value = [
-            ('task1',),
-            ('task2',)
-        ]
+        mock_execute_query.return_value = [("task1",), ("task2",)]
         repo = PicklistRepository()
 
         # Act
         result = repo.fetch_distinct_picktasks()
 
         # Assert
-        assert result == ['task1', 'task2']
+        assert result == ["task1", "task2"]
         mock_execute_query.assert_called_once()
         # Check that the query contains DISTINCT
-        assert 'DISTINCT' in mock_execute_query.call_args[0][0]
+        assert "DISTINCT" in mock_execute_query.call_args[0][0]
 
-    @patch('forestfire.database.repository.BaseRepository.execute_query')
+    @patch("forestfire.database.repository.BaseRepository.execute_query")
     def test_fetch_distinct_picktasks_error(self, mock_execute_query):
         """Test handling errors when fetching distinct picktasks."""
         # Arrange
-        mock_execute_query.side_effect = Exception('Database error')
+        mock_execute_query.side_effect = Exception("Database error")
         repo = PicklistRepository()
 
         # Act/Assert
         with pytest.raises(QueryError) as excinfo:
             repo.fetch_distinct_picktasks()
 
-        assert 'Failed to fetch distinct picktasks' in str(excinfo.value)
+        assert "Failed to fetch distinct picktasks" in str(excinfo.value)
 
-    @patch('forestfire.database.repository.BaseRepository.execute_query')
+    @patch("forestfire.database.repository.BaseRepository.execute_query")
     def test_update_batchid(self, mock_execute_query):
         """Test updating batch ID."""
         # Arrange
         mock_execute_query.return_value = []
         repo = PicklistRepository()
-        picklist_id = 'test_picklist_id'
-        batch_id = 'test_batch_id'
+        picklist_id = "test_picklist_id"
+        batch_id = "test_batch_id"
 
         # Act
         repo.update_batchid(batch_id, picklist_id)
@@ -86,31 +83,35 @@ class TestPicklistRepositoryComprehensive:
         # Assert
         mock_execute_query.assert_called_once()
         # Check that the query is an UPDATE
-        assert 'UPDATE' in mock_execute_query.call_args[0][0]
+        assert "UPDATE" in mock_execute_query.call_args[0][0]
         # Check that the parameters are correct
         assert mock_execute_query.call_args[0][1] == (batch_id, picklist_id)
 
-    @patch('forestfire.database.repository.BaseRepository.execute_query')
+    @patch("forestfire.database.repository.BaseRepository.execute_query")
     def test_update_batchid_error(self, mock_execute_query):
         """Test handling errors when updating batch ID."""
         # Arrange
-        mock_execute_query.side_effect = Exception('Database error')
+        mock_execute_query.side_effect = Exception("Database error")
         repo = PicklistRepository()
-        picklist_id = 'test_picklist_id'
-        batch_id = 'test_batch_id'
+        picklist_id = "test_picklist_id"
+        batch_id = "test_batch_id"
 
         # Act/Assert
         with pytest.raises(QueryError) as excinfo:
             repo.update_batchid(batch_id, picklist_id)
 
-        assert 'Failed to update batch ID' in str(excinfo.value)
+        assert "Failed to update batch ID" in str(excinfo.value)
 
-    @patch('forestfire.database.services.picklist.PicklistRepository'
-           '.fetch_picklist_data')
-    @patch('forestfire.database.services.picklist.PicklistRepository'
-           '.fetch_distinct_picktasks')
-    def test_map_picklist_data(self, mock_fetch_distinct_picktasks,
-                               mock_fetch_picklist_data):
+    @patch(
+        "forestfire.database.services.picklist.PicklistRepository.fetch_picklist_data"
+    )
+    @patch(
+        "forestfire.database.services.picklist.PicklistRepository"
+        ".fetch_distinct_picktasks"
+    )
+    def test_map_picklist_data(
+        self, mock_fetch_distinct_picktasks, mock_fetch_picklist_data
+    ):
         """Test mapping picklist data."""
         # Arrange
         # The implementation expects rows with specific indexes:
@@ -124,8 +125,8 @@ class TestPicklistRepositoryComprehensive:
         for i in range(3):
             # Create a row with enough elements
             row = [None] * 70  # Create a list with 70 elements
-            row[0] = f'id{i+1}'  # Database ID
-            row[3] = f'task{(i % 2) + 1}'  # picktaskid (task1 or task2)
+            row[0] = f"id{i + 1}"  # Database ID
+            row[3] = f"task{(i % 2) + 1}"  # picktaskid (task1 or task2)
             row[21] = 10 + i * 10  # x coordinate for pick location
             row[22] = 20 + i * 10  # y coordinate for pick location
             row[67] = 50 + i * 10  # x coordinate for staging location
@@ -133,7 +134,7 @@ class TestPicklistRepositoryComprehensive:
             mock_rows.append(row)
 
         mock_fetch_picklist_data.return_value = mock_rows
-        mock_fetch_distinct_picktasks.return_value = ['task1', 'task2']
+        mock_fetch_distinct_picktasks.return_value = ["task1", "task2"]
 
         repo = PicklistRepository()
 
@@ -142,28 +143,29 @@ class TestPicklistRepositoryComprehensive:
 
         # Assert
         # Check that the dictionaries have the expected keys
-        assert 'task1' in staging
-        assert 'task2' in staging
-        assert 'task1' in taskid
-        assert 'task2' in taskid
-        assert 'task1' in id_mapping
-        assert 'task2' in id_mapping
+        assert "task1" in staging
+        assert "task2" in staging
+        assert "task1" in taskid
+        assert "task2" in taskid
+        assert "task1" in id_mapping
+        assert "task2" in id_mapping
 
         # Check that the dictionaries contain the expected data structure
-        assert isinstance(staging['task1'], list)
-        assert isinstance(staging['task2'], list)
-        assert isinstance(taskid['task1'], list)
-        assert isinstance(taskid['task2'], list)
-        assert isinstance(id_mapping['task1'], str)
-        assert isinstance(id_mapping['task2'], str)
+        assert isinstance(staging["task1"], list)
+        assert isinstance(staging["task2"], list)
+        assert isinstance(taskid["task1"], list)
+        assert isinstance(taskid["task2"], list)
+        assert isinstance(id_mapping["task1"], str)
+        assert isinstance(id_mapping["task2"], str)
 
         # Check the content of the dictionaries
-        assert len(staging['task1']) > 0
-        assert len(taskid['task1']) > 0
-        assert id_mapping['task1'] == 'id1'
+        assert len(staging["task1"]) > 0
+        assert len(taskid["task1"]) > 0
+        assert id_mapping["task1"] == "id1"
 
-    @patch('forestfire.database.services.picklist.PicklistRepository'
-           '.map_picklist_data')
+    @patch(
+        "forestfire.database.services.picklist.PicklistRepository.map_picklist_data"
+    )
     def test_get_optimized_data_with_empty_data(self, mock_map_picklist_data):
         """Test getting optimized data with empty input."""
         # Arrange
@@ -180,19 +182,21 @@ class TestPicklistRepositoryComprehensive:
         assert not stage_result
         assert not picklistids
 
-    @patch('forestfire.database.services.picklist.PicklistRepository'
-           '.map_picklist_data')
-    def test_get_optimized_data_with_multiple_tasks(self,
-                                           mock_map_picklist_data):
+    @patch(
+        "forestfire.database.services.picklist.PicklistRepository.map_picklist_data"
+    )
+    def test_get_optimized_data_with_multiple_tasks(
+        self, mock_map_picklist_data
+    ):
         """Test getting optimized data with multiple tasks."""
         # Arrange
         mock_map_picklist_data.return_value = (
             # staging
-            {'task1': [(5, 5)], 'task2': [(15, 15)], 'task3': [(25, 25)]},
+            {"task1": [(5, 5)], "task2": [(15, 15)], "task3": [(25, 25)]},
             # taskid
-            {'task1': [(10, 20)], 'task2': [(30, 40)], 'task3': [(50, 60)]},
+            {"task1": [(10, 20)], "task2": [(30, 40)], "task3": [(50, 60)]},
             # id_mapping
-            {'task1': 'id1', 'task2': 'id2', 'task3': 'id3'}
+            {"task1": "id1", "task2": "id2", "task3": "id3"},
         )
         repo = PicklistRepository()
 
@@ -202,9 +206,9 @@ class TestPicklistRepositoryComprehensive:
 
         # Assert
         assert len(picktasks) == 3
-        assert 'task1' in picktasks
-        assert 'task2' in picktasks
-        assert 'task3' in picktasks
+        assert "task1" in picktasks
+        assert "task2" in picktasks
+        assert "task3" in picktasks
 
         assert len(orders_assign) == 3
         assert orders_assign[0] == [(10, 20)]
@@ -212,11 +216,11 @@ class TestPicklistRepositoryComprehensive:
         assert orders_assign[2] == [(50, 60)]
 
         assert len(stage_result) == 3
-        assert stage_result['task1'] == [(5, 5)]
-        assert stage_result['task2'] == [(15, 15)]
-        assert stage_result['task3'] == [(25, 25)]
+        assert stage_result["task1"] == [(5, 5)]
+        assert stage_result["task2"] == [(15, 15)]
+        assert stage_result["task3"] == [(25, 25)]
 
         assert len(picklistids) == 3
-        assert picklistids[0] == 'id1'
-        assert picklistids[1] == 'id2'
-        assert picklistids[2] == 'id3'
+        assert picklistids[0] == "id1"
+        assert picklistids[1] == "id2"
+        assert picklistids[2] == "id3"

@@ -7,7 +7,9 @@ warehouse order picking optimization.
 import pytest
 from unittest.mock import patch, MagicMock
 from forestfire.database.services.picklist import PicklistRepository
-from forestfire.database.services.batch_pick_seq_service import BatchPickSequenceService
+from forestfire.database.services.batch_pick_seq_service import (
+    BatchPickSequenceService,
+)
 from forestfire.database.services.picksequencemodel import PickSequenceUpdate
 from forestfire.database.exceptions import QueryError
 from forestfire.optimizer.models.route import Route
@@ -15,16 +17,17 @@ from forestfire.optimizer.models.route import Route
 # Configure pytest-asyncio for async tests only
 # We'll apply the mark to individual async tests instead of globally
 
+
 class TestPicklistRepository:
     """Test cases for the PicklistRepository class."""
 
-    @patch('forestfire.database.repository.BaseRepository.execute_query')
+    @patch("forestfire.database.repository.BaseRepository.execute_query")
     def test_fetch_picklist_data(self, mock_execute_query):
         """Test fetching picklist data."""
         # Arrange
         mock_execute_query.return_value = [
-            (1, 'task1', 10, 20),
-            (2, 'task2', 30, 40)
+            (1, "task1", 10, 20),
+            (2, "task2", 30, 40),
         ]
         repo = PicklistRepository()
 
@@ -35,35 +38,36 @@ class TestPicklistRepository:
         assert result == mock_execute_query.return_value
         mock_execute_query.assert_called_once()
 
-    @patch('forestfire.database.repository.BaseRepository.execute_query')
+    @patch("forestfire.database.repository.BaseRepository.execute_query")
     def test_fetch_picklist_data_error(self, mock_execute_query):
         """Test handling errors when fetching picklist data."""
         # Arrange
-        mock_execute_query.side_effect = Exception('Database error')
+        mock_execute_query.side_effect = Exception("Database error")
         repo = PicklistRepository()
 
         # Act/Assert
         with pytest.raises(QueryError):
             repo.fetch_picklist_data()
 
-    @patch.object(PicklistRepository, 'map_picklist_data')
+    @patch.object(PicklistRepository, "map_picklist_data")
     def test_get_optimized_data(self, mock_map_picklist_data):
         """Test getting optimized data."""
         # Arrange
         # Mock the map_picklist_data method to return test data
         mock_map_picklist_data.return_value = (
             # staging
-            {'task1': [(5, 5)], 'task2': [(15, 15)]},
+            {"task1": [(5, 5)], "task2": [(15, 15)]},
             # taskid
-            {'task1': [(10, 20)], 'task2': [(30, 40)]},
+            {"task1": [(10, 20)], "task2": [(30, 40)]},
             # id_mapping
-            {'task1': 'id1', 'task2': 'id2'}
+            {"task1": "id1", "task2": "id2"},
         )
         repo = PicklistRepository()
 
         # Act
-        (picktasks, orders_assign, stage_result,
-         picklistids) = repo.get_optimized_data()
+        (picktasks, orders_assign, stage_result, picklistids) = (
+            repo.get_optimized_data()
+        )
 
         # Assert
         assert len(picktasks) == 2
@@ -77,41 +81,51 @@ class TestBatchPickSequenceService:
     """Test cases for the BatchPickSequenceService class."""
 
     @pytest.mark.asyncio
-    @patch('forestfire.database.repository.BaseRepository.execute_query')
-    @patch('forestfire.optimizer.services.routing.RouteOptimizer'
-           '.calculate_shortest_route')
-    @patch.object(BatchPickSequenceService, 'send_sequence_update')
-    async def test_update_pick_sequences(self, mock_send_update,  # pylint: disable=unused-argument
-                                      mock_calculate_shortest_route,
-                                      mock_execute_query):
+    @patch("forestfire.database.repository.BaseRepository.execute_query")
+    @patch(
+        "forestfire.optimizer.services.routing.RouteOptimizer.calculate_shortest_route"
+    )
+    @patch.object(BatchPickSequenceService, "send_sequence_update")
+    async def test_update_pick_sequences(
+        self,
+        mock_send_update,  # pylint: disable=unused-argument
+        mock_calculate_shortest_route,
+        mock_execute_query,
+    ):
         """Test updating pick sequences."""
         # Arrange
         # Mock the calculate_shortest_route method with proper Route objects
         mock_calculate_shortest_route.return_value = (
             100.0,
             [
-                Route(picker_id=0, locations=[(0, 0), (10, 10)],
-                     assigned_orders=[0]),
-                Route(picker_id=1, locations=[(10, 10), (20, 20)],
-                     assigned_orders=[1])
+                Route(
+                    picker_id=0,
+                    locations=[(0, 0), (10, 10)],
+                    assigned_orders=[0],
+                ),
+                Route(
+                    picker_id=1,
+                    locations=[(10, 10), (20, 20)],
+                    assigned_orders=[1],
+                ),
             ],
-            [[(0, 0), (10, 10)], [(10, 10), (20, 20)]]
+            [[(0, 0), (10, 10)], [(10, 10), (20, 20)]],
         )
 
         # Mock the execute_query method with complete data for updates
         # Include all 7 expected columns: picklist_id,
         #  picktask_id, x, y, accountid, businessunitid, warehouseid
         mock_execute_query.return_value = [
-            ('id1', 'task1', 0, 0, 'account1', 'business1', 'warehouse1'),
-            ('id2', 'task2', 10, 10, 'account1', 'business1', 'warehouse1')
+            ("id1", "task1", 0, 0, "account1", "business1", "warehouse1"),
+            ("id2", "task2", 10, 10, "account1", "business1", "warehouse1"),
         ]
 
         service = BatchPickSequenceService()
         final_solution = [0, 1]
-        picklistids = ['id1', 'id2']
+        picklistids = ["id1", "id2"]
         orders_assign = [[(0, 0)], [(10, 10)]]
-        picktasks = ['task1', 'task2']
-        stage_result = {'task1': [(5, 5)], 'task2': [(15, 15)]}
+        picktasks = ["task1", "task2"]
+        stage_result = {"task1": [(5, 5)], "task2": [(15, 15)]}
 
         # Act
         await service.update_pick_sequences(
@@ -130,15 +144,15 @@ class TestBatchPickSequenceService:
         service = BatchPickSequenceService()
         updates = [
             PickSequenceUpdate(
-                picklist_id='01JP45RZ36HTQFMH048DZD5F95',
-                batch_id='BOBSBATCH',
-                pick_sequence=222
+                picklist_id="01JP45RZ36HTQFMH048DZD5F95",
+                batch_id="BOBSBATCH",
+                pick_sequence=222,
             ),
             PickSequenceUpdate(
-                picklist_id='01JP3WXZ33ENQHYAJC6S8R9YKP',
-                batch_id=' BOBSBATCH ',  # Note the spaces to test strip()
-                pick_sequence=3333
-            )
+                picklist_id="01JP3WXZ33ENQHYAJC6S8R9YKP",
+                batch_id=" BOBSBATCH ",  # Note the spaces to test strip()
+                pick_sequence=3333,
+            ),
         ]
 
         # Act
@@ -146,50 +160,58 @@ class TestBatchPickSequenceService:
         result = service._transform_updates_to_api_format(updates)
 
         # Assert
-        assert 'PickTasks' in result[0]
-        assert len(result[0]['PickTasks']) == 1
+        assert "PickTasks" in result[0]
+        assert len(result[0]["PickTasks"]) == 1
         # Both updates have same batch_id
 
-        pick_task = result[0]['PickTasks'][0]
-        assert pick_task['UserAssigned'] == 'BOB'
-        assert pick_task['Batch'] == 'BOBSBATCH'
-        assert 'AdditionalProperties' in pick_task
-        assert len(pick_task['PickLists']) == 2
+        pick_task = result[0]["PickTasks"][0]
+        assert pick_task["UserAssigned"] == "BOB"
+        assert pick_task["Batch"] == "BOBSBATCH"
+        assert "AdditionalProperties" in pick_task
+        assert len(pick_task["PickLists"]) == 2
 
         # Check that the pick lists contain the correct data
-        pick_lists = pick_task['PickLists']
-        assert any(pl['PickListId'] == '01JP45RZ36HTQFMH048DZD5F95' and
-                  pl['Sequence'] == 222 and pl['Test'] == 'PF03'
-                  for pl in pick_lists)
-        assert any(pl['PickListId'] == '01JP3WXZ33ENQHYAJC6S8R9YKP' and
-                  pl['Sequence'] == 3333 and pl['Test'] == 'PF03'
-                  for pl in pick_lists)
+        pick_lists = pick_task["PickLists"]
+        assert any(
+            pl["PickListId"] == "01JP45RZ36HTQFMH048DZD5F95"
+            and pl["Sequence"] == 222
+            and pl["Test"] == "PF03"
+            for pl in pick_lists
+        )
+        assert any(
+            pl["PickListId"] == "01JP3WXZ33ENQHYAJC6S8R9YKP"
+            and pl["Sequence"] == 3333
+            and pl["Test"] == "PF03"
+            for pl in pick_lists
+        )
 
     @pytest.mark.asyncio
-    @patch('httpx.AsyncClient.put')
-    @patch.object(BatchPickSequenceService, '_transform_updates_to_api_format')
+    @patch("httpx.AsyncClient.put")
+    @patch.object(BatchPickSequenceService, "_transform_updates_to_api_format")
     async def test_send_sequence_update(self, mock_transform, mock_put):
         """Test sending sequence updates to the API."""
         # Arrange
         service = BatchPickSequenceService()
         updates = [
             PickSequenceUpdate(
-                picklist_id='01JP45RZ36HTQFMH048DZD5F95',
-                batch_id='BOBSBATCH',
+                picklist_id="01JP45RZ36HTQFMH048DZD5F95",
+                batch_id="BOBSBATCH",
                 pick_sequence=222,
-                account_id='account1',
-                business_unit_id='business1',
-                warehouse_id='warehouse1'
+                account_id="account1",
+                business_unit_id="business1",
+                warehouse_id="warehouse1",
             )
         ]
 
         # Mock the transform method to return a list of payloads
-        mock_api_data = [{
-            'AccountId': 'account1',
-            'BusinessunitId': 'business1',
-            'WarehouseId': 'warehouse1',
-            'PickTasks': [{'TaskId': 'test', 'Batch': 'BOBSBATCH'}]
-        }]
+        mock_api_data = [
+            {
+                "AccountId": "account1",
+                "BusinessunitId": "business1",
+                "WarehouseId": "warehouse1",
+                "PickTasks": [{"TaskId": "test", "Batch": "BOBSBATCH"}],
+            }
+        ]
         mock_transform.return_value = mock_api_data
 
         # Mock the httpx response
@@ -206,13 +228,13 @@ class TestBatchPickSequenceService:
 
         # Check that the API was called with the correct data
         call_kwargs = mock_put.call_args.kwargs
-        assert call_kwargs['json'] == mock_api_data[0]  # First item in the list
-        assert 'Authorization' in call_kwargs['headers']
-        assert call_kwargs['headers']['Content-Type'] == 'application/json'
-        assert call_kwargs['headers']['App-User-Id'] == 'Forestfire'
+        assert call_kwargs["json"] == mock_api_data[0]  # First item in the list
+        assert "Authorization" in call_kwargs["headers"]
+        assert call_kwargs["headers"]["Content-Type"] == "application/json"
+        assert call_kwargs["headers"]["App-User-Id"] == "Forestfire"
 
     @pytest.mark.asyncio
-    @patch('httpx.AsyncClient.put')
+    @patch("httpx.AsyncClient.put")
     async def test_send_sequence_update_empty(self, mock_put):
         """Test sending empty sequence updates to the API."""
         # Arrange

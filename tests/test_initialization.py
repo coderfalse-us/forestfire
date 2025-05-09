@@ -6,11 +6,12 @@ warehouse order picking optimization.
 
 from main import initialize_population
 
+
 class TestInitialization:
     """Test cases for the initialization functions."""
 
     def test_initialize_population_size(self):
-        """Test that initialize_population returns the correct number of solutions."""
+        """Test initialize_population returns correct number of solutions."""
         # Arrange
         num_pickers = 3
         orders_size = 5
@@ -18,7 +19,8 @@ class TestInitialization:
 
         # Act
         population = initialize_population(
-            num_pickers, orders_size, picker_capacities)
+            num_pickers, orders_size, picker_capacities
+        )
 
         # Assert
         assert len(population) > 0
@@ -33,7 +35,8 @@ class TestInitialization:
 
         # Act
         population = initialize_population(
-            num_pickers, orders_size, picker_capacities)
+            num_pickers, orders_size, picker_capacities
+        )
 
         # Assert
         for assignment in population:
@@ -48,13 +51,16 @@ class TestInitialization:
 
         # Act
         population = initialize_population(
-            num_pickers, orders_size, picker_capacities)
+            num_pickers, orders_size, picker_capacities
+        )
 
         # Assert
         for assignment in population:
             picker_counts = [assignment.count(i) for i in range(num_pickers)]
-            assert all(count <= capacity
-                       for count, capacity in zip(picker_counts, picker_capacities))
+            assert all(
+                count <= capacity
+                for count, capacity in zip(picker_counts, picker_capacities)
+            )
 
     def test_initialize_population_random_choice(self):
         """Test that initialize_population uses random assignment."""
@@ -65,14 +71,18 @@ class TestInitialization:
 
         # Act
         population1 = initialize_population(
-            num_pickers, orders_size, picker_capacities)
+            num_pickers, orders_size, picker_capacities
+        )
         population2 = initialize_population(
-            num_pickers, orders_size, picker_capacities)
+            num_pickers, orders_size, picker_capacities
+        )
 
         # Assert
         # Check that at least one assignment is different (randomness check)
-        assert any(assignment1 != assignment2
-                   for assignment1, assignment2 in zip(population1, population2))
+        assert any(
+            assignment1 != assignment2
+            for assignment1, assignment2 in zip(population1, population2)
+        )
 
     def test_initialize_population_with_limited_capacity(self):
         """Test initialize_population with limited picker capacity."""
@@ -84,7 +94,8 @@ class TestInitialization:
 
         # Act
         population = initialize_population(
-            num_pickers, orders_size, picker_capacities)
+            num_pickers, orders_size, picker_capacities
+        )
 
         # Assert
         for assignment in population:

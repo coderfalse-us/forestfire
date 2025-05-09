@@ -11,11 +11,16 @@ from ..utils.geometry import WalkwayCalculator
 from .distance import DistanceCalculator
 from forestfire.utils.config import NUM_PICKERS
 
+
 class RouteOptimizer:
     """Service for optimizing picker routes"""
-    def __init__(self, left_walkway: int = 15,
-                right_walkway: int = 105,
-                step_between_rows: int = 10):
+
+    def __init__(
+        self,
+        left_walkway: int = 15,
+        right_walkway: int = 105,
+        step_between_rows: int = 10,
+    ):
         self.left_walkway = left_walkway
         self.right_walkway = right_walkway
         self.step_between_rows = step_between_rows
@@ -28,7 +33,7 @@ class RouteOptimizer:
         emptypop_position: List[int],
         orders_assign: List[List[Tuple[float, float]]],
         picktasks: List[str],
-        stage_results: Dict[str, List[Tuple[float, float]]]
+        stage_results: Dict[str, List[Tuple[float, float]]],
     ) -> Tuple[float, List[Route], List[List[Tuple[float, float]]]]:
         """
         Calculate shortest routes for all pickers
@@ -40,48 +45,42 @@ class RouteOptimizer:
             assignments[picker_index].extend(orders_assign[index])
             order_indices[picker_index].append(index)
 
-        final_result=self._get_staging_points(
-            order_indices,
-            picktasks,
-            stage_results)
-        sorted_data=self._sort_locations(assignments)
-        r_flag=[0]*NUM_PICKERS
+        final_result = self._get_staging_points(
+            order_indices, picktasks, stage_results
+        )
+        sorted_data = self._sort_locations(assignments)
+        r_flag = [0] * NUM_PICKERS
 
         for p in range(NUM_PICKERS):
             if not sorted_data[p]:
                 continue
             sorted_data[p] = self._handle_entry_logic(
-                picker_locations[p],
-                sorted_data[p],
-                p,
-                r_flag
+                picker_locations[p], sorted_data[p], p, r_flag
             )
         optimized_routes = self._handle_serpentine_logic(
-            sorted_data,
-            r_flag,
-            final_result)
+            sorted_data, r_flag, final_result
+        )
         # Calculate total cost
         total_cost = 0
         routes = []
         for idx, route in enumerate(optimized_routes):
             cost = self._calculate_route_cost(route)
             total_cost += cost
-            routes.append(Route(
-                picker_id=idx,
-                locations=route,
-                cost=cost,
-                assigned_orders=order_indices[idx]
-            ))
+            routes.append(
+                Route(
+                    picker_id=idx,
+                    locations=route,
+                    cost=cost,
+                    assigned_orders=order_indices[idx],
+                )
+            )
         return total_cost, routes, assignments
-
-
-
 
     def _get_staging_points(
         self,
         order_indices: List[List[int]],
         picktasks: List[str],
-        stage_result: Dict[str, List[Tuple[float, float]]]
+        stage_result: Dict[str, List[Tuple[float, float]]],
     ) -> List[Tuple[float, float]]:
         """Get staging locations for the route"""
         final_result = []
@@ -92,6 +91,7 @@ class RouteOptimizer:
             for taskid in taskids:
                 final_result.extend(stage_result.get(taskid[0], []))
             return final_result
+
     def _sort_locations(
         self, assignments: List[List[Tuple[float, float]]]
     ) -> List[List[Tuple[float, float]]]:
@@ -161,13 +161,12 @@ class RouteOptimizer:
             f"Point must be tuple or list, got {type(point)}: {point}"
         )
 
-
     def _handle_entry_logic(
         self,
         picker_location: Tuple[float, float],
         sorted_data: List[Tuple[float, float]],
         p: int,
-        r_flag: List[int]
+        r_flag: List[int],
     ) -> List[Tuple[float, float]]:
         """
         Handle entry logic for picker routing based on picker location and
@@ -194,19 +193,16 @@ class RouteOptimizer:
         dist2_walkway = self.walkway_calculator.get_walkway_position(
             route[-1][1]
         )
-        point1 = (tuple(picker_location)
-                 if not isinstance(picker_location, tuple)
-                 else picker_location)
+        point1 = (
+            tuple(picker_location)
+            if not isinstance(picker_location, tuple)
+            else picker_location
+        )
         point2 = tuple((dist1_walkway, route[0][1]))
         point3 = tuple((dist2_walkway, route[-1][1]))
 
-        dist1 = self.distance_calculator.euclidean_distance(
-            point1,
-            point2
-        )
-        dist2 = self.distance_calculator.euclidean_distance(
-            point1, point3
-        )
+        dist1 = self.distance_calculator.euclidean_distance(point1, point2)
+        dist2 = self.distance_calculator.euclidean_distance(point1, point3)
 
         # Logic for left side of warehouse
         if picker_location[0] < 50:
@@ -217,8 +213,10 @@ class RouteOptimizer:
                 else:
                     route.insert(
                         1,
-                        (self.left_walkway,
-                         route[1][1] - self.step_between_rows)
+                        (
+                            self.left_walkway,
+                            route[1][1] - self.step_between_rows,
+                        ),
                     )
             else:
                 route = route[::-1]
@@ -229,8 +227,10 @@ class RouteOptimizer:
                 else:
                     route.insert(
                         1,
-                        (self.left_walkway,
-                         route[1][1] + self.step_between_rows)
+                        (
+                            self.left_walkway,
+                            route[1][1] + self.step_between_rows,
+                        ),
                     )
         # Logic for right side of warehouse
         else:
@@ -242,8 +242,10 @@ class RouteOptimizer:
                     route.insert(0, picker_location)
                     route.insert(
                         1,
-                        (self.right_walkway,
-                         route[1][1] - self.step_between_rows)
+                        (
+                            self.right_walkway,
+                            route[1][1] - self.step_between_rows,
+                        ),
                     )
             else:
                 route = route[::-1]
@@ -255,17 +257,18 @@ class RouteOptimizer:
                     route.insert(0, picker_location)
                     route.insert(
                         1,
-                        (self.right_walkway,
-                         route[1][1] + self.step_between_rows)
+                        (
+                            self.right_walkway,
+                            route[1][1] + self.step_between_rows,
+                        ),
                     )
         return route
-
 
     def _handle_serpentine_logic(
         self,
         sorted_data: List[List[Tuple[float, float]]],
         r_flag: List[int],
-        final_result: List[Tuple[float, float]]
+        final_result: List[Tuple[float, float]],
     ) -> List[List[Tuple[float, float]]]:
         """
         Implements serpentine routing logic for warehouse paths
@@ -290,9 +293,7 @@ class RouteOptimizer:
                 # Check if moving to different y-coordinate
                 if current_route[i][1] != current_route[i + 1][1]:
                     i = self._handle_aisle_transition(
-                        current_route,
-                        i,
-                        r_flag[j]
+                        current_route, i, r_flag[j]
                     )
                 else:
                     i += 1
@@ -303,10 +304,7 @@ class RouteOptimizer:
         return processed_routes
 
     def _handle_aisle_transition(
-        self,
-        route: List[Tuple[float, float]],
-        index: int,
-        r_flag: int
+        self, route: List[Tuple[float, float]], index: int, r_flag: int
     ) -> int:
         """
         Handle transitions between aisles in serpentine routing
@@ -332,8 +330,11 @@ class RouteOptimizer:
                 return index + 2
             else:
                 # Both positions on main aisle
-                step = (-self.step_between_rows if r_flag
-                        else self.step_between_rows)
+                step = (
+                    -self.step_between_rows
+                    if r_flag
+                    else self.step_between_rows
+                )
                 route.insert(index + 1, (self.right_walkway, current_pos[1]))
                 route.insert(
                     index + 2, (self.right_walkway, route[index + 1][1] + step)
@@ -356,8 +357,11 @@ class RouteOptimizer:
                 return index + 2
             else:
                 # Neither position on main aisle
-                step = (-self.step_between_rows if r_flag
-                        else self.step_between_rows)
+                step = (
+                    -self.step_between_rows
+                    if r_flag
+                    else self.step_between_rows
+                )
                 route.insert(index + 1, (self.left_walkway, current_pos[1]))
                 route.insert(
                     index + 2, (self.left_walkway, route[index + 1][1] + step)

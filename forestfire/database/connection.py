@@ -10,19 +10,21 @@ import psycopg2
 from .config import DatabaseConfig
 from .exceptions import DBConnectionError
 
+
 class DatabaseConnectionManager:
     """Manages database connections using a singleton pattern.
 
     This class provides methods to get database connections and ensures
     proper connection handling and resource cleanup.
     """
+
     _config = DatabaseConfig()
     _connection = None
 
     @classmethod
     @contextmanager
     def get_connection(
-        cls
+        cls,
     ) -> Generator[psycopg2.extensions.connection, None, None]:
         try:
             if not cls._connection or cls._connection.closed:
@@ -31,7 +33,7 @@ class DatabaseConnectionManager:
                     port=cls._config.port,
                     database=cls._config.database,
                     user=cls._config.user,
-                    password=cls._config.password
+                    password=cls._config.password,
                 )
             yield cls._connection
         except Exception as e:

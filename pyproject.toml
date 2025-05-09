@@ -9,6 +9,21 @@ dependencies = [
     "httpx>=0.28.1",
     "matplotlib>=3.10.1",
     "numpy>=2.2.5",
+    "pre-commit>=4.2.0",
     "psycopg2>=2.9.10",
     "pydantic>=2.11.4",
 ]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.11.8",
+]
+[tool.ruff]
+# Set the maximum line length to 80.
+line-length = 80
+
+[tool.ruff.lint]
+# Add the `line-too-long` rule to the enforced rule set. By default, Ruff omits rules that
+# overlap with the use of a formatter, like Black, but we can override this behavior by
+# explicitly adding the rule.
+extend-select = ["E501"]
