@@ -3,15 +3,17 @@
 This module provides utilities for calculating distances between points in
 the warehouse environment.
 """
+
 from typing import Tuple
 import math
 
+
 class DistanceCalculator:
     """Service for calculating distances between points"""
+
     @staticmethod
     def euclidean_distance(
-        point1: Tuple[float, float],
-        point2: Tuple[float, float]
+        point1: Tuple[float, float], point2: Tuple[float, float]
     ) -> float:
         """Calculate Euclidean distance between two points"""
         try:

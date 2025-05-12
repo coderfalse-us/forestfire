@@ -7,13 +7,13 @@ to optimize picker routes in a warehouse environment.
 import random
 import numpy as np
 from typing import List, Tuple
-from forestfire.utils.config import (
-    NUM_PICKERS, PICKER_CAPACITIES, PC
-)
+from forestfire.utils.config import NUM_PICKERS, PICKER_CAPACITIES, PC
 from forestfire.optimizer.services.routing import RouteOptimizer
+
 
 class GeneticOperator:
     """Class for genetic algorithm operations"""
+
     def __init__(self, route_optimizer: RouteOptimizer):
         self.route_optimizer = route_optimizer
 
@@ -85,7 +85,8 @@ class GeneticOperator:
         for i, picker_id in enumerate(offspring):
             if picker_id in over_capacity and over_capacity[picker_id] > 0:
                 valid_pickers = [
-                    p for p in range(NUM_PICKERS)
+                    p
+                    for p in range(NUM_PICKERS)
                     if assigned_counts[p] < picker_capacities[p]
                 ]
 
@@ -127,14 +128,13 @@ class GeneticOperator:
         return x
 
     def tournament_selection(
-        self,
-        population: List[Tuple[List[int], float]],
-        tournament_size: int
+        self, population: List[Tuple[List[int], float]], tournament_size: int
     ) -> List[int]:
         """Select parent using tournament selection"""
         tournament_contestants = random.sample(population, tournament_size)
         winner = sorted(tournament_contestants, key=lambda x: x[1])[0]
         return winner[0]
+
 
 # For backwards compatibility
 def crossover(x1: List[int], x2: List[int]) -> Tuple[List[int], List[int]]:
@@ -142,12 +142,14 @@ def crossover(x1: List[int], x2: List[int]) -> Tuple[List[int], List[int]]:
     genetic_op = GeneticOperator(RouteOptimizer())
     return genetic_op.crossover(x1, x2)
 
+
 def mutate_with_capacity(
     x: List[int], picker_capacities: List[int]
 ) -> List[int]:
     """Legacy mutation function"""
     genetic_op = GeneticOperator(RouteOptimizer())
     return genetic_op.mutate_with_capacity(x, picker_capacities)
+
 
 def tournament_selection(
     population: List[Tuple[List[int], float]], tournament_size: int

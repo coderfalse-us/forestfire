@@ -9,9 +9,9 @@ from .repository import BaseRepository
 from .exceptions import DatabaseError, DBConnectionError, QueryError
 
 __all__ = [
-    'DatabaseConnectionManager',
-    'BaseRepository',
-    'DatabaseError',
-    'DBConnectionError',
-    'QueryError'
+    "DatabaseConnectionManager",
+    "BaseRepository",
+    "DatabaseError",
+    "DBConnectionError",
+    "QueryError",
 ]

@@ -10,12 +10,14 @@ import psycopg2
 from .connection import DatabaseConnectionManager
 from .exceptions import QueryError
 
+
 class BaseRepository(ABC):
     """Base repository class for database operations.
 
     Provides common methods for executing queries and transactions
     with proper connection handling and error reporting.
     """
+
     def execute_query(self, query: str, params: tuple = None) -> List[Any]:
         with DatabaseConnectionManager.get_connection() as conn:
             with conn.cursor() as cur:

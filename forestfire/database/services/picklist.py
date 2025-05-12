@@ -13,6 +13,7 @@ from forestfire.utils.config import WAREHOUSE_NAME
 
 logger = logging.getLogger(__name__)
 
+
 class PicklistRepository:
     """Repository for handling picklist-related database operations"""
 
@@ -61,7 +62,7 @@ class PicklistRepository:
             ) from e
 
     def map_picklist_data(
-        self
+        self,
     ) -> Tuple[Dict[str, List[Tuple]], Dict[str, List[Tuple]], Dict[str, int]]:
         """
         Map picklist data by picktask ID
@@ -91,9 +92,7 @@ class PicklistRepository:
             for picktaskid in picktasks:
                 # Filter pick locations and get IDs
                 filtered_values = [
-                    (row[21], row[22])
-                    for row in rows
-                    if row[3] == picktaskid
+                    (row[21], row[22]) for row in rows if row[3] == picktaskid
                 ]
 
                 # Get database ID for picktask
@@ -103,9 +102,7 @@ class PicklistRepository:
 
                 # Filter staging locations
                 staging_loc = [
-                    (row[67], row[68])
-                    for row in rows
-                    if row[3] == picktaskid
+                    (row[67], row[68]) for row in rows if row[3] == picktaskid
                 ]
 
                 task_result[picktaskid] = filtered_values
@@ -118,8 +115,6 @@ class PicklistRepository:
         except Exception as e:
             logger.error("Error mapping picklist data: %s", e)
             raise QueryError("Failed to map picklist data: %s" % e) from e
-
-
 
     def update_batchid(self, batch_id: str, picklist_id: str) -> None:
         """
@@ -141,9 +136,8 @@ class PicklistRepository:
             logger.error("Error updating batch ID: %s", e)
             raise QueryError("Failed to update batch ID: %s" % e) from e
 
-
     def get_optimized_data(
-        self
+        self,
     ) -> Tuple[List[str], List[List[Tuple]], Dict[str, List[Tuple]], List[int]]:
         """
         Get optimized picklist data for order assignment

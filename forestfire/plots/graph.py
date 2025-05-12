@@ -11,15 +11,18 @@ import matplotlib
 import matplotlib.pyplot as plt
 from forestfire.optimizer.services.routing import RouteOptimizer
 from forestfire.utils.config import (
-    NUM_PICKERS, PICKER_LOCATIONS, ITEM_LOCATIONS
+    NUM_PICKERS,
+    PICKER_LOCATIONS,
+    ITEM_LOCATIONS,
 )
 from forestfire.database.services.picklist import PicklistRepository
 
 # Use Agg backend if no display available
-if os.environ.get('DISPLAY') is None:
-    matplotlib.use('Agg')
+if os.environ.get("DISPLAY") is None:
+    matplotlib.use("Agg")
 
 logger = logging.getLogger(__name__)
+
 
 class PathVisualizer:
     """Visualizes optimized picker routes in the warehouse environment.
@@ -27,10 +30,11 @@ class PathVisualizer:
     This class provides methods to generate and save visualizations of
     picker routes, assignments, and item locations.
     """
+
     def __init__(self):
         self.picklist_repo = PicklistRepository()
         self.route_optimizer = RouteOptimizer()
-        self.output_dir = os.path.join(os.getcwd(), 'output', 'plots')
+        self.output_dir = os.path.join(os.getcwd(), "output", "plots")
 
         # Ensure output directory exists
         if not os.path.exists(self.output_dir):
@@ -38,30 +42,31 @@ class PathVisualizer:
 
     def save_plot(self, plot_name=None):
         """Save the current plot with timestamp"""
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         if plot_name is None:
-            filename = f'route_visualization_{timestamp}.png'
+            filename = f"route_visualization_{timestamp}.png"
         else:
-            filename = f'{plot_name}_{timestamp}.png'
+            filename = f"{plot_name}_{timestamp}.png"
         filepath = os.path.join(self.output_dir, filename)
 
-        plt.savefig(filepath, dpi=300, bbox_inches='tight')
-        logger.info('Plot saved to: %s', filepath)
+        plt.savefig(filepath, dpi=300, bbox_inches="tight")
+        logger.info("Plot saved to: %s", filepath)
         return filepath
 
     def plot_routes(self, final_solution):
         """Plot optimized routes for each picker"""
         # Map orders to pickers
         orders = {picker_id: [] for picker_id in range(NUM_PICKERS)}
-        (picktasks, orders_assign,
-         stage_result, _) = self.picklist_repo.get_optimized_data()
+        (picktasks, orders_assign, stage_result, _) = (
+            self.picklist_repo.get_optimized_data()
+        )
 
         for item_id, picker_id in enumerate(final_solution):
             orders[picker_id].append(item_id)
 
-        print('\nOrders for Each Picker:')
+        print("\nOrders for Each Picker:")
         for picker_id, items in orders.items():
-            print(f'Picker {picker_id}: Orders Tasks {items}')
+            print(f"Picker {picker_id}: Orders Tasks {items}")
 
         # Generate optimized routes for plotting
         _, routes, assignments = self.route_optimizer.calculate_shortest_route(
@@ -69,7 +74,7 @@ class PathVisualizer:
             final_solution,
             orders_assign,
             picktasks,
-            stage_result
+            stage_result,
         )
 
         # Setup plot
@@ -78,7 +83,7 @@ class PathVisualizer:
             ncols=len(PICKER_LOCATIONS),
             figsize=(30, 6),
             sharex=True,
-            sharey=True
+            sharey=True,
         )
 
         # Extract item coordinates for plotting
@@ -93,21 +98,14 @@ class PathVisualizer:
             # Plot picker start location
             ax.scatter(
                 *PICKER_LOCATIONS[group],
-                c='blue',
+                c="blue",
                 s=150,
-                label='Picker Start',
-                marker='o'
+                label="Picker Start",
+                marker="o",
             )
 
             # Plot all item locations
-            ax.scatter(
-                item_x,
-                item_y,
-                c='red',
-                s=50,
-                label='Items',
-                marker='*'
-            )
+            ax.scatter(item_x, item_y, c="red", s=50, label="Items", marker="*")
 
             # Plot optimized path
             if group < len(routes):
@@ -119,9 +117,9 @@ class PathVisualizer:
                     ax.plot(
                         x,
                         y,
-                        label=f'Picker {group + 1} Path',
-                        linestyle='-',
-                        linewidth=2
+                        label=f"Picker {group + 1} Path",
+                        linestyle="-",
+                        linewidth=2,
                     )
 
             # Plot assigned items
@@ -132,20 +130,21 @@ class PathVisualizer:
                     ax.scatter(
                         assign_x,
                         assign_y,
-                        c='green',
+                        c="green",
                         s=60,
-                        label='Assigned Items',
-                        marker='o'
+                        label="Assigned Items",
+                        marker="o",
                     )
 
-            ax.set_title(f'Picker {group + 1}', fontsize=12)
-            ax.set_xlabel('X Coordinate', fontsize=10)
-            ax.set_ylabel('Y Coordinate', fontsize=10)
+            ax.set_title(f"Picker {group + 1}", fontsize=12)
+            ax.set_xlabel("X Coordinate", fontsize=10)
+            ax.set_ylabel("Y Coordinate", fontsize=10)
             ax.grid(True)
 
         filepath = self.save_plot()
         plt.close()
         return filepath
+
 
 # Create instance for backwards compatibility
 path_visualizer = PathVisualizer()
