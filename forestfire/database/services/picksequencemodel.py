@@ -26,13 +26,11 @@ class PickSequenceUpdate(BaseModel):
 class PickTaskPayload(BaseModel):
     """Pydantic model for pick task API payload"""
 
-    task_id: str = Field(..., alias="TaskId")
-    user_assigned: str = Field(default="BOB", alias="UserAssigned")
-    batch_id: str = Field(..., alias="Batch")
-    additional_properties: Dict[str, Any] = Field(
-        default_factory=dict, alias="AdditionalProperties"
-    )
-    pick_lists: List["PickListPayload"] = Field(..., alias="PickLists")
+    TaskId: str
+    UserAssigned: str = Field(default="BOB")
+    Batch: str
+    AdditionalProperties: Dict[str, Any] = Field(default_factory=dict)
+    PickLists: List["PickListPayload"]
 
     class Config:
         from_attributes = True
@@ -41,9 +39,9 @@ class PickTaskPayload(BaseModel):
 class PickListPayload(BaseModel):
     """Pydantic model for picklist API payload"""
 
-    picklist_id: str = Field(..., alias="PickListId")
-    pick_sequence: int = Field(..., alias="Sequence")
-    test: str = Field(default="PF03", alias="Test")
+    PickListId: str
+    Sequence: int
+    Test: str = Field(default="PF03")
 
     class Config:
         from_attributes = True
@@ -52,10 +50,10 @@ class PickListPayload(BaseModel):
 class ApiPayload(BaseModel):
     """Pydantic model for the complete API payload"""
 
-    account_id: str = Field(..., alias="AccountId")
-    business_unit_id: str = Field(..., alias="BusinessunitId")
-    warehouse_id: str = Field(..., alias="WarehouseId")
-    pick_tasks: List[PickTaskPayload] = Field(..., alias="PickTasks")
+    AccountId: str
+    BusinessunitId: str
+    WarehouseId: str
+    PickTasks: List[PickTaskPayload]
 
     class Config:
         from_attributes = True
