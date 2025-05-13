@@ -5,7 +5,7 @@ based on optimized routes for warehouse order picking.
 """
 
 from typing import List, Dict, Tuple
-import logging
+from loguru import logger
 import httpx
 
 from .picksequencemodel import (
@@ -17,8 +17,6 @@ from .picksequencemodel import (
 from .picklist import PicklistRepository
 from forestfire.optimizer.services.routing import RouteOptimizer
 from forestfire.utils.config import PICKER_LOCATIONS
-
-logger = logging.getLogger(__name__)
 
 
 class BatchPickSequenceService:
@@ -32,8 +30,8 @@ class BatchPickSequenceService:
             "2025-18/api/picking/task/batchassign"
         )
         self.api_key = (
-            "1GkFdCZ6NzzbKsaTSsGY9GSFcuVZ2mrX7rnOKRQroHSQkoH0eMbU"
-            "1UkkF1YtDartoVMwoVB4SyfunGCvJoaFzy7qRh_EqS_GoR39YFub"
+            "ufyVgC4ELgqnwnKjGzxzbTRGCdFDWn6pDdu5oDMhYcGWqivSLbZm"
+            "GwJ24ZI0Rs4llTIwP23s6fATUw_pS3d-JufeRrBhHevgwitQaOnV"
         )
 
     def _transform_updates_to_api_format(
@@ -121,7 +119,7 @@ class BatchPickSequenceService:
             for payload in api_payloads:
                 try:
                     logger.info(
-                        "Sending API request with payload: %s",
+                        "Sending API request with payload: {}",
                         payload.model_dump(),
                     )
                     response = await client.put(
@@ -139,18 +137,18 @@ class BatchPickSequenceService:
                         timeout=30.0,
                     )
                     # Log the response for debugging
-                    logger.info("API response status: %s", response.status_code)
+                    logger.info("API response status: {}", response.status_code)
                     response.raise_for_status()
                     logger.info(
-                        "Successfully sent updates to Domain for account %s",
+                        "Successfully sent updates to Domain for account {}",
                         payload.AccountId,
                     )
                 except httpx.RequestError as e:
-                    logger.error("API request failed: %s", e)
+                    logger.error("API request failed: {}", e)
                     raise
                 except httpx.HTTPStatusError as e:
                     logger.error(
-                        "API returned error status: %s, Response: %s",
+                        "API returned error status: {}, Response: {}",
                         e,
                         e.response.text
                         if hasattr(e, "response")
@@ -158,7 +156,7 @@ class BatchPickSequenceService:
                     )
                     raise
                 except Exception as e:
-                    logger.error("Error sending updates: %s", e)
+                    logger.error("Error sending updates: {}", e)
                     raise
 
     async def update_pick_sequences(
@@ -271,7 +269,7 @@ class BatchPickSequenceService:
             if updates:
                 await self.send_sequence_update(updates)
                 logger.info(
-                    "Sent %d picklists across %d batches",
+                    "Sent {} picklists across {} batches",
                     len(processed_items),
                     len(sequence_tracking),
                 )
@@ -279,5 +277,5 @@ class BatchPickSequenceService:
                 logger.warning("No updates required for pick sequences")
 
         except Exception as e:
-            logger.error("Error updating pick sequences: %s", e, exc_info=True)
+            logger.error("Error updating pick sequences: {}", e, exc_info=True)
             raise

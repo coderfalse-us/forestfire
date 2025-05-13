@@ -45,20 +45,20 @@ ForestFire uses **Pydantic** to define structured data models for API requests a
 #### Key API Models
 
 1. **PickSequenceUpdate**
-   - Represents a single pick sequence update
-   - Contains information about picklist, batch, sequence, and identifiers
+    - Represents a single pick sequence update
+    - Contains information about picklist, batch, sequence, and identifiers
 
 2. **PickTaskPayload**
-   - Represents a pick task in the API payload
-   - Contains task ID, user assignment, batch, and picklists
+    - Represents a pick task in the API payload
+    - Contains task ID, user assignment, batch, and picklists
 
 3. **PickListPayload**
-   - Represents a picklist in the API payload
-   - Contains picklist ID, sequence, and test information
+    - Represents a picklist in the API payload
+    - Contains picklist ID, sequence, and test information
 
 4. **ApiPayload**
-   - Top-level API payload model
-   - Contains account, business unit, warehouse, and pick tasks
+    - Top-level API payload model
+    - Contains account, business unit, warehouse, and pick tasks
 
 #### Example Model Definition
 
@@ -150,11 +150,6 @@ ForestFire uses a bearer token for API authentication:
 self.api_key = "1GkFdCZ6NzzbKsaTSsGY9GSFcuVZ2mrX7rnOKRQroHSQkoH0eMbU1UkkF1YtDartoVMwoVB4SyfunGCvJoaFzy7qRh_EqS_GoR39YFub"
 ```
 
-**Security Considerations**:
-- In production, the API key should be stored in environment variables or a secure vault
-- The key should not be hardcoded in the source code
-- Regular key rotation should be implemented
-
 ### SSL Verification
 
 The current implementation disables SSL verification for development purposes:
@@ -164,10 +159,6 @@ async with httpx.AsyncClient(verify=False) as client:
     # API request code
 ```
 
-**Security Recommendations**:
-- Enable SSL verification in production environments
-- Use proper certificate validation
-- Consider using certificate pinning for additional security
 
 ## Error Handling
 
@@ -209,13 +200,6 @@ response = await client.put(...)
 logger.info("API response status: %s", response.status_code)
 ```
 
-### Logging Best Practices
-
-- Log request payloads for debugging (sanitize sensitive data)
-- Log response status codes
-- Log detailed error information
-- Use appropriate log levels (INFO, ERROR, DEBUG)
-
 ## Testing API Integration
 
 The ForestFire project includes tests for API integration using mocking:
@@ -246,46 +230,6 @@ async def test_send_sequence_update(self):
         mock_put.assert_called_once()
 ```
 
-### Testing Approaches
-
-1. **Unit Testing**: Mock external API calls
-2. **Integration Testing**: Test against a staging API
-3. **Contract Testing**: Verify API contract compliance
-
-## Best Practices for API Integration
-
-### 1. Separation of Concerns
-
-- Keep API client code separate from business logic
-- Use models to represent API data structures
-- Implement service classes for API integration
-
-### 2. Error Handling
-
-- Implement comprehensive error handling
-- Log detailed error information
-- Provide meaningful error messages
-- Consider retry mechanisms for transient failures
-
-### 3. Configuration Management
-
-- Store API endpoints in configuration
-- Use environment variables for sensitive information
-- Support different environments (development, staging, production)
-
-### 4. Performance Optimization
-
-- Use connection pooling
-- Implement request timeouts
-- Consider rate limiting
-- Use asynchronous requests for better performance
-
-### 5. Security
-
-- Secure API keys and credentials
-- Enable SSL verification
-- Validate input data
-- Sanitize logged information
 
 ## Future Improvements
 
