@@ -1,0 +1,1120 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.13">
+    
+    
+      
+        <title>Python Documentation Tools: A Comprehensive Guide - Forestfire</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.342714a4.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="pink">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#python-documentation-tools-a-comprehensive-guide" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Forestfire" class="md-header__button md-logo" aria-label="Forestfire" data-md-component="logo">
+      
+  <img src="../assets/forestf.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Forestfire
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Python Documentation Tools: A Comprehensive Guide
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="pink"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="pink"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 2c-1.05 0-2.05.16-3 .46 4.06 1.27 7 5.04 7 9.54s-2.94 8.27-7 9.54c.95.3 1.95.46 3 .46a10 10 0 0 0 10-10A10 10 0 0 0 9 2"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/coderfalse-us/forestfire.git" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Forestfire" class="md-nav__button md-logo" aria-label="Forestfire" data-md-component="logo">
+      
+  <img src="../assets/forestf.png" alt="logo">
+
+    </a>
+    Forestfire
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/coderfalse-us/forestfire.git" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../home/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../package_managers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Package Manager
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../python_formatters/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Formatter
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api_documentation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../python_logging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Logger
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../orm_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    ORM
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mkdocs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Mkdocs
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#introduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      Introduction
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#python-documentation-approaches" class="md-nav__link">
+    <span class="md-ellipsis">
+      Python Documentation Approaches
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Python Documentation Approaches">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-docstrings" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Docstrings
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Docstrings">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common-docstring-styles" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Docstring Styles
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common Docstring Styles">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a-google-style" class="md-nav__link">
+    <span class="md-ellipsis">
+      a. Google Style
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#b-numpy-style" class="md-nav__link">
+    <span class="md-ellipsis">
+      b. NumPy Style
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c-restructuredtext-sphinx-style" class="md-nav__link">
+    <span class="md-ellipsis">
+      c. reStructuredText (Sphinx) Style
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-documentation-generation-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Documentation Generation Tools
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Documentation Generation Tools">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a-sphinx" class="md-nav__link">
+    <span class="md-ellipsis">
+      a. Sphinx
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#b-pdoc" class="md-nav__link">
+    <span class="md-ellipsis">
+      b. pdoc
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c-pycco" class="md-nav__link">
+    <span class="md-ellipsis">
+      c. Pycco
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#d-mkdocs" class="md-nav__link">
+    <span class="md-ellipsis">
+      d. MkDocs
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mkdocs-the-documentation-tool-used-in-forestfire" class="md-nav__link">
+    <span class="md-ellipsis">
+      MkDocs: The Documentation Tool Used in ForestFire
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="MkDocs: The Documentation Tool Used in ForestFire">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-features-of-mkdocs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Key Features of MkDocs
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Key Features of MkDocs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-simplicity-and-ease-of-use" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Simplicity and Ease of Use
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-customization-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Customization Options
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-material-theme" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Material Theme
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-mkdocs-in-the-forestfire-project" class="md-nav__link">
+    <span class="md-ellipsis">
+      Using MkDocs in the ForestFire Project
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#benefits-of-using-mkdocs-in-forestfire" class="md-nav__link">
+    <span class="md-ellipsis">
+      Benefits of Using MkDocs in ForestFire
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#google-style-docstrings-in-forestfire" class="md-nav__link">
+    <span class="md-ellipsis">
+      Google-Style Docstrings in ForestFire
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Google-Style Docstrings in ForestFire">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#benefits-of-google-style-docstrings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Benefits of Google-Style Docstrings
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#documentation-best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      Documentation Best Practices
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Documentation Best Practices">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-document-as-you-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Document as You Code
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-be-consistent" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Be Consistent
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-document-why-not-just-what" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Document Why, Not Just What
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-keep-documentation-updated" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. Keep Documentation Updated
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-use-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      5. Use Examples
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#integrating-documentation-into-development-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Integrating Documentation into Development Workflow
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Integrating Documentation into Development Workflow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-editor-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Editor Integration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-pre-commit-hooks" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Pre-commit Hooks
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-cicd-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. CI/CD Integration
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#conclusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      Conclusion
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="python-documentation-tools-a-comprehensive-guide">Python Documentation Tools: A Comprehensive Guide</h1>
+<h2 id="introduction">Introduction</h2>
+<p>Documentation is a critical aspect of software development that helps developers understand, maintain, and extend codebases. Good documentation makes code more accessible, reduces onboarding time for new team members, and serves as a reference for future development. This document provides an overview of Python documentation tools and practices, with a special focus on MkDocs and Google-style docstrings, which are used in the ForestFire project.</p>
+<h2 id="python-documentation-approaches">Python Documentation Approaches</h2>
+<h3 id="1-docstrings">1. Docstrings</h3>
+<p>Docstrings are string literals that appear right after the definition of a function, method, class, or module. They are used to document the purpose, behavior, parameters, and return values of Python code.</p>
+<h4 id="common-docstring-styles">Common Docstring Styles</h4>
+<h5 id="a-google-style">a. Google Style</h5>
+<p><strong>Google Style</strong> docstrings use indentation and sections with headers to organize information.</p>
+<pre><code class="language-python">def function_name(param1, param2):
+    &quot;&quot;&quot;Summary line.
+
+    Extended description of function.
+
+    Args:
+        param1 (int): Description of param1.
+        param2 (str): Description of param2.
+
+    Returns:
+        bool: Description of return value.
+
+    Raises:
+        ValueError: If param1 is negative.
+    &quot;&quot;&quot;
+</code></pre>
+<h5 id="b-numpy-style">b. NumPy Style</h5>
+<p><strong>NumPy Style</strong> docstrings use reStructuredText (reST) syntax with sections denoted by underlined headers.</p>
+<pre><code class="language-python">def function_name(param1, param2):
+    &quot;&quot;&quot;
+    Summary line.
+
+    Extended description of function.
+
+    Parameters
+    ----------
+    param1 : int
+        Description of param1
+    param2 : str
+        Description of param2
+
+    Returns
+    -------
+    bool
+        Description of return value
+
+    Raises
+    ------
+    ValueError
+        If param1 is negative
+    &quot;&quot;&quot;
+</code></pre>
+<h5 id="c-restructuredtext-sphinx-style">c. reStructuredText (Sphinx) Style</h5>
+<p><strong>reStructuredText Style</strong> uses explicit directives for parameters, return values, and other elements.</p>
+<pre><code class="language-python">def function_name(param1, param2):
+    &quot;&quot;&quot;Summary line.
+
+    Extended description of function.
+
+    :param param1: Description of param1
+    :type param1: int
+    :param param2: Description of param2
+    :type param2: str
+    :returns: Description of return value
+    :rtype: bool
+    :raises ValueError: If param1 is negative
+    &quot;&quot;&quot;
+</code></pre>
+<h3 id="2-documentation-generation-tools">2. Documentation Generation Tools</h3>
+<h4 id="a-sphinx">a. Sphinx</h4>
+<p><strong>Sphinx</strong> is a powerful documentation generator that converts reStructuredText files into HTML, PDF, and other formats.</p>
+<p><strong>Key Features:</strong>
+- Industry standard for Python documentation
+- Extensive customization options
+- Support for multiple output formats
+- Cross-referencing and indexing
+- Extension system</p>
+<p><strong>Limitations:</strong>
+- Steep learning curve
+- Complex configuration
+- Requires knowledge of reStructuredText</p>
+<h4 id="b-pdoc">b. pdoc</h4>
+<p><strong>pdoc</strong> automatically generates API documentation for Python modules based on docstrings.</p>
+<p><strong>Key Features:</strong>
+- Simple to use
+- Minimal configuration
+- Markdown support
+- Live preview server</p>
+<p><strong>Limitations:</strong>
+- Less powerful than Sphinx
+- Fewer customization options
+- Limited output formats</p>
+<h4 id="c-pycco">c. Pycco</h4>
+<p><strong>Pycco</strong> generates documentation in a literate programming style, with code and documentation side by side.</p>
+<p><strong>Key Features:</strong>
+- Code and documentation side by side
+- Simple to use
+- Markdown support</p>
+<p><strong>Limitations:</strong>
+- Limited to single-file documentation
+- Minimal customization options
+- No cross-referencing</p>
+<h4 id="d-mkdocs">d. MkDocs</h4>
+<p><strong>MkDocs</strong> is a fast, simple static site generator for project documentation using Markdown.</p>
+<p><strong>Key Features:</strong>
+- Simple, readable Markdown syntax
+- Fast build times
+- Live preview server
+- Themes and plugins
+- Easy deployment to GitHub Pages</p>
+<p><strong>Limitations:</strong>
+- Not specifically designed for API documentation
+- Requires separate tools for docstring extraction
+- Less integrated with Python ecosystem than Sphinx</p>
+<h2 id="mkdocs-the-documentation-tool-used-in-forestfire">MkDocs: The Documentation Tool Used in ForestFire</h2>
+<h3 id="overview">Overview</h3>
+<p><strong>MkDocs</strong> is a fast, simple, and beautiful static site generator designed for building project documentation. It uses Markdown files as source documents and can be extended with themes and plugins.</p>
+<h3 id="key-features-of-mkdocs">Key Features of MkDocs</h3>
+<h4 id="1-simplicity-and-ease-of-use">1. Simplicity and Ease of Use</h4>
+<ul>
+<li><strong>Markdown-Based</strong>: Uses simple Markdown syntax</li>
+<li><strong>Minimal Configuration</strong>: Simple YAML configuration file</li>
+<li><strong>Live Preview</strong>: Built-in development server with auto-reload</li>
+<li><strong>Single Command Deployment</strong>: Easy deployment to GitHub Pages</li>
+</ul>
+<h4 id="2-customization-options">2. Customization Options</h4>
+<ul>
+<li><strong>Themes</strong>: Multiple built-in and third-party themes</li>
+<li><strong>Plugins</strong>: Extensible with plugins</li>
+<li><strong>Navigation</strong>: Customizable navigation structure</li>
+<li><strong>Search</strong>: Built-in search functionality</li>
+</ul>
+<h4 id="3-material-theme">3. Material Theme</h4>
+<p>The Material theme for MkDocs provides a modern, responsive, and customizable design based on Google's Material Design guidelines.</p>
+<p><strong>Key Features:</strong>
+- Responsive design
+- Multiple color schemes
+- Search functionality
+- Navigation options
+- Code highlighting
+- Admonitions (note, warning, etc.)</p>
+<h3 id="using-mkdocs-in-the-forestfire-project">Using MkDocs in the ForestFire Project</h3>
+<p>The ForestFire project leverages MkDocs with the Material theme for documentation:</p>
+<pre><code class="language-yaml"># mkdocs.yml
+site_name: Forestfire
+repo_url: https://github.com/coderfalse-us/forestfire.git
+theme:
+  name: material
+  logo: assets/forestf.png
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+  palette:
+    # Palette toggle for light mode
+    - scheme: default
+      primary: indigo
+      accent: pink
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Palette toggle for dark mode
+    - scheme: slate
+      primary: deep-purple
+      accent: pink
+      toggle:
+        icon: material/brightness-3        
+        name: Switch to light mode
+nav:
+  - Home: home.md
+  - Package Manager: package_managers.md
+  - Formatter: python_formatters.md
+  - API: api_documentation.md
+  - ORM: orm_guide.md
+</code></pre>
+<h3 id="benefits-of-using-mkdocs-in-forestfire">Benefits of Using MkDocs in ForestFire</h3>
+<ol>
+<li><strong>Readability</strong>: Markdown is easy to read and write</li>
+<li><strong>Maintainability</strong>: Simple structure makes documentation easy to maintain</li>
+<li><strong>Collaboration</strong>: Markdown files work well with version control</li>
+<li><strong>Modern Design</strong>: Material theme provides a professional look</li>
+<li><strong>Fast Development</strong>: Live preview speeds up documentation writing</li>
+<li><strong>Comprehensive Coverage</strong>: Organized documentation of various aspects of the project</li>
+</ol>
+<h2 id="google-style-docstrings-in-forestfire">Google-Style Docstrings in ForestFire</h2>
+<p>The ForestFire project uses Google-style docstrings for code documentation:</p>
+<pre><code class="language-python">class AntColonyOptimizer:
+    &quot;&quot;&quot;Class for ant colony optimization operations&quot;&quot;&quot;
+
+    def __init__(self, route_optimizer: RouteOptimizer):
+        self.route_optimizer = route_optimizer
+
+    def calculate_heuristic(
+        self,
+        orders_assign: List[List[Tuple[float, float]]],
+        picker_locations: List[Tuple[float, float]],
+    ) -&gt; np.ndarray:
+        &quot;&quot;&quot;Calculate heuristic values for ant colony optimization&quot;&quot;&quot;
+        heuristic = np.zeros((len(orders_assign), len(picker_locations)))
+        for item_idx, item_locs in enumerate(orders_assign):
+            for picker_idx, picker_loc in enumerate(picker_locations):
+                min_distance = float(&quot;inf&quot;)
+                for loc in item_locs:
+                    distance = np.sqrt(
+                        (loc[0] - picker_loc[0]) ** 2
+                        + (loc[1] - picker_loc[1]) ** 2
+                    )
+                    min_distance = min(min_distance, distance)
+                heuristic[item_idx][picker_idx] = 1 / (min_distance + 1e-6)
+        return heuristic
+</code></pre>
+<h3 id="benefits-of-google-style-docstrings">Benefits of Google-Style Docstrings</h3>
+<ol>
+<li><strong>Readability</strong>: Clear section headers make docstrings easy to read</li>
+<li><strong>Consistency</strong>: Standardized format across the codebase</li>
+<li><strong>Type Information</strong>: Clear indication of parameter and return types</li>
+<li><strong>IDE Support</strong>: Good integration with IDEs for auto-completion and documentation display</li>
+<li><strong>Compatibility</strong>: Works well with documentation generation tools</li>
+</ol>
+<h2 id="documentation-best-practices">Documentation Best Practices</h2>
+<h3 id="1-document-as-you-code">1. Document as You Code</h3>
+<p>Write documentation while writing code, not after. This ensures that:
+- Documentation is accurate
+- You don't forget important details
+- Documentation stays in sync with code</p>
+<h3 id="2-be-consistent">2. Be Consistent</h3>
+<p>Use a consistent style throughout your codebase:
+- Same docstring format
+- Consistent terminology
+- Uniform level of detail</p>
+<h3 id="3-document-why-not-just-what">3. Document Why, Not Just What</h3>
+<p>Explain the reasoning behind code decisions:
+- Why a particular algorithm was chosen
+- Why a specific approach was taken
+- Why certain edge cases are handled in a particular way</p>
+<h3 id="4-keep-documentation-updated">4. Keep Documentation Updated</h3>
+<p>Update documentation when code changes:
+- Make documentation updates part of code reviews
+- Include documentation changes in pull requests
+- Automate documentation checks in CI/CD pipelines</p>
+<h3 id="5-use-examples">5. Use Examples</h3>
+<p>Include examples in documentation:
+- Code snippets showing usage
+- Example inputs and outputs
+- Common use cases</p>
+<h2 id="integrating-documentation-into-development-workflow">Integrating Documentation into Development Workflow</h2>
+<h3 id="1-editor-integration">1. Editor Integration</h3>
+<p>Most modern code editors support documentation tools:
+- VS Code: MkDocs and docstring extensions
+- PyCharm: Built-in docstring generation
+- Vim/Neovim: Plugins for docstring generation</p>
+<h3 id="2-pre-commit-hooks">2. Pre-commit Hooks</h3>
+<p>Use pre-commit hooks to check documentation:
+- Docstring presence
+- Docstring format
+- Documentation build</p>
+<h3 id="3-cicd-integration">3. CI/CD Integration</h3>
+<p>Add documentation checks to CI/CD pipelines:
+- Build documentation
+- Check for broken links
+- Deploy documentation to hosting</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>Documentation is a crucial aspect of software development that enhances code quality, maintainability, and collaboration. The ForestFire project benefits from using MkDocs with the Material theme for project documentation and Google-style docstrings for code documentation.</p>
+<p>By following consistent documentation practices and integrating documentation into the development workflow, the ForestFire project maintains high-quality, accessible documentation that serves as a valuable resource for developers working on the project.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.sections", "navigation.expand", "navigation.top"], "search": "../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.13a4f30d.min.js"></script>
+      
+    
+  </body>
+</html>
