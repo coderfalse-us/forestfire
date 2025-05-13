@@ -1,0 +1,1261 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../package_managers/">
+      
+      
+        <link rel="next" href="../api_documentation/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.13">
+    
+    
+      
+        <title>Formatter - Forestfire</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.342714a4.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="pink">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#python-code-formatters-a-comprehensive-guide" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Forestfire" class="md-header__button md-logo" aria-label="Forestfire" data-md-component="logo">
+      
+  <img src="../assets/forestf.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Forestfire
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Formatter
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="pink"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="pink"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 2c-1.05 0-2.05.16-3 .46 4.06 1.27 7 5.04 7 9.54s-2.94 8.27-7 9.54c.95.3 1.95.46 3 .46a10 10 0 0 0 10-10A10 10 0 0 0 9 2"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/coderfalse-us/forestfire.git" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Forestfire" class="md-nav__button md-logo" aria-label="Forestfire" data-md-component="logo">
+      
+  <img src="../assets/forestf.png" alt="logo">
+
+    </a>
+    Forestfire
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/coderfalse-us/forestfire.git" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../home/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../package_managers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Package Manager
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Formatter
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Formatter
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#introduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      Introduction
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-use-code-formatters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Why Use Code Formatters?
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-python-formatters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Python Formatters
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common Python Formatters">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-black" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Black
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-yapf-yet-another-python-formatter" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. YAPF (Yet Another Python Formatter)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-autopep8" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. autopep8
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-isort" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. isort
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ruff-the-modern-python-formatter-and-linter" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ruff: The Modern Python Formatter and Linter
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Ruff: The Modern Python Formatter and Linter">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-features-of-ruff" class="md-nav__link">
+    <span class="md-ellipsis">
+      Key Features of Ruff
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Key Features of Ruff">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-exceptional-performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Exceptional Performance
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-comprehensive-functionality" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Comprehensive Functionality
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-compatibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Compatibility
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-configurability" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. Configurability
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-ruff-in-the-forestfire-project" class="md-nav__link">
+    <span class="md-ellipsis">
+      Using Ruff in the ForestFire Project
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#benefits-of-using-ruff-in-our-project" class="md-nav__link">
+    <span class="md-ellipsis">
+      Benefits of Using Ruff in Our Project
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-formatter-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Formatter Commands
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common Formatter Commands">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ruff-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ruff Commands
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#equivalent-commands-in-other-formatters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Equivalent Commands in Other Formatters
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#integrating-formatters-with-development-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Integrating Formatters with Development Workflow
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Integrating Formatters with Development Workflow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-editor-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Editor Integration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-pre-commit-hooks" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Pre-commit Hooks
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-cicd-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. CI/CD Integration
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#conclusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      Conclusion
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api_documentation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../python_logging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Logger
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../orm_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    ORM
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mkdocs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Mkdocs
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#introduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      Introduction
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-use-code-formatters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Why Use Code Formatters?
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-python-formatters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Python Formatters
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common Python Formatters">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-black" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Black
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-yapf-yet-another-python-formatter" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. YAPF (Yet Another Python Formatter)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-autopep8" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. autopep8
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-isort" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. isort
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ruff-the-modern-python-formatter-and-linter" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ruff: The Modern Python Formatter and Linter
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Ruff: The Modern Python Formatter and Linter">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-features-of-ruff" class="md-nav__link">
+    <span class="md-ellipsis">
+      Key Features of Ruff
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Key Features of Ruff">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-exceptional-performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Exceptional Performance
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-comprehensive-functionality" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Comprehensive Functionality
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-compatibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Compatibility
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-configurability" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. Configurability
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-ruff-in-the-forestfire-project" class="md-nav__link">
+    <span class="md-ellipsis">
+      Using Ruff in the ForestFire Project
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#benefits-of-using-ruff-in-our-project" class="md-nav__link">
+    <span class="md-ellipsis">
+      Benefits of Using Ruff in Our Project
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-formatter-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Formatter Commands
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common Formatter Commands">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ruff-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ruff Commands
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#equivalent-commands-in-other-formatters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Equivalent Commands in Other Formatters
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#integrating-formatters-with-development-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Integrating Formatters with Development Workflow
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Integrating Formatters with Development Workflow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-editor-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Editor Integration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-pre-commit-hooks" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Pre-commit Hooks
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-cicd-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. CI/CD Integration
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#conclusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      Conclusion
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="python-code-formatters-a-comprehensive-guide">Python Code Formatters: A Comprehensive Guide</h1>
+<h2 id="introduction">Introduction</h2>
+<p>Code formatters are essential tools in modern software development that automatically format code according to predefined style rules. They help maintain consistent code style across a project, improve readability, and eliminate debates about formatting preferences. This document provides an overview of popular Python code formatters, with a special focus on Ruff, which is the formatter used in the ForestFire project.</p>
+<h2 id="why-use-code-formatters">Why Use Code Formatters?</h2>
+<ol>
+<li><strong>Consistency</strong>: Ensures uniform code style across the entire codebase</li>
+<li><strong>Productivity</strong>: Eliminates time spent on manual formatting</li>
+<li><strong>Readability</strong>: Makes code easier to read and understand</li>
+<li><strong>Collaboration</strong>: Reduces conflicts in code reviews about style preferences</li>
+<li><strong>Focus</strong>: Allows developers to focus on logic rather than formatting</li>
+<li><strong>Onboarding</strong>: Makes it easier for new developers to adapt to project standards</li>
+</ol>
+<h2 id="common-python-formatters">Common Python Formatters</h2>
+<h3 id="1-black">1. Black</h3>
+<p><strong>Black</strong> is a popular, opinionated code formatter that aims to provide a consistent style by reformatting entire files in place.</p>
+<p><strong>Key Features:</strong>
+- "Uncompromising" code formatting with minimal configuration options
+- Deterministic output (same input always produces same output)
+- Reformats entire files
+- PEP 8 compliant (with some exceptions)
+- Widely adopted in the Python community</p>
+<p><strong>Limitations:</strong>
+- Limited configurability by design
+- Some developers find its style choices too rigid
+- Can produce unexpected formatting in certain edge cases</p>
+<h3 id="2-yapf-yet-another-python-formatter">2. YAPF (Yet Another Python Formatter)</h3>
+<p><strong>YAPF</strong> is a formatter from Google that aims to produce code that follows the style guide, even if the original code didn't.</p>
+<p><strong>Key Features:</strong>
+- Highly configurable
+- Multiple predefined styles (pep8, Google, etc.)
+- Reformats code to look as much like hand-formatted code as possible
+- Can be configured to match personal preferences</p>
+<p><strong>Limitations:</strong>
+- Can be slower than other formatters
+- Many configuration options can lead to inconsistency between projects
+- Less popular than Black or Ruff</p>
+<h3 id="3-autopep8">3. autopep8</h3>
+<p><strong>autopep8</strong> automatically formats Python code to conform to the PEP 8 style guide.</p>
+<p><strong>Key Features:</strong>
+- Focuses specifically on PEP 8 compliance
+- Conservative by default (makes minimal changes)
+- Configurable aggressiveness level
+- Can fix specific issues or entire files</p>
+<p><strong>Limitations:</strong>
+- Less comprehensive than other formatters
+- Doesn't handle some complex formatting cases
+- Primarily focused on fixing PEP 8 violations rather than comprehensive formatting</p>
+<h3 id="4-isort">4. isort</h3>
+<p><strong>isort</strong> is a specialized formatter that sorts imports alphabetically and automatically separates them into sections.</p>
+<p><strong>Key Features:</strong>
+- Specialized in organizing and formatting import statements
+- Configurable import sections
+- Can be integrated with other formatters
+- Supports various styles (Google, PEP8, etc.)</p>
+<p><strong>Limitations:</strong>
+- Only handles import statements
+- Must be used alongside other formatters for complete code formatting</p>
+<h2 id="ruff-the-modern-python-formatter-and-linter">Ruff: The Modern Python Formatter and Linter</h2>
+<h3 id="overview">Overview</h3>
+<p><strong>Ruff</strong> is a fast, Rust-based Python linter and formatter that aims to replace multiple Python tools (like Black, isort, pycodestyle, flake8, etc.) with a single, high-performance solution. It's designed to be a drop-in replacement for existing tools while offering significant performance improvements.</p>
+<h3 id="key-features-of-ruff">Key Features of Ruff</h3>
+<h4 id="1-exceptional-performance">1. Exceptional Performance</h4>
+<ul>
+<li><strong>Blazing Fast</strong>: Ruff is 10-100x faster than traditional Python linters and formatters</li>
+<li><strong>Rust Implementation</strong>: Built with Rust for memory safety and performance</li>
+<li><strong>Incremental Formatting</strong>: Can efficiently format only changed files</li>
+</ul>
+<h4 id="2-comprehensive-functionality">2. Comprehensive Functionality</h4>
+<ul>
+<li><strong>Formatter and Linter</strong>: Combines formatting and linting in a single tool</li>
+<li><strong>Import Sorting</strong>: Includes isort-compatible import sorting</li>
+<li><strong>Rule Selection</strong>: Supports over 700 built-in rules</li>
+<li><strong>Auto-fixes</strong>: Can automatically fix many issues it identifies</li>
+</ul>
+<h4 id="3-compatibility">3. Compatibility</h4>
+<ul>
+<li><strong>Black-Compatible</strong>: Can produce Black-compatible output</li>
+<li><strong>Configuration Compatibility</strong>: Supports configuration from pyproject.toml and other standard files</li>
+<li><strong>IDE Integration</strong>: Works with popular IDEs and editors</li>
+</ul>
+<h4 id="4-configurability">4. Configurability</h4>
+<ul>
+<li><strong>Flexible Configuration</strong>: Extensive configuration options while maintaining sensible defaults</li>
+<li><strong>Rule Selection</strong>: Enable/disable specific rules or rule categories</li>
+<li><strong>Line Length</strong>: Configurable line length and other formatting options</li>
+</ul>
+<h3 id="using-ruff-in-the-forestfire-project">Using Ruff in the ForestFire Project</h3>
+<p>Our project leverages Ruff for code formatting and linting with the following configuration:</p>
+<ol>
+<li><strong>Configuration in pyproject.toml</strong>:
+   ```toml
+   [tool.ruff]
+   # Set the maximum line length to 80.
+   line-length = 80</li>
+</ol>
+<p>[tool.ruff.lint]
+   # Add the <code>line-too-long</code> rule to the enforced rule set.
+   extend-select = ["E501"]
+   ```</p>
+<ol>
+<li><strong>Pre-commit Integration</strong>:
+   ```yaml
+   repos:<ul>
+<li>repo: https://github.com/astral-sh/ruff-pre-commit
+   rev: v0.3.0
+   hooks:<ul>
+<li>id: ruff</li>
+<li>id: ruff-format
+   ```</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="benefits-of-using-ruff-in-our-project">Benefits of Using Ruff in Our Project</h3>
+<ol>
+<li><strong>Development Speed</strong>: Faster formatting and linting means less time waiting and more time coding</li>
+<li><strong>Consistency</strong>: Ensures uniform code style across the entire codebase</li>
+<li><strong>Modern Tooling</strong>: Support for the latest Python features and best practices</li>
+<li><strong>Simplified Workflow</strong>: Single tool for formatting, linting, and import sorting</li>
+<li><strong>Performance</strong>: Reduced resource usage and faster CI/CD pipelines</li>
+<li><strong>Pre-commit Integration</strong>: Automatic formatting and linting before commits</li>
+</ol>
+<h2 id="common-formatter-commands">Common Formatter Commands</h2>
+<h3 id="ruff-commands">Ruff Commands</h3>
+<pre><code class="language-bash"># Format a file
+ruff format file.py
+
+# Format all Python files in a directory
+ruff format .
+
+# Format and fix linting issues
+ruff check --fix file.py
+
+# Check for issues without fixing
+ruff check file.py
+
+# Format and check imports
+ruff format --select I file.py
+</code></pre>
+<h3 id="equivalent-commands-in-other-formatters">Equivalent Commands in Other Formatters</h3>
+<table>
+<thead>
+<tr>
+<th>Task</th>
+<th>Ruff</th>
+<th>Black</th>
+<th>isort</th>
+<th>autopep8</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Format file</td>
+<td><code>ruff format file.py</code></td>
+<td><code>black file.py</code></td>
+<td>N/A</td>
+<td><code>autopep8 file.py</code></td>
+</tr>
+<tr>
+<td>Format directory</td>
+<td><code>ruff format .</code></td>
+<td><code>black .</code></td>
+<td>N/A</td>
+<td><code>autopep8 .</code></td>
+</tr>
+<tr>
+<td>Sort imports</td>
+<td><code>ruff check --select I --fix</code></td>
+<td>N/A</td>
+<td><code>isort .</code></td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>Check without changing</td>
+<td><code>ruff check</code></td>
+<td><code>black --check .</code></td>
+<td><code>isort --check .</code></td>
+<td><code>autopep8 --diff .</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="integrating-formatters-with-development-workflow">Integrating Formatters with Development Workflow</h2>
+<h3 id="1-editor-integration">1. Editor Integration</h3>
+<p>Most modern code editors support integration with Python formatters:</p>
+<ul>
+<li><strong>VS Code</strong>: Extensions for Ruff, Black, and other formatters</li>
+<li><strong>PyCharm</strong>: Built-in support or plugins for formatters</li>
+<li><strong>Vim/Neovim</strong>: Plugins available for formatter integration</li>
+</ul>
+<h3 id="2-pre-commit-hooks">2. Pre-commit Hooks</h3>
+<p>Pre-commit hooks ensure code is formatted before being committed:</p>
+<pre><code class="language-yaml"># .pre-commit-config.yaml
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.3.0
+    hooks:
+      - id: ruff
+      - id: ruff-format
+</code></pre>
+<h3 id="3-cicd-integration">3. CI/CD Integration</h3>
+<p>Add formatting checks to CI/CD pipelines to ensure all code meets the project's style requirements:</p>
+<pre><code class="language-yaml"># Example GitHub Actions workflow
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: pip install ruff
+      - name: Check formatting
+        run: ruff format --check .
+</code></pre>
+<h2 id="conclusion">Conclusion</h2>
+<p>Code formatters are crucial tools in modern Python development. While there are several options available, each with its own strengths and weaknesses, our project benefits significantly from using Ruff due to its performance, comprehensive functionality, and modern feature set.</p>
+<p>By using Ruff, we ensure consistent code style, faster development cycles, and a streamlined workflow that enhances productivity across the team.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.sections", "navigation.expand", "navigation.top"], "search": "../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.13a4f30d.min.js"></script>
+      
+    
+  </body>
+</html>
