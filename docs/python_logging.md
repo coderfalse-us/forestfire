@@ -255,48 +255,6 @@ elapsed = time.time() - start_time
 logger.info("Operation completed in {:.2f} seconds", elapsed)
 ```
 
-## Configuring Loguru for Different Environments
-
-### Development Environment
-
-```python
-logger.configure(
-    handlers=[
-        {
-            "sink": sys.stdout,
-            "format": "<green>{time:HH:mm:ss}</green> | <level>{level: <8}</level> | <level>{message}</level>",
-            "colorize": True,
-            "level": "DEBUG",
-        }
-    ]
-)
-```
-
-### Production Environment
-
-```python
-logger.configure(
-    handlers=[
-        {
-            "sink": "app.log",
-            "format": "{time:YYYY-MM-DD HH:mm:ss} | {level: <8} | {message}",
-            "rotation": "10 MB",
-            "retention": "1 week",
-            "compression": "zip",
-            "level": "INFO",
-        },
-        {
-            "sink": "errors.log",
-            "format": "{time:YYYY-MM-DD HH:mm:ss} | {level: <8} | {message}",
-            "rotation": "10 MB",
-            "retention": "1 month",
-            "compression": "zip",
-            "level": "ERROR",
-        }
-    ]
-)
-```
-
 ### JSON Logging for Services
 
 ```python

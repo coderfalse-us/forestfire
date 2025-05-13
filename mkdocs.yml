@@ -29,4 +29,6 @@ nav:
   - Package Manager: package_managers.md
   - Formatter: python_formatters.md
   - API: api_documentation.md
+  - Logger: python_logging.md
   - ORM: orm_guide.md
+  - Mkdocs: mkdocs.md
