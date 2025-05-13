@@ -4,11 +4,16 @@ This module provides functionality for updating pick sequences in the database
 based on optimized routes for warehouse order picking.
 """
 
-from typing import List, Dict, Tuple, Any
+from typing import List, Dict, Tuple
 import logging
 import httpx
 
-from .picksequencemodel import PickSequenceUpdate
+from .picksequencemodel import (
+    PickSequenceUpdate,
+    PickTaskPayload,
+    PickListPayload,
+    ApiPayload,
+)
 from .picklist import PicklistRepository
 from forestfire.optimizer.services.routing import RouteOptimizer
 from forestfire.utils.config import PICKER_LOCATIONS
@@ -27,38 +32,13 @@ class BatchPickSequenceService:
             "2025-18/api/picking/task/batchassign"
         )
         self.api_key = (
-            "8FZ3usPmCKkqDhd6OKWAvezM-1KEIKmOwjYtrba79PQPzpi8Rkt9eSGNmvHl"
-            "Upnptk0wrXnUJGrBK46xKLgp3tGxiULXZaLhGxHcwhXB"
+            "1GkFdCZ6NzzbKsaTSsGY9GSFcuVZ2mrX7rnOKRQroHSQkoH0eMbU"
+            "1UkkF1YtDartoVMwoVB4SyfunGCvJoaFzy7qRh_EqS_GoR39YFub"
         )
 
     def _transform_updates_to_api_format(
         self, updates: List[PickSequenceUpdate]
-    ) -> Dict[str, List[Dict[str, Any]]]:
-        """
-        Transform pick sequence updates to the required API format.
-
-        The API expects data in the following format:
-        {
-            "AccountId": "account_id",
-            "BusinessunitId": "business_unit_id",
-            "WarehouseId": "warehouse_id",
-            "PickTasks": [
-                {
-                    "TaskId": "task_id",
-                    "UserAssigned": "user",
-                    "Batch": "batch_id",
-                    "AdditionalProperties": {},
-                    "PickLists": [
-                        {
-                            "PickListId": "picklist_id",
-                            "Sequence": sequence_number,
-                            "Test": "PF03"
-                        }
-                    ]
-                }
-            ]
-        }
-        """
+    ) -> List[ApiPayload]:
         # Group updates by batch_id
         grouped_updates = {}
 
@@ -81,11 +61,10 @@ class BatchPickSequenceService:
 
             # Add the picklist to the appropriate batch
             grouped_updates[org_key][batch_id].append(
-                {
-                    "PickListId": update.picklist_id,
-                    "Sequence": update.pick_sequence,
-                    "Test": "PF03",
-                }
+                PickListPayload(
+                    PickListId=update.picklist_id,
+                    Sequence=update.pick_sequence,
+                )
             )
 
         # Create the final API payload structure
@@ -111,22 +90,18 @@ class BatchPickSequenceService:
                 )
 
                 pick_tasks.append(
-                    {
-                        "TaskId": task_id,
-                        "UserAssigned": "BOB",  # Default user
-                        "Batch": batch_id,
-                        "AdditionalProperties": {},
-                        "PickLists": pick_lists,
-                    }
+                    PickTaskPayload(
+                        TaskId=task_id, Batch=batch_id, PickLists=pick_lists
+                    )
                 )
 
             api_payload.append(
-                {
-                    "AccountId": account_id,
-                    "BusinessunitId": business_unit_id,
-                    "WarehouseId": warehouse_id,
-                    "PickTasks": pick_tasks,
-                }
+                ApiPayload(
+                    AccountId=account_id,
+                    BusinessunitId=business_unit_id,
+                    WarehouseId=warehouse_id,
+                    PickTasks=pick_tasks,
+                )
             )
         return api_payload
 
@@ -136,7 +111,6 @@ class BatchPickSequenceService:
         """Send pick sequence updates to the API"""
         if not updates:
             logger.warning("No updates to send")
-            return
 
         # Transform the updates to the required API format
         api_payloads = self._transform_updates_to_api_format(updates)
@@ -146,10 +120,13 @@ class BatchPickSequenceService:
         async with httpx.AsyncClient(verify=False) as client:
             for payload in api_payloads:
                 try:
-                    logger.info("Sending API request with payload: %s", payload)
+                    logger.info(
+                        "Sending API request with payload: %s",
+                        payload.model_dump(),
+                    )
                     response = await client.put(
                         self.api_url,
-                        json=payload,
+                        json=payload.model_dump(),
                         headers={
                             "Authorization": f"Bearer {self.api_key}",
                             "Content-Type": "application/json",
@@ -166,7 +143,7 @@ class BatchPickSequenceService:
                     response.raise_for_status()
                     logger.info(
                         "Successfully sent updates to Domain for account %s",
-                        payload.get("accountid", "unknown"),
+                        payload.AccountId,
                     )
                 except httpx.RequestError as e:
                     logger.error("API request failed: %s", e)

@@ -1,16 +1,27 @@
 """
-Picker route
+Picker route model
 """
 
-from dataclasses import dataclass
 from typing import List, Tuple
+from pydantic import BaseModel, Field
 
 
-@dataclass
-class Route:
+class Route(BaseModel):
     """Model representing a picker's route"""
 
-    picker_id: int
-    locations: List[Tuple[float, float]]
-    cost: float = 0.0
-    assigned_orders: List[int] = None
+    picker_id: int = Field(..., description="Unique identifier for the picker")
+    locations: List[Tuple[float, float]] = Field(
+        ..., description="List of (x,y) coordinates in the route"
+    )
+    cost: float = Field(
+        default=0.0, ge=0.0, description="Total cost/distance of the route"
+    )
+    assigned_orders: List[int] = Field(
+        default_factory=list,
+        description="List of order IDs assigned to this route",
+    )
+
+    class Config:
+        """Model configuration"""
+
+        frozen = True
