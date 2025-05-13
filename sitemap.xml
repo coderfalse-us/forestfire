@@ -1,3 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://forestfire.com/</loc>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://forestfire.com/home/</loc>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://forestfire.com/package_managers/</loc>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://forestfire.com/python_formatters/</loc>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://forestfire.com/api_documentation/</loc>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://forestfire.com/python_logging/</loc>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://forestfire.com/orm_guide/</loc>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://forestfire.com/mkdocs/</loc>
+    <priority>0.7</priority>
+  </url>
 </urlset>

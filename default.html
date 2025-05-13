@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forestfire Documentation</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #3f51b5;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        .nav-links {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .nav-links a {
+            margin-right: 15px;
+            color: #3f51b5;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>Forestfire Documentation</h1>
+    
+    <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="package_managers/index.html">Package Managers</a>
+        <a href="python_formatters/index.html">Python Formatters</a>
+        <a href="api_documentation/index.html">API Documentation</a>
+        <a href="python_logging/index.html">Python Logging</a>
+        <a href="orm_guide/index.html">ORM Guide</a>
+        <a href="mkdocs/index.html">MkDocs</a>
+    </div>
+    
+    <p>Welcome to the Forestfire documentation. Please select a section from the navigation links above.</p>
+    
+    <script>
+        // Check if we're in a subdirectory
+        const path = window.location.pathname;
+        const parts = path.split('/').filter(p => p);
+        
+        if (parts.length > 0) {
+            const lastPart = parts[parts.length - 1];
+            // If we're in a directory (not a file), try to redirect to index.html
+            if (!lastPart.includes('.')) {
+                window.location.href = lastPart + '/index.html';
+            }
+        }
+    </script>
+</body>
+</html>
