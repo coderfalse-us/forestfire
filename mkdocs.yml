@@ -1,0 +1,34 @@
+site_name: Forestfire
+repo_url: https://github.com/coderfalse-us/forestfire.git
+theme:
+  name: material
+  logo: assets/forestf.png
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+  palette:
+    # Palette toggle for light mode
+    - scheme: default
+      primary: indigo
+      accent: pink
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Palette toggle for dark mode
+    - scheme: slate
+      primary: deep-purple
+      accent: pink
+      toggle:
+        icon: material/brightness-3        
+        name: Switch to light mode
+nav:
+  - Home: home.md
+  - Package Manager: package_managers.md
+  - Formatter: python_formatters.md
+  - API: api_documentation.md
+  - Logger: python_logging.md
+  - ORM: orm_guide.md
+  - Mkdocs: mkdocs.md

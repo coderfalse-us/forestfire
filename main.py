@@ -1,7 +1,7 @@
 """Main module for warehouse order picking
 optimization using hybrid ACO-GA approach."""
 
-import logging
+from loguru import logger
 from typing import List, Any
 import random
 
@@ -26,9 +26,6 @@ from forestfire.optimizer.services.routing import RouteOptimizer
 from forestfire.algorithms.genetic import GeneticOperator
 from forestfire.algorithms.ant_colony import AntColonyOptimizer
 from forestfire.plots.graph import PathVisualizer
-
-
-logger = logging.getLogger(__name__)
 
 
 def initialize_population(
@@ -161,73 +158,102 @@ def run_genetic_optimization(
         pop.extend(crossover_population + mutation_population)
         pop.sort(key=lambda x: x[1])
         pop = pop[:N_POP]
-        logger.info("Iteration %d: Best Solution = %f", iteration, pop[0][1])
+        logger.info(
+            "Iteration {}: Best Solution = {:.6f}", iteration, pop[0][1]
+        )
     return pop[0][0]
 
 
 async def main() -> None:
     """Main execution function."""
-    services = {
-        "picklist_repo": PicklistRepository(),
-        "route_optimizer": RouteOptimizer(),
-        "genetic_op": GeneticOperator(RouteOptimizer()),
-        "aco": AntColonyOptimizer(RouteOptimizer()),
-        "path_visualizer": PathVisualizer(),
-        "picksequence_service": BatchPickSequenceService(),
-    }
-
-    # Get optimization data
-    picktasks, orders_assign, stage_result, picklistids = services[
-        "picklist_repo"
-    ].get_optimized_data()
-
-    # Initialize and evaluate population
-    initial_population = initialize_population(
-        NUM_PICKERS, len(orders_assign), PICKER_CAPACITIES
-    )
-    empty_pop = []
-    for position in initial_population:
-        route_optimizer = services["route_optimizer"]
-        fitness_score, _, _ = route_optimizer.calculate_shortest_route(
-            PICKER_LOCATIONS, position, orders_assign, picktasks, stage_result
+    with logger.contextualize(task_id="optimization"):
+        services = {
+            "picklist_repo": PicklistRepository(),
+            "route_optimizer": RouteOptimizer(),
+            "genetic_op": GeneticOperator(RouteOptimizer()),
+            "aco": AntColonyOptimizer(RouteOptimizer()),
+            "path_visualizer": PathVisualizer(),
+            "picksequence_service": BatchPickSequenceService(),
+        }
+        logger.info(
+            "Starting optimization with {} pickers", NUM_PICKERS, color="cyan"
         )
-        empty_pop.append([position, fitness_score])
 
-    # Run ACO optimization
-    aco_solutions = run_aco_optimization(
-        services["aco"],
-        services["route_optimizer"],
-        orders_assign,
-        picktasks,
-        stage_result,
-    )
-    empty_pop.extend(aco_solutions)
+        # Get optimization data
+        picktasks, orders_assign, stage_result, picklistids = services[
+            "picklist_repo"
+        ].get_optimized_data()
 
-    # Run GA optimization
-    pop = sorted(empty_pop, key=lambda x: x[1])
-    final_solution = run_genetic_optimization(
-        services["genetic_op"],
-        services["route_optimizer"],
-        pop,
-        orders_assign,
-        picktasks,
-        stage_result,
-    )
-    logger.info("\nFinal Best Solution: %s", final_solution)
+        # Initialize and evaluate population
+        initial_population = initialize_population(
+            NUM_PICKERS, len(orders_assign), PICKER_CAPACITIES
+        )
+        empty_pop = []
+        for position in initial_population:
+            route_optimizer = services["route_optimizer"]
+            fitness_score, _, _ = route_optimizer.calculate_shortest_route(
+                PICKER_LOCATIONS,
+                position,
+                orders_assign,
+                picktasks,
+                stage_result,
+            )
+            empty_pop.append([position, fitness_score])
 
-    # Visualize and update results
-    services["path_visualizer"].plot_routes(final_solution)
-    await services["picksequence_service"].update_pick_sequences(
-        final_solution, picklistids, orders_assign, picktasks, stage_result
-    )
+        # Run ACO optimization
+        aco_solutions = run_aco_optimization(
+            services["aco"],
+            services["route_optimizer"],
+            orders_assign,
+            picktasks,
+            stage_result,
+        )
+        empty_pop.extend(aco_solutions)
+
+        # Run GA optimization
+        pop = sorted(empty_pop, key=lambda x: x[1])
+        final_solution = run_genetic_optimization(
+            services["genetic_op"],
+            services["route_optimizer"],
+            pop,
+            orders_assign,
+            picktasks,
+            stage_result,
+        )
+        logger.info("\nFinal Best Solution: {}", final_solution)
+
+        # Visualize and update results
+        services["path_visualizer"].plot_routes(final_solution)
+        await services["picksequence_service"].update_pick_sequences(
+            final_solution, picklistids, orders_assign, picktasks, stage_result
+        )
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
     try:
         import asyncio
+        from colorama import init
 
+        init()
+
+        logger.configure(
+            handlers=[
+                {
+                    "sink": print,
+                    "format": "<green>{time:HH:mm:ss}</green> | "
+                    "<level>{level: <8}</level> | "
+                    "<red>{message}</red>"
+                    if "{level}" == "ERROR"
+                    else "<green>{time:HH:mm:ss}</green> | "
+                    "<level>{level: <8}</level> | "
+                    "<level>{message}</level>",
+                    "colorize": True,
+                    "level": "INFO",
+                    "diagnose": True,  # Adds traceback for errors
+                }
+            ]
+        )
         asyncio.run(main())
     except Exception as e:
-        logger.error("Error in optimization process: %s", e)
+        logger.error("Error in optimization process: {}", e)
         raise
