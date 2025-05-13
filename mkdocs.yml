@@ -1,0 +1,5 @@
+site_name: Forsetfire
+theme: material
+nav:
+  - Home: index.md
+  - Working: working.md
