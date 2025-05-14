@@ -200,6 +200,53 @@ To generate an HTML coverage report:
 python -m pytest --cov=forestfire --cov-report=html
 ```
 
+## Behavior-Driven Development (BDD)
+
+In addition to traditional unit and integration testing, we've implemented Behavior-Driven Development (BDD) tests to better document and communicate the system's behavior.
+
+### Overview
+
+BDD is an agile software development process that encourages collaboration between developers, QA, and non-technical stakeholders. It focuses on defining the behavior of the system in a way that all stakeholders can understand.
+
+### Implementation
+
+Our BDD implementation uses:
+
+1. **Feature Files**: Located in `tests/features/`, these files use Gherkin syntax to describe scenarios in plain language.
+2. **pytest Implementation**: The `test_integration_bdd.py` file implements these scenarios as executable tests using pytest.
+
+### Example Feature
+
+```gherkin
+Feature: Warehouse Order Picking Optimization
+  As a warehouse manager
+  I want to optimize the order picking process
+  So that I can minimize the total distance traveled by pickers
+
+  Scenario: Optimize picker routes using hybrid ACO-GA approach
+    Given a warehouse with 2 pickers
+    And a set of 5 orders to be picked
+    When the ACO algorithm is run to generate initial solutions
+    Then it should produce valid assignments respecting picker capacities
+    When the genetic algorithm is run to optimize the solutions
+    Then it should improve the solution quality
+```
+
+### Running BDD Tests
+
+To run the BDD-style integration tests:
+
+```bash
+python -m pytest tests/test_integration_bdd.py -v
+```
+
+### Benefits
+
+- **Improved Communication**: BDD bridges the gap between technical and non-technical team members
+- **Living Documentation**: Feature files serve as up-to-date documentation
+- **Focus on Business Value**: Tests are written from the user's perspective
+- **Reduced Rework**: Clear specifications lead to fewer misunderstandings
+
 ## Conclusion
 
-Our testing approach combines the simplicity and power of pytest with specialized tools for coverage analysis and mocking. This comprehensive testing strategy ensures our code is reliable, maintainable, and performs as expected.
+Our testing approach combines the simplicity and power of pytest with specialized tools for coverage analysis and mocking, along with BDD for better stakeholder communication. This comprehensive testing strategy ensures our code is reliable, maintainable, and performs as expected while meeting business requirements.
