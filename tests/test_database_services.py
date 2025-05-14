@@ -147,11 +147,19 @@ class TestBatchPickSequenceService:
                 picklist_id="01JP45RZ36HTQFMH048DZD5F95",
                 batch_id="BOBSBATCH",
                 pick_sequence=222,
+                picktask_id="TASK123",
+                account_id="account1",
+                business_unit_id="business1",
+                warehouse_id="warehouse1",
             ),
             PickSequenceUpdate(
                 picklist_id="01JP3WXZ33ENQHYAJC6S8R9YKP",
                 batch_id=" BOBSBATCH ",  # Note the spaces to test strip()
                 pick_sequence=3333,
+                picktask_id="TASK123",
+                account_id="account1",
+                business_unit_id="business1",
+                warehouse_id="warehouse1",
             ),
         ]
 
@@ -160,28 +168,28 @@ class TestBatchPickSequenceService:
         result = service._transform_updates_to_api_format(updates)
 
         # Assert
-        assert "PickTasks" in result[0]
-        assert len(result[0]["PickTasks"]) == 1
+        assert hasattr(result[0], 'PickTasks')
+        assert len(result[0].PickTasks) == 1
         # Both updates have same batch_id
 
-        pick_task = result[0]["PickTasks"][0]
-        assert pick_task["UserAssigned"] == "BOB"
-        assert pick_task["Batch"] == "BOBSBATCH"
-        assert "AdditionalProperties" in pick_task
-        assert len(pick_task["PickLists"]) == 2
+        pick_task = result[0].PickTasks[0]
+        assert pick_task.UserAssigned == "BOB"
+        assert pick_task.Batch == "BOBSBATCH"
+        assert hasattr(pick_task, 'AdditionalProperties')
+        assert len(pick_task.PickLists) == 2
 
         # Check that the pick lists contain the correct data
-        pick_lists = pick_task["PickLists"]
+        pick_lists = pick_task.PickLists
         assert any(
-            pl["PickListId"] == "01JP45RZ36HTQFMH048DZD5F95"
-            and pl["Sequence"] == 222
-            and pl["Test"] == "PF03"
+            pl.PickListId == "01JP45RZ36HTQFMH048DZD5F95"
+            and pl.Sequence == 222
+            and pl.Test == "PF03"
             for pl in pick_lists
         )
         assert any(
-            pl["PickListId"] == "01JP3WXZ33ENQHYAJC6S8R9YKP"
-            and pl["Sequence"] == 3333
-            and pl["Test"] == "PF03"
+            pl.PickListId == "01JP3WXZ33ENQHYAJC6S8R9YKP"
+            and pl.Sequence == 3333
+            and pl.Test == "PF03"
             for pl in pick_lists
         )
 
@@ -197,20 +205,29 @@ class TestBatchPickSequenceService:
                 picklist_id="01JP45RZ36HTQFMH048DZD5F95",
                 batch_id="BOBSBATCH",
                 pick_sequence=222,
+                picktask_id="TASK123",
                 account_id="account1",
                 business_unit_id="business1",
                 warehouse_id="warehouse1",
             )
         ]
 
-        # Mock the transform method to return a list of payloads
+        # Mock the transform method to return a list of ApiPayload objects
+        from forestfire.database.services.picksequencemodel import ApiPayload, PickTaskPayload
+
         mock_api_data = [
-            {
-                "AccountId": "account1",
-                "BusinessunitId": "business1",
-                "WarehouseId": "warehouse1",
-                "PickTasks": [{"TaskId": "test", "Batch": "BOBSBATCH"}],
-            }
+            ApiPayload(
+                AccountId="account1",
+                BusinessunitId="business1",
+                WarehouseId="warehouse1",
+                PickTasks=[
+                    PickTaskPayload(
+                        TaskId="test",
+                        Batch="BOBSBATCH",
+                        PickLists=[]
+                    )
+                ]
+            )
         ]
         mock_transform.return_value = mock_api_data
 
@@ -228,7 +245,7 @@ class TestBatchPickSequenceService:
 
         # Check that the API was called with the correct data
         call_kwargs = mock_put.call_args.kwargs
-        assert call_kwargs["json"] == mock_api_data[0]  # First item in the list
+        assert call_kwargs["json"] == mock_api_data[0].model_dump()  # First item in the list, converted to dict
         assert "Authorization" in call_kwargs["headers"]
         assert call_kwargs["headers"]["Content-Type"] == "application/json"
         assert call_kwargs["headers"]["App-User-Id"] == "Forestfire"

@@ -139,8 +139,8 @@ class TestMain:
             # We'd need a more complex setup with AsyncMock in Python 3.8+
             # This is simplified for the test
 
-    @patch("main.logging")
-    def test_main_script_execution(self, mock_logging):
+    @patch("main.logger")
+    def test_main_script_execution(self, mock_logger):
         """Test the main script execution with exception handling."""
         # This test simulates the error handling in the main script's
         # if __name__ == '__main__' block
