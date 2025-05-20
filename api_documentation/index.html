@@ -572,6 +572,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#testing-api-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Testing API Integration
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#future-improvements" class="md-nav__link">
     <span class="md-ellipsis">
       Future Improvements
@@ -632,6 +641,50 @@
   
   <span class="md-ellipsis">
     ORM
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing_libraries/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Testing Libraries
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bdd_testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    BDD Testing
     
   </span>
   
@@ -894,6 +947,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#testing-api-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Testing API Integration
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#future-improvements" class="md-nav__link">
     <span class="md-ellipsis">
       Future Improvements
@@ -1026,7 +1088,7 @@
 </ul>
 <h2 id="api-endpoint-details">API Endpoint Details</h2>
 <h3 id="batch-assign-api">Batch Assign API</h3>
-<p><strong>Endpoint</strong>: <code>https://picking-example.com/picking/task/batchassign</code></p>
+<p><strong>Endpoint</strong>: <code>https://picking-example.com/2025-18/api/picking/task/batchassign</code></p>
 <p><strong>Method</strong>: PUT</p>
 <p><strong>Purpose</strong>: Updates pick sequences for batches in the warehouse management system</p>
 <p><strong>Authentication</strong>: Bearer token authentication</p>
@@ -1101,6 +1163,32 @@ except Exception as e:
 <pre><code class="language-python">logger.info(&quot;Sending API request with payload: %s&quot;, payload.model_dump())
 response = await client.put(...)
 logger.info(&quot;API response status: %s&quot;, response.status_code)
+</code></pre>
+<h2 id="testing-api-integration">Testing API Integration</h2>
+<p>The ForestFire project includes tests for API integration using mocking:</p>
+<pre><code class="language-python">@pytest.mark.asyncio
+async def test_send_sequence_update(self):
+    # Arrange
+    service = BatchPickSequenceService()
+    updates = [MagicMock()]
+    mock_api_data = [{&quot;key&quot;: &quot;value&quot;}]
+
+    # Mock the transform method
+    with patch.object(service, &quot;transform_updates_to_api_payload&quot;) as mock_transform, \
+         patch(&quot;httpx.AsyncClient.put&quot;) as mock_put:
+        mock_transform.return_value = mock_api_data
+
+        # Mock the httpx response
+        mock_response = MagicMock()
+        mock_response.raise_for_status = MagicMock()
+        mock_put.return_value = mock_response
+
+        # Act
+        await service.send_sequence_update(updates)
+
+        # Assert
+        mock_transform.assert_called_once_with(updates)
+        mock_put.assert_called_once()
 </code></pre>
 <h2 id="future-improvements">Future Improvements</h2>
 <ol>
