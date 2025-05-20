@@ -381,51 +381,6 @@
       
   
   
-    
-  
-  
-  
-    
-    
-    
-    
-      
-        
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
-        
-          
-          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
-            
-  
-  
-  <span class="md-ellipsis">
-    Testing
-    
-  </span>
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_7">
-            <span class="md-nav__icon md-icon"></span>
-            Testing
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
   
   
     <li class="md-nav__item">
@@ -443,10 +398,9 @@
     </li>
   
 
-              
-            
-              
-                
+    
+      
+      
   
   
     
@@ -628,15 +582,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#best-practices" class="md-nav__link">
-    <span class="md-ellipsis">
-      Best Practices
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#extending-the-test-suite" class="md-nav__link">
     <span class="md-ellipsis">
       Extending the Test Suite
@@ -648,14 +593,6 @@
     </ul>
   
 </nav>
-      
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
       
     </li>
   
@@ -836,15 +773,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#best-practices" class="md-nav__link">
-    <span class="md-ellipsis">
-      Best Practices
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#extending-the-test-suite" class="md-nav__link">
     <span class="md-ellipsis">
       Extending the Test Suite
@@ -884,7 +812,6 @@
 <li><a href="#implementing-step-definitions">Implementing Step Definitions</a></li>
 <li><a href="#environment-setup">Environment Setup</a></li>
 <li><a href="#running-bdd-tests">Running BDD Tests</a></li>
-<li><a href="#best-practices">Best Practices</a></li>
 <li><a href="#extending-the-test-suite">Extending the Test Suite</a></li>
 </ol>
 <h2 id="introduction-to-bdd">Introduction to BDD</h2>
@@ -1032,17 +959,6 @@ behave -v
 # Generate JUnit report
 behave --junit
 </code></pre>
-<h2 id="best-practices">Best Practices</h2>
-<p>When writing BDD tests for the ForestFire project, follow these best practices:</p>
-<ol>
-<li><strong>Focus on business value</strong>: Write scenarios that demonstrate business value, not implementation details</li>
-<li><strong>Use domain language</strong>: Use terminology that business stakeholders understand</li>
-<li><strong>Keep scenarios independent</strong>: Each scenario should be able to run independently</li>
-<li><strong>Use background for common setup</strong>: Move common setup steps to the Background section</li>
-<li><strong>Mock external dependencies</strong>: Use mocks for external systems like APIs</li>
-<li><strong>Validate critical assertions</strong>: Ensure that each scenario validates the most important outcomes</li>
-<li><strong>Keep scenarios concise</strong>: Focus on one specific behavior per scenario</li>
-</ol>
 <h2 id="extending-the-test-suite">Extending the Test Suite</h2>
 <p>To add new BDD tests to the ForestFire project:</p>
 <ol>
@@ -1064,8 +980,6 @@ behave --junit
   And the solution quality should be improved
 </code></pre>
 <p>Then implement the new step definitions in <code>warehouse_optimization_steps.py</code>.</p>
-<hr />
-<p>This documentation provides a comprehensive guide to the BDD testing approach in the ForestFire project. For more information on BDD and Behave, refer to the <a href="https://behave.readthedocs.io/">Behave documentation</a>.</p>
 
 
 
