@@ -12,7 +12,7 @@
         <link rel="prev" href="../orm_guide/">
       
       
-        <link rel="next" href="../mkdocs/">
+        <link rel="next" href="../bdd_testing/">
       
       
       <link rel="icon" href="../assets/images/favicon.png">
@@ -20,7 +20,7 @@
     
     
       
-        <title>Testing - Forestfire</title>
+        <title>Testing Libraries - Forestfire</title>
       
     
     
@@ -107,7 +107,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Testing
+              Testing Libraries
             
           </span>
         </div>
@@ -398,7 +398,7 @@
   
   
   <span class="md-ellipsis">
-    Testing
+    Testing Libraries
     
   </span>
   
@@ -411,7 +411,7 @@
   
   
   <span class="md-ellipsis">
-    Testing
+    Testing Libraries
     
   </span>
   
@@ -594,13 +594,13 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-pytest-asyncio" class="md-nav__link">
+  <a href="#1-behave-bdd-framework" class="md-nav__link">
     <span class="md-ellipsis">
-      1. pytest-asyncio
+      1. Behave (BDD Framework)
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="1. pytest-asyncio">
+    <nav class="md-nav" aria-label="1. Behave (BDD Framework)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -627,17 +627,50 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-numpytesting" class="md-nav__link">
+  <a href="#2-pytest-asyncio" class="md-nav__link">
     <span class="md-ellipsis">
-      2. numpy.testing
+      2. pytest-asyncio
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="2. numpy.testing">
+    <nav class="md-nav" aria-label="2. pytest-asyncio">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#key-features_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      Key Features
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#usage-example_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Usage Example
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-numpytesting" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. numpy.testing
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. numpy.testing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-features_5" class="md-nav__link">
     <span class="md-ellipsis">
       Key Features
     </span>
@@ -680,6 +713,30 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Best Practices">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#general-testing-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      General Testing Practices
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bdd-specific-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      BDD-Specific Practices
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -688,6 +745,30 @@
       Running Tests
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Running Tests">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#unit-and-integration-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      Unit and Integration Tests
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bdd-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      BDD Tests
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -704,6 +785,28 @@
   
 </nav>
       
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bdd_testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    BDD Testing
+    
+  </span>
+  
+
+      </a>
     </li>
   
 
@@ -917,13 +1020,13 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-pytest-asyncio" class="md-nav__link">
+  <a href="#1-behave-bdd-framework" class="md-nav__link">
     <span class="md-ellipsis">
-      1. pytest-asyncio
+      1. Behave (BDD Framework)
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="1. pytest-asyncio">
+    <nav class="md-nav" aria-label="1. Behave (BDD Framework)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -950,17 +1053,50 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-numpytesting" class="md-nav__link">
+  <a href="#2-pytest-asyncio" class="md-nav__link">
     <span class="md-ellipsis">
-      2. numpy.testing
+      2. pytest-asyncio
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="2. numpy.testing">
+    <nav class="md-nav" aria-label="2. pytest-asyncio">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#key-features_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      Key Features
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#usage-example_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Usage Example
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-numpytesting" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. numpy.testing
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. numpy.testing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-features_5" class="md-nav__link">
     <span class="md-ellipsis">
       Key Features
     </span>
@@ -1003,6 +1139,30 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Best Practices">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#general-testing-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      General Testing Practices
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bdd-specific-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      BDD-Specific Practices
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1011,6 +1171,30 @@
       Running Tests
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Running Tests">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#unit-and-integration-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      Unit and Integration Tests
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bdd-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      BDD Tests
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1127,15 +1311,41 @@ def test_function(mock_picklist_repo):
 <li><strong>Coverage</strong>: Test error conditions that are difficult to trigger naturally</li>
 </ul>
 <h2 id="additional-testing-tools">Additional Testing Tools</h2>
-<h3 id="1-pytest-asyncio">1. pytest-asyncio</h3>
-<p><strong>pytest-asyncio</strong> is a pytest plugin for testing asynchronous code, used in our project for testing async functions.</p>
+<h3 id="1-behave-bdd-framework">1. Behave (BDD Framework)</h3>
+<p><strong>Behave</strong> is a Behavior-Driven Development (BDD) framework that we use for end-to-end integration testing. It allows us to write tests in a natural language format that can be understood by both technical and non-technical stakeholders.</p>
 <h4 id="key-features_3">Key Features</h4>
+<ul>
+<li><strong>Gherkin syntax</strong>: Write tests in a human-readable format</li>
+<li><strong>Feature files</strong>: Describe system behavior from the user's perspective</li>
+<li><strong>Step definitions</strong>: Implement test logic in Python</li>
+<li><strong>Context sharing</strong>: Share data between test steps</li>
+<li><strong>Hooks</strong>: Set up and tear down test environments</li>
+</ul>
+<h4 id="usage-example_1">Usage Example</h4>
+<pre><code class="language-gherkin"># Feature file (warehouse_optimization.feature)
+Feature: Warehouse Order Picking Optimization
+
+  Scenario: Complete optimization workflow
+    Given the warehouse data is loaded from the database
+    When the optimization process is executed
+    Then the best solution should be valid and optimized
+</code></pre>
+<pre><code class="language-python"># Step definition
+@given(&quot;the warehouse data is loaded from the database&quot;)
+def step_given_warehouse_data(context):
+    context.picklist_repo = PicklistRepository()
+    # Load data...
+</code></pre>
+<p>For more details, see the <a href="../bdd_testing/">BDD Testing Guide</a>.</p>
+<h3 id="2-pytest-asyncio">2. pytest-asyncio</h3>
+<p><strong>pytest-asyncio</strong> is a pytest plugin for testing asynchronous code, used in our project for testing async functions.</p>
+<h4 id="key-features_4">Key Features</h4>
 <ul>
 <li><strong>Async fixtures</strong>: Create async setup and teardown functions</li>
 <li><strong>Async test functions</strong>: Write tests as async functions</li>
 <li><strong>Event loop management</strong>: Properly handles event loops for testing</li>
 </ul>
-<h4 id="usage-example_1">Usage Example</h4>
+<h4 id="usage-example_2">Usage Example</h4>
 <pre><code class="language-python">import pytest
 
 @pytest.mark.asyncio
@@ -1143,9 +1353,9 @@ async def test_async_function():
     result = await some_async_function()
     assert result == expected_value
 </code></pre>
-<h3 id="2-numpytesting">2. numpy.testing</h3>
+<h3 id="3-numpytesting">3. numpy.testing</h3>
 <p><strong>numpy.testing</strong> provides specialized assertions for numerical operations, which we use for testing mathematical components.</p>
-<h4 id="key-features_4">Key Features</h4>
+<h4 id="key-features_5">Key Features</h4>
 <ul>
 <li><strong>Array comparisons</strong>: Compare arrays with appropriate tolerances</li>
 <li><strong>Approximate equality</strong>: Test floating-point values with tolerance</li>
@@ -1181,6 +1391,7 @@ def sample_orders_assign():
     ]
 </code></pre>
 <h2 id="best-practices">Best Practices</h2>
+<h3 id="general-testing-practices">General Testing Practices</h3>
 <ol>
 <li><strong>High coverage</strong>: We aim for &gt;90% test coverage</li>
 <li><strong>Isolated tests</strong>: Tests should not depend on each other</li>
@@ -1188,8 +1399,17 @@ def sample_orders_assign():
 <li><strong>Clear assertions</strong>: Each test should have clear assertions</li>
 <li><strong>Descriptive names</strong>: Test names should describe what they're testing</li>
 </ol>
+<h3 id="bdd-specific-practices">BDD-Specific Practices</h3>
+<ol>
+<li><strong>Business language</strong>: Write scenarios in language that stakeholders understand</li>
+<li><strong>Focus on behavior</strong>: Describe what the system should do, not how it does it</li>
+<li><strong>One behavior per scenario</strong>: Each scenario should test one specific behavior</li>
+<li><strong>Independent scenarios</strong>: Scenarios should be able to run independently</li>
+<li><strong>Consistent terminology</strong>: Use consistent terminology across feature files</li>
+</ol>
 <h2 id="running-tests">Running Tests</h2>
-<p>To run the test suite:</p>
+<h3 id="unit-and-integration-tests">Unit and Integration Tests</h3>
+<p>To run the pytest test suite:</p>
 <pre><code class="language-bash">python -m pytest
 </code></pre>
 <p>To check test coverage:</p>
@@ -1198,8 +1418,21 @@ def sample_orders_assign():
 <p>To generate an HTML coverage report:</p>
 <pre><code class="language-bash">python -m pytest --cov=forestfire --cov-report=html
 </code></pre>
+<h3 id="bdd-tests">BDD Tests</h3>
+<p>To run all BDD tests:</p>
+<pre><code class="language-bash">behave
+</code></pre>
+<p>To run a specific feature file:</p>
+<pre><code class="language-bash">behave features/warehouse_optimization.feature
+</code></pre>
+<p>To run a specific scenario by name:</p>
+<pre><code class="language-bash">behave -n &quot;Complete optimization workflow with API integration&quot;
+</code></pre>
+<p>To generate a JUnit report for BDD tests:</p>
+<pre><code class="language-bash">behave --junit
+</code></pre>
 <h2 id="conclusion">Conclusion</h2>
-<p>Our testing approach combines the simplicity and power of pytest with specialized tools for coverage analysis and mocking. This comprehensive testing strategy ensures our code is reliable, maintainable, and performs as expected.</p>
+<p>Our testing approach combines the simplicity and power of pytest for unit and integration testing with the expressiveness of Behave for BDD-style end-to-end testing. This multi-layered testing strategy, enhanced with specialized tools for coverage analysis and mocking, ensures our code is reliable, maintainable, and performs as expected across all levels of the application.</p>
 
 
 
