@@ -168,14 +168,14 @@ class TestBatchPickSequenceService:
         result = service._transform_updates_to_api_format(updates)
 
         # Assert
-        assert hasattr(result[0], 'PickTasks')
+        assert hasattr(result[0], "PickTasks")
         assert len(result[0].PickTasks) == 1
         # Both updates have same batch_id
 
         pick_task = result[0].PickTasks[0]
         assert pick_task.UserAssigned == "BOB"
         assert pick_task.Batch == "BOBSBATCH"
-        assert hasattr(pick_task, 'AdditionalProperties')
+        assert hasattr(pick_task, "AdditionalProperties")
         assert len(pick_task.PickLists) == 2
 
         # Check that the pick lists contain the correct data
@@ -213,7 +213,10 @@ class TestBatchPickSequenceService:
         ]
 
         # Mock the transform method to return a list of ApiPayload objects
-        from forestfire.database.services.picksequencemodel import ApiPayload, PickTaskPayload
+        from forestfire.database.services.picksequencemodel import (
+            ApiPayload,
+            PickTaskPayload,
+        )
 
         mock_api_data = [
             ApiPayload(
@@ -222,11 +225,9 @@ class TestBatchPickSequenceService:
                 WarehouseId="warehouse1",
                 PickTasks=[
                     PickTaskPayload(
-                        TaskId="test",
-                        Batch="BOBSBATCH",
-                        PickLists=[]
+                        TaskId="test", Batch="BOBSBATCH", PickLists=[]
                     )
-                ]
+                ],
             )
         ]
         mock_transform.return_value = mock_api_data
@@ -245,7 +246,9 @@ class TestBatchPickSequenceService:
 
         # Check that the API was called with the correct data
         call_kwargs = mock_put.call_args.kwargs
-        assert call_kwargs["json"] == mock_api_data[0].model_dump()  # First item in the list, converted to dict
+        assert (
+            call_kwargs["json"] == mock_api_data[0].model_dump()
+        )  # First item in the list, converted to dict
         assert "Authorization" in call_kwargs["headers"]
         assert call_kwargs["headers"]["Content-Type"] == "application/json"
         assert call_kwargs["headers"]["App-User-Id"] == "Forestfire"

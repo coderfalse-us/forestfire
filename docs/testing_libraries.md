@@ -107,7 +107,41 @@ def test_function(mock_picklist_repo):
 
 ## Additional Testing Tools
 
-### 1. pytest-asyncio
+### 1. Behave (BDD Framework)
+
+**Behave** is a Behavior-Driven Development (BDD) framework that we use for end-to-end integration testing. It allows us to write tests in a natural language format that can be understood by both technical and non-technical stakeholders.
+
+#### Key Features
+
+- **Gherkin syntax**: Write tests in a human-readable format
+- **Feature files**: Describe system behavior from the user's perspective
+- **Step definitions**: Implement test logic in Python
+- **Context sharing**: Share data between test steps
+- **Hooks**: Set up and tear down test environments
+
+#### Usage Example
+
+```gherkin
+# Feature file (warehouse_optimization.feature)
+Feature: Warehouse Order Picking Optimization
+
+  Scenario: Complete optimization workflow
+    Given the warehouse data is loaded from the database
+    When the optimization process is executed
+    Then the best solution should be valid and optimized
+```
+
+```python
+# Step definition
+@given("the warehouse data is loaded from the database")
+def step_given_warehouse_data(context):
+    context.picklist_repo = PicklistRepository()
+    # Load data...
+```
+
+For more details, see the [BDD Testing Guide](bdd_testing.md).
+
+### 2. pytest-asyncio
 
 **pytest-asyncio** is a pytest plugin for testing asynchronous code, used in our project for testing async functions.
 
@@ -128,7 +162,7 @@ async def test_async_function():
     assert result == expected_value
 ```
 
-### 2. numpy.testing
+### 3. numpy.testing
 
 **numpy.testing** provides specialized assertions for numerical operations, which we use for testing mathematical components.
 
@@ -174,15 +208,27 @@ def sample_orders_assign():
 
 ## Best Practices
 
+### General Testing Practices
+
 1. **High coverage**: We aim for >90% test coverage
 2. **Isolated tests**: Tests should not depend on each other
 3. **Fast execution**: Tests should run quickly
 4. **Clear assertions**: Each test should have clear assertions
 5. **Descriptive names**: Test names should describe what they're testing
 
+### BDD-Specific Practices
+
+1. **Business language**: Write scenarios in language that stakeholders understand
+2. **Focus on behavior**: Describe what the system should do, not how it does it
+3. **One behavior per scenario**: Each scenario should test one specific behavior
+4. **Independent scenarios**: Scenarios should be able to run independently
+5. **Consistent terminology**: Use consistent terminology across feature files
+
 ## Running Tests
 
-To run the test suite:
+### Unit and Integration Tests
+
+To run the pytest test suite:
 
 ```bash
 python -m pytest
@@ -200,6 +246,32 @@ To generate an HTML coverage report:
 python -m pytest --cov=forestfire --cov-report=html
 ```
 
+### BDD Tests
+
+To run all BDD tests:
+
+```bash
+behave
+```
+
+To run a specific feature file:
+
+```bash
+behave features/warehouse_optimization.feature
+```
+
+To run a specific scenario by name:
+
+```bash
+behave -n "Complete optimization workflow with API integration"
+```
+
+To generate a JUnit report for BDD tests:
+
+```bash
+behave --junit
+```
+
 ## Conclusion
 
-Our testing approach combines the simplicity and power of pytest with specialized tools for coverage analysis and mocking. This comprehensive testing strategy ensures our code is reliable, maintainable, and performs as expected.
+Our testing approach combines the simplicity and power of pytest for unit and integration testing with the expressiveness of Behave for BDD-style end-to-end testing. This multi-layered testing strategy, enhanced with specialized tools for coverage analysis and mocking, ensures our code is reliable, maintainable, and performs as expected across all levels of the application.

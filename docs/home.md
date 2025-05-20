@@ -49,6 +49,7 @@ The system minimizes total distance traveled by pickers in a warehouse by select
    - `psycopg2`: For PostgreSQL database connectivity
    - `pytest`: For running unit tests
    - `pytest-cov`: For measuring test coverage
+   - `behave`: For Behavior-Driven Development testing
 
 3. **Database configuration**:
    Update the PostgreSQL connection details in `forestfire/database/config.py`:
@@ -62,7 +63,11 @@ The system minimizes total distance traveled by pickers in a warehouse by select
 
 4. **Run tests**:
    ```bash
+   # Run unit and integration tests
    python -m pytest
+
+   # Run BDD tests
+   behave
    ```
 
    To check test coverage:
@@ -134,15 +139,21 @@ The system minimizes total distance traveled by pickers in a warehouse by select
      - `config.py`: Global configuration parameters
 
 2. **`tests/`**:
-   Comprehensive test suite with >90% coverage.
+   Comprehensive unit and integration test suite with >90% coverage.
 
-3. **`main.py`**:
+3. **`features/`**:
+   BDD tests using Behave framework for end-to-end testing.
+   - `warehouse_optimization.feature`: Feature file with BDD scenarios
+   - `steps/`: Step definitions for BDD tests
+   - `environment.py`: Test environment setup for BDD
+
+4. **`main.py`**:
    Entry point that orchestrates the optimization process.
 
-4. **`requirements.txt`**:
+5. **`requirements.txt`**:
    List of dependencies used in the project.
 
-5. **`README.md`**:
+6. **`README.md`**:
    Documentation (this file).
 
 ### Key Classes and Functions
@@ -226,9 +237,10 @@ The system minimizes total distance traveled by pickers in a warehouse by select
 ## Recent Improvements
 
 1. **Code Architecture:** Refactored to follow clean architecture principles with proper separation of concerns.
-2. **Test Coverage:** Achieved >90% test coverage with comprehensive unit tests.
+2. **Test Coverage:** Achieved >90% test coverage with comprehensive unit tests and BDD integration tests.
 3. **Code Quality:** Implemented Google style guide for consistent code formatting.
 4. **Database Access:** Implemented repository pattern with read-only database sessions to prevent accidental data insertion.
+5. **BDD Testing:** Implemented Behavior-Driven Development for end-to-end integration testing.
 
 ## Future Work
 
@@ -252,7 +264,14 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Make your changes and ensure tests pass (`python -m pytest`)
+3. Make your changes and ensure all tests pass:
+   ```bash
+   # Run unit and integration tests
+   python -m pytest
+
+   # Run BDD tests
+   behave
+   ```
 4. Commit your changes (`git commit -m 'Add some amazing feature'`)
 5. Push to the branch (`git push origin feature/amazing-feature`)
 6. Open a Pull Request

@@ -5,7 +5,7 @@ managing database connections in the warehouse order picking system.
 """
 
 import pytest
-from unittest.mock import patch, MagicMock, PropertyMock
+from unittest.mock import patch, MagicMock
 import psycopg2
 from forestfire.database.connection import DatabaseConnectionManager
 from forestfire.database.exceptions import DBConnectionError
@@ -26,7 +26,7 @@ class TestDatabaseConnectionManager:
 
     @patch("psycopg2.connect")
     def test_get_connection_creates_new_connection(self, mock_connect):
-        """Test that get_connection creates a new connection when none exists."""
+        """Test that get_connection creates a new connection when none exists"""
         # Arrange
         mock_conn = MagicMock()
         mock_connect.return_value = mock_conn
@@ -56,11 +56,12 @@ class TestDatabaseConnectionManager:
         with DatabaseConnectionManager.get_connection() as conn:
             # Assert
             assert conn is mock_conn
-            mock_connect.assert_not_called()  # Should not create a new connection
+            mock_connect.assert_not_called()  # Should not create new connection
 
     @patch("psycopg2.connect")
     def test_get_connection_creates_new_when_closed(self, mock_connect):
-        """Test that get_connection creates a new connection when the existing one is closed."""
+        """Test that get_connection creates a new
+        connection when the existing one is closed"""
         # Arrange
         mock_conn1 = MagicMock()
         mock_conn1.closed = False
@@ -81,11 +82,14 @@ class TestDatabaseConnectionManager:
         with DatabaseConnectionManager.get_connection() as conn:
             # Assert
             assert conn is mock_conn2
-            assert mock_connect.call_count == 2  # Should create a new connection
+            assert (
+                mock_connect.call_count == 2
+            )  # Should create a new connection
 
     @patch("psycopg2.connect")
     def test_connection_is_closed_after_context(self, mock_connect):
-        """Test that the connection is closed after exiting the context manager."""
+        """Test that the connection is closed
+        after exiting the context manager."""
         # Arrange
         mock_conn = MagicMock()
         mock_conn.closed = False
@@ -113,7 +117,8 @@ class TestDatabaseConnectionManager:
 
     @patch("psycopg2.connect")
     def test_exception_in_context_closes_connection(self, mock_connect):
-        """Test that the connection is closed even if an exception occurs in the context."""
+        """Test that the connection is closed even
+        if an exception occurs in the context."""
         # Arrange
         mock_conn = MagicMock()
         mock_conn.closed = False
@@ -129,7 +134,8 @@ class TestDatabaseConnectionManager:
 
     @patch("psycopg2.connect")
     def test_connection_with_config_parameters(self, mock_connect):
-        """Test that connection is created with the correct config parameters."""
+        """Test that connection is created with
+        the correct config parameters."""
         # Arrange
         mock_conn = MagicMock()
         mock_connect.return_value = mock_conn
@@ -143,11 +149,11 @@ class TestDatabaseConnectionManager:
         mock_config.password = "test_password"
 
         # Save the original config
-        original_config = DatabaseConnectionManager._config
+        original_config = DatabaseConnectionManager.get_config()
 
         try:
             # Replace the config with our mock
-            DatabaseConnectionManager._config = mock_config
+            DatabaseConnectionManager.set_config(mock_config)
 
             # Reset any existing connection
             DatabaseConnectionManager._connection = None
@@ -166,11 +172,12 @@ class TestDatabaseConnectionManager:
             )
         finally:
             # Restore the original config
-            DatabaseConnectionManager._config = original_config
+            DatabaseConnectionManager.set_config(original_config)
 
     @patch("psycopg2.connect")
     def test_connection_not_closed_if_already_closed(self, mock_connect):
-        """Test that the connection is not closed again if it's already closed."""
+        """Test that the connection is not closed
+        again if it's already closed."""
         # Arrange
         mock_conn = MagicMock()
         mock_connect.return_value = mock_conn
@@ -189,5 +196,6 @@ class TestDatabaseConnectionManager:
         with DatabaseConnectionManager.get_connection():
             pass
 
-        # Assert - since we're creating a new connection, the old one shouldn't be closed again
+        # Assert - since we're creating a new connection,
+        # the old one shouldn't be closed again
         mock_conn.close.assert_not_called()

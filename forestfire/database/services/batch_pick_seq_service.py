@@ -30,8 +30,8 @@ class BatchPickSequenceService:
             "2025-18/api/picking/task/batchassign"
         )
         self.api_key = (
-            "ufyVgC4ELgqnwnKjGzxzbTRGCdFDWn6pDdu5oDMhYcGWqivSLbZm"
-            "GwJ24ZI0Rs4llTIwP23s6fATUw_pS3d-JufeRrBhHevgwitQaOnV"
+            "1UZd-w7BTZ4b1EEaQv0e37AmRq3ZLN9tZboeYgs7jT0-CXmTHyS"
+            "7Ke90QfAJrd_7APcbyq8PfB93Gy_5csuCpDkwl8CHGz_n3Pf8p7NV"
         )
 
     def _transform_updates_to_api_format(
