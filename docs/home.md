@@ -39,17 +39,31 @@ The system minimizes total distance traveled by pickers in a warehouse by select
    ```
 
 2. **Install dependencies**:
-   Install required Python libraries using pip:
+   We use uv, a fast Python package installer and resolver, for dependency management:
+   ```bash
+   # Install uv if you don't have it
+   pip install uv
+
+   # Create and activate a virtual environment
+   uv venv
+
+   # Install dependencies using uv
+   uv pip install -e .
+   ```
+
+   Alternatively, you can use pip:
    ```bash
    pip install -r requirements.txt
    ```
-   Required libraries:
+
+   Key dependencies:
    - `numpy`: For efficient array operations and calculations
    - `matplotlib`: For visualizing picker assignments and routing paths
    - `psycopg2`: For PostgreSQL database connectivity
    - `pytest`: For running unit tests
    - `pytest-cov`: For measuring test coverage
    - `behave`: For Behavior-Driven Development testing
+   - `pydantic`: For data validation and settings management
 
 3. **Database configuration**:
    Update the PostgreSQL connection details in `forestfire/database/config.py`:
@@ -62,17 +76,28 @@ The system minimizes total distance traveled by pickers in a warehouse by select
    ```
 
 4. **Run tests**:
+   Using uv (recommended):
+   ```bash
+   # Run unit and integration tests
+   uv run pytest
+
+   # Run BDD tests
+   uv run behave
+
+   # Check test coverage
+   uv run pytest --cov=forestfire --cov-report=html
+   ```
+
+   Alternatively, using python directly:
    ```bash
    # Run unit and integration tests
    python -m pytest
 
    # Run BDD tests
    behave
-   ```
 
-   To check test coverage:
-   ```bash
-   python -m pytest --cov=forestfire
+   # Check test coverage
+   python -m pytest --cov=forestfire --cov-report=html
    ```
 
 ---
@@ -178,7 +203,12 @@ The system minimizes total distance traveled by pickers in a warehouse by select
 ## Usage
 
 1. **Run the Optimization**:
-   Execute the main script via terminal:
+   Execute the main script via terminal using uv (recommended):
+   ```bash
+   uv run python main.py
+   ```
+
+   Alternatively, using python directly:
    ```bash
    python main.py
    ```
@@ -238,9 +268,12 @@ The system minimizes total distance traveled by pickers in a warehouse by select
 
 1. **Code Architecture:** Refactored to follow clean architecture principles with proper separation of concerns.
 2. **Test Coverage:** Achieved >90% test coverage with comprehensive unit tests and BDD integration tests.
-3. **Code Quality:** Implemented Google style guide for consistent code formatting.
+3. **Code Quality:** Implemented Google style guide for consistent code formatting with Ruff linter.
 4. **Database Access:** Implemented repository pattern with read-only database sessions to prevent accidental data insertion.
 5. **BDD Testing:** Implemented Behavior-Driven Development for end-to-end integration testing.
+6. **Modern Dependency Management:** Adopted uv for faster and more reliable package management.
+7. **Type Safety:** Added Pydantic models for data validation and settings management.
+8. **Documentation:** Enhanced project documentation with MkDocs and Material theme.
 
 ## Future Work
 
@@ -266,10 +299,12 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 2. Create your feature branch (`git checkout -b feature/amazing-feature`)
 3. Make your changes and ensure all tests pass:
    ```bash
-   # Run unit and integration tests
-   python -m pytest
+   # Using uv (recommended)
+   uv run pytest
+   uv run behave
 
-   # Run BDD tests
+   # Or using python directly
+   python -m pytest
    behave
    ```
 4. Commit your changes (`git commit -m 'Add some amazing feature'`)
