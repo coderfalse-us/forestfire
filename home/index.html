@@ -564,9 +564,27 @@
   
   
   
-    <li class="md-nav__item">
-      <a href="../testing_libraries/" class="md-nav__link">
+    
+    
+    
+    
+      
         
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
   
   
   <span class="md-ellipsis">
@@ -575,17 +593,75 @@
   </span>
   
 
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Testing
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing_libraries/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Testing Libraries
+    
+  </span>
+  
+
       </a>
     </li>
+  
 
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bdd_testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    BDD Testing
+    
+  </span>
+  
 
+      </a>
+    </li>
+  
 
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
 
-
-
-
-
-
+    
+      
+      
+  
+  
+  
+  
     <li class="md-nav__item">
       <a href="../mkdocs/" class="md-nav__link">
         
@@ -833,8 +909,9 @@
 <li><code>matplotlib</code>: For visualizing picker assignments and routing paths</li>
 <li><code>psycopg2</code>: For PostgreSQL database connectivity</li>
 <li><code>pytest</code>: For running unit tests</li>
+<li><code>pytest-cov</code>: For measuring test coverage</li>
 <li>
-<p><code>pytest-cov</code>: For measuring test coverage</p>
+<p><code>behave</code>: For Behavior-Driven Development testing</p>
 </li>
 <li>
 <p><strong>Database configuration</strong>:
@@ -848,10 +925,14 @@
 </li>
 <li>
 <p><strong>Run tests</strong>:
-   <code>bash
-   python -m pytest</code></p>
+   ```bash
+   # Run unit and integration tests
+   python -m pytest</p>
 </li>
 </ol>
+<p># Run BDD tests
+   behave
+   ```</p>
 <p>To check test coverage:
    <code>bash
    python -m pytest --cov=forestfire</code></p>
@@ -948,7 +1029,16 @@
 </li>
 <li>
 <p><strong><code>tests/</code></strong>:
-   Comprehensive test suite with &gt;90% coverage.</p>
+   Comprehensive unit and integration test suite with &gt;90% coverage.</p>
+</li>
+<li>
+<p><strong><code>features/</code></strong>:
+   BDD tests using Behave framework for end-to-end testing.</p>
+</li>
+<li><code>warehouse_optimization.feature</code>: Feature file with BDD scenarios</li>
+<li><code>steps/</code>: Step definitions for BDD tests</li>
+<li>
+<p><code>environment.py</code>: Test environment setup for BDD</p>
 </li>
 <li>
 <p><strong><code>main.py</code></strong>:
@@ -1114,9 +1204,10 @@
 <h2 id="recent-improvements">Recent Improvements</h2>
 <ol>
 <li><strong>Code Architecture:</strong> Refactored to follow clean architecture principles with proper separation of concerns.</li>
-<li><strong>Test Coverage:</strong> Achieved &gt;90% test coverage with comprehensive unit tests.</li>
+<li><strong>Test Coverage:</strong> Achieved &gt;90% test coverage with comprehensive unit tests and BDD integration tests.</li>
 <li><strong>Code Quality:</strong> Implemented Google style guide for consistent code formatting.</li>
 <li><strong>Database Access:</strong> Implemented repository pattern with read-only database sessions to prevent accidental data insertion.</li>
+<li><strong>BDD Testing:</strong> Implemented Behavior-Driven Development for end-to-end integration testing.</li>
 </ol>
 <h2 id="future-work">Future Work</h2>
 <ol>
@@ -1135,11 +1226,17 @@
 <ol>
 <li>Fork the repository</li>
 <li>Create your feature branch (<code>git checkout -b feature/amazing-feature</code>)</li>
-<li>Make your changes and ensure tests pass (<code>python -m pytest</code>)</li>
-<li>Commit your changes (<code>git commit -m 'Add some amazing feature'</code>)</li>
-<li>Push to the branch (<code>git push origin feature/amazing-feature</code>)</li>
-<li>Open a Pull Request</li>
+<li>Make your changes and ensure all tests pass:
+   ```bash
+   # Run unit and integration tests
+   python -m pytest</li>
 </ol>
+<p># Run BDD tests
+   behave
+   <code>``
+4. Commit your changes (</code>git commit -m 'Add some amazing feature'<code>)
+5. Push to the branch (</code>git push origin feature/amazing-feature`)
+6. Open a Pull Request</p>
 <p>Happy Optimizing! 🚀🚢</p>
 
 
