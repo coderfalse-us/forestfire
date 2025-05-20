@@ -846,19 +846,29 @@
 </li>
 <li>
 <p><strong>Install dependencies</strong>:
-   Install required Python libraries using pip:
+   We use uv, a fast Python package installer and resolver, for dependency management:
+   ```bash
+   # Install uv if you don't have it
+   pip install uv</p>
+</li>
+</ol>
+<p># Create and activate a virtual environment
+   uv venv</p>
+<p># Install dependencies using uv
+   uv pip install -e .
+   ```</p>
+<p>Alternatively, you can use pip:
    <code>bash
-   pip install -r requirements.txt</code>
-   Required libraries:</p>
-</li>
-<li><code>numpy</code>: For efficient array operations and calculations</li>
-<li><code>matplotlib</code>: For visualizing picker assignments and routing paths</li>
-<li><code>psycopg2</code>: For PostgreSQL database connectivity</li>
-<li><code>pytest</code>: For running unit tests</li>
-<li><code>pytest-cov</code>: For measuring test coverage</li>
-<li>
-<p><code>behave</code>: For Behavior-Driven Development testing</p>
-</li>
+   pip install -r requirements.txt</code></p>
+<p>Key dependencies:
+   - <code>numpy</code>: For efficient array operations and calculations
+   - <code>matplotlib</code>: For visualizing picker assignments and routing paths
+   - <code>psycopg2</code>: For PostgreSQL database connectivity
+   - <code>pytest</code>: For running unit tests
+   - <code>pytest-cov</code>: For measuring test coverage
+   - <code>behave</code>: For Behavior-Driven Development testing
+   - <code>pydantic</code>: For data validation and settings management</p>
+<ol>
 <li>
 <p><strong>Database configuration</strong>:
    Update the PostgreSQL connection details in <code>forestfire/database/config.py</code>:
@@ -871,17 +881,26 @@
 </li>
 <li>
 <p><strong>Run tests</strong>:
+   Using uv (recommended):
    ```bash
    # Run unit and integration tests
-   python -m pytest</p>
+   uv run pytest</p>
 </li>
 </ol>
 <p># Run BDD tests
-   behave
+   uv run behave</p>
+<p># Check test coverage
+   uv run pytest --cov=forestfire --cov-report=html
    ```</p>
-<p>To check test coverage:
-   <code>bash
-   python -m pytest --cov=forestfire</code></p>
+<p>Alternatively, using python directly:
+   ```bash
+   # Run unit and integration tests
+   python -m pytest</p>
+<p># Run BDD tests
+   behave</p>
+<p># Check test coverage
+   python -m pytest --cov=forestfire --cov-report=html
+   ```</p>
 <hr />
 <h2 id="how-it-works">How It Works</h2>
 <ol>
@@ -1025,15 +1044,16 @@
 <hr />
 <h2 id="usage">Usage</h2>
 <ol>
-<li>
-<p><strong>Run the Optimization</strong>:
-   Execute the main script via terminal:
+<li><strong>Run the Optimization</strong>:
+   Execute the main script via terminal using uv (recommended):
+   <code>bash
+   uv run python main.py</code></li>
+</ol>
+<p>Alternatively, using python directly:
    <code>bash
    python main.py</code></p>
-</li>
-<li>
-<p><strong>View Outputs</strong>:</p>
-</li>
+<ol>
+<li><strong>View Outputs</strong>:</li>
 <li>Picker assignments for items</li>
 <li>Total distance traveled after optimization</li>
 <li>
@@ -1151,9 +1171,12 @@
 <ol>
 <li><strong>Code Architecture:</strong> Refactored to follow clean architecture principles with proper separation of concerns.</li>
 <li><strong>Test Coverage:</strong> Achieved &gt;90% test coverage with comprehensive unit tests and BDD integration tests.</li>
-<li><strong>Code Quality:</strong> Implemented Google style guide for consistent code formatting.</li>
+<li><strong>Code Quality:</strong> Implemented Google style guide for consistent code formatting with Ruff linter.</li>
 <li><strong>Database Access:</strong> Implemented repository pattern with read-only database sessions to prevent accidental data insertion.</li>
 <li><strong>BDD Testing:</strong> Implemented Behavior-Driven Development for end-to-end integration testing.</li>
+<li><strong>Modern Dependency Management:</strong> Adopted uv for faster and more reliable package management.</li>
+<li><strong>Type Safety:</strong> Added Pydantic models for data validation and settings management.</li>
+<li><strong>Documentation:</strong> Enhanced project documentation with MkDocs and Material theme.</li>
 </ol>
 <h2 id="future-work">Future Work</h2>
 <ol>
@@ -1174,10 +1197,12 @@
 <li>Create your feature branch (<code>git checkout -b feature/amazing-feature</code>)</li>
 <li>Make your changes and ensure all tests pass:
    ```bash
-   # Run unit and integration tests
-   python -m pytest</li>
+   # Using uv (recommended)
+   uv run pytest
+   uv run behave</li>
 </ol>
-<p># Run BDD tests
+<p># Or using python directly
+   python -m pytest
    behave
    <code>``
 4. Commit your changes (</code>git commit -m 'Add some amazing feature'<code>)
