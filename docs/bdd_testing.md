@@ -13,8 +13,7 @@ This document provides a comprehensive guide to the Behavior-Driven Development 
 5. [Implementing Step Definitions](#implementing-step-definitions)
 6. [Environment Setup](#environment-setup)
 7. [Running BDD Tests](#running-bdd-tests)
-8. [Best Practices](#best-practices)
-9. [Extending the Test Suite](#extending-the-test-suite)
+8. [Extending the Test Suite](#extending-the-test-suite)
 
 ## Introduction to BDD
 
@@ -187,18 +186,6 @@ behave -v
 behave --junit
 ```
 
-## Best Practices
-
-When writing BDD tests for the ForestFire project, follow these best practices:
-
-1. **Focus on business value**: Write scenarios that demonstrate business value, not implementation details
-2. **Use domain language**: Use terminology that business stakeholders understand
-3. **Keep scenarios independent**: Each scenario should be able to run independently
-4. **Use background for common setup**: Move common setup steps to the Background section
-5. **Mock external dependencies**: Use mocks for external systems like APIs
-6. **Validate critical assertions**: Ensure that each scenario validates the most important outcomes
-7. **Keep scenarios concise**: Focus on one specific behavior per scenario
-
 ## Extending the Test Suite
 
 To add new BDD tests to the ForestFire project:
@@ -225,6 +212,3 @@ Scenario: Optimization with custom algorithm parameters
 
 Then implement the new step definitions in `warehouse_optimization_steps.py`.
 
----
-
-This documentation provides a comprehensive guide to the BDD testing approach in the ForestFire project. For more information on BDD and Behave, refer to the [Behave documentation](https://behave.readthedocs.io/).
