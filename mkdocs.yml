@@ -22,7 +22,7 @@ theme:
       primary: deep-purple
       accent: pink
       toggle:
-        icon: material/brightness-3        
+        icon: material/brightness-3
         name: Switch to light mode
 nav:
   - Home: home.md
@@ -31,4 +31,6 @@ nav:
   - API: api_documentation.md
   - Logger: python_logging.md
   - ORM: orm_guide.md
+  - Testing Libraries: testing_libraries.md
+  - BDD Testing: bdd_testing.md
   - Mkdocs: mkdocs.md

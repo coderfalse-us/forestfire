@@ -22,6 +22,24 @@ class DatabaseConnectionManager:
     _connection = None
 
     @classmethod
+    def get_config(cls):
+        """Get the current database configuration.
+
+        Returns:
+            DatabaseConfig: The current database configuration
+        """
+        return cls._config
+
+    @classmethod
+    def set_config(cls, config):
+        """Set a new database configuration.
+
+        Args:
+            config: The new database configuration to use
+        """
+        cls._config = config
+
+    @classmethod
     @contextmanager
     def get_connection(
         cls,
