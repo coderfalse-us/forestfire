@@ -4,13 +4,28 @@ This module contains tests for the population initialization functions used in
 warehouse order picking optimization.
 """
 
-from main import initialize_population
+import pytest
+from forestfire.core.optimizer import WarehouseOptimizer
+from forestfire.utils.config import WarehouseConfig, WarehouseConfigManager
 
 
 class TestInitialization:
     """Test cases for the initialization functions."""
 
-    def test_initialize_population_size(self):
+    @pytest.fixture
+    def optimizer(self):
+        """Create optimizer instance with test configuration."""
+        config = WarehouseConfig(
+            num_pickers=3,
+            picker_capacities=[10, 10, 10],
+            picker_locations=[(0, 0), (10, 0), (20, 0)],
+            warehouse_name="TEST",
+        )
+        optimizer = WarehouseOptimizer()
+        optimizer.config = WarehouseConfigManager(config)
+        return optimizer
+
+    def test_initialize_population_size(self, optimizer):
         """Test initialize_population returns correct number of solutions."""
         # Arrange
         num_pickers = 3
@@ -18,7 +33,7 @@ class TestInitialization:
         picker_capacities = [10, 10, 10]
 
         # Act
-        population = initialize_population(
+        population = optimizer.initialize_population(
             num_pickers, orders_size, picker_capacities
         )
 
@@ -26,7 +41,7 @@ class TestInitialization:
         assert len(population) > 0
         assert all(len(assignment) == orders_size for assignment in population)
 
-    def test_initialize_population_picker_range(self):
+    def test_initialize_population_picker_range(self, optimizer):
         """Test that initialize_population assigns valid picker IDs."""
         # Arrange
         num_pickers = 3
@@ -34,7 +49,7 @@ class TestInitialization:
         picker_capacities = [10, 10, 10]
 
         # Act
-        population = initialize_population(
+        population = optimizer.initialize_population(
             num_pickers, orders_size, picker_capacities
         )
 
@@ -42,7 +57,7 @@ class TestInitialization:
         for assignment in population:
             assert all(0 <= picker_id < num_pickers for picker_id in assignment)
 
-    def test_initialize_population_valid_assignments(self):
+    def test_initialize_population_valid_assignments(self, optimizer):
         """Test that initialize_population respects capacity constraints."""
         # Arrange
         num_pickers = 3
@@ -50,7 +65,7 @@ class TestInitialization:
         picker_capacities = [5, 5, 5]
 
         # Act
-        population = initialize_population(
+        population = optimizer.initialize_population(
             num_pickers, orders_size, picker_capacities
         )
 
@@ -62,7 +77,7 @@ class TestInitialization:
                 for count, capacity in zip(picker_counts, picker_capacities)
             )
 
-    def test_initialize_population_random_choice(self):
+    def test_initialize_population_random_choice(self, optimizer):
         """Test that initialize_population uses random assignment."""
         # Arrange
         num_pickers = 3
@@ -70,10 +85,10 @@ class TestInitialization:
         picker_capacities = [10, 10, 10]
 
         # Act
-        population1 = initialize_population(
+        population1 = optimizer.initialize_population(
             num_pickers, orders_size, picker_capacities
         )
-        population2 = initialize_population(
+        population2 = optimizer.initialize_population(
             num_pickers, orders_size, picker_capacities
         )
 
@@ -84,7 +99,7 @@ class TestInitialization:
             for assignment1, assignment2 in zip(population1, population2)
         )
 
-    def test_initialize_population_with_limited_capacity(self):
+    def test_initialize_population_with_limited_capacity(self, optimizer):
         """Test initialize_population with limited picker capacity."""
         # Arrange
         num_pickers = 2
@@ -93,7 +108,7 @@ class TestInitialization:
         picker_capacities = [3, 7]
 
         # Act
-        population = initialize_population(
+        population = optimizer.initialize_population(
             num_pickers, orders_size, picker_capacities
         )
 

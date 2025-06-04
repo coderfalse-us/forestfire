@@ -76,10 +76,16 @@ class TestRouteOptimizerComprehensive:
             "task4": [(35, 35)],
             "task5": [(45, 45)],
         }
+        num_pickers = 2
 
         # Act
         total_cost, routes, paths = optimizer.calculate_shortest_route(
-            picker_locations, assignment, orders_assign, picktasks, stage_result
+            num_pickers,
+            picker_locations,
+            assignment,
+            orders_assign,
+            picktasks,
+            stage_result,
         )
 
         # Assert
@@ -109,10 +115,16 @@ class TestRouteOptimizerComprehensive:
         orders_assign = []
         picktasks = []
         stage_result = {}
+        num_pickers = None
 
         # Act
         total_cost, routes, paths = optimizer.calculate_shortest_route(
-            picker_locations, assignment, orders_assign, picktasks, stage_result
+            num_pickers,
+            picker_locations,
+            assignment,
+            orders_assign,
+            picktasks,
+            stage_result,
         )
 
         # Assert
@@ -144,10 +156,16 @@ class TestRouteOptimizerComprehensive:
             "task4": [(35, 35)],
             "task5": [(45, 45)],
         }
+        num_pickers = 2
 
         # Act
         total_cost, routes, _ = optimizer.calculate_shortest_route(
-            picker_locations, assignment, orders_assign, picktasks, stage_result
+            num_pickers,
+            picker_locations,
+            assignment,
+            orders_assign,
+            picktasks,
+            stage_result,
         )
 
         # Assert
@@ -184,10 +202,16 @@ class TestRouteOptimizerComprehensive:
             "task4": [(80, 80)],
             "task5": [(90, 90)],
         }
+        num_pickers = 2
 
         # Act
         total_cost, routes, paths = optimizer.calculate_shortest_route(
-            picker_locations, assignment, orders_assign, picktasks, stage_result
+            num_pickers,
+            picker_locations,
+            assignment,
+            orders_assign,
+            picktasks,
+            stage_result,
         )
 
         # Assert
@@ -225,10 +249,16 @@ class TestRouteOptimizerComprehensive:
             "task4": [(35, 35)],
             "task5": [(45, 45)],
         }
+        num_pickers = 2
 
         # Act
         total_cost, routes, paths = optimizer.calculate_shortest_route(
-            picker_locations, assignment, orders_assign, picktasks, stage_result
+            num_pickers,
+            picker_locations,
+            assignment,
+            orders_assign,
+            picktasks,
+            stage_result,
         )
 
         # Assert

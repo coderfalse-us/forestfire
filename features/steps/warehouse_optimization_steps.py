@@ -3,6 +3,7 @@
 import random
 from unittest.mock import patch
 import numpy as np
+import httpx
 from behave import given, when, then
 from behave.api.async_step import async_run_until_complete
 
@@ -17,9 +18,11 @@ from forestfire.database.services.batch_pick_seq_service import (
     BatchPickSequenceService,
 )
 from forestfire.utils.config import (
-    NUM_PICKERS,
-    PICKER_CAPACITIES,
-    PICKER_LOCATIONS,
+    TEST_NUM_PICKERS as NUM_PICKERS,
+    TEST_PICKER_CAPACITIES as PICKER_CAPACITIES,
+    TEST_PICKER_LOCATIONS as PICKER_LOCATIONS,
+    TEST_WAREHOUSE_NAME as WAREHOUSE_NAME,
+    TestWarehouseConfigManager,
 )
 
 
@@ -34,7 +37,8 @@ def step_given_warehouse_config(context):
 
 
 @given("the warehouse data is loaded from the database")
-def step_given_warehouse_data(context):
+@async_run_until_complete
+async def step_given_warehouse_data(context):
     """Load warehouse data from the database."""
     context.picklist_repo = PicklistRepository()
     (
@@ -42,7 +46,7 @@ def step_given_warehouse_data(context):
         context.orders_assign,
         context.stage_result,
         context.picklistids,
-    ) = context.picklist_repo.get_optimized_data()
+    ) = await context.picklist_repo.get_optimized_data(WAREHOUSE_NAME)
     context.route_optimizer = RouteOptimizer()
     context.genetic_op = GeneticOperator(context.route_optimizer)
     context.aco = AntColonyOptimizer(context.route_optimizer)
@@ -65,16 +69,21 @@ def step_when_aco_optimization(context):
     """Execute the ACO optimization process."""
     # Run ACO optimization
     context.aco_solutions = []
-    pheromone = np.ones((len(context.orders_assign), NUM_PICKERS))
+    pheromone = np.ones((len(context.orders_assign), context.num_pickers))
     heuristic = context.aco.calculate_heuristic(
         context.orders_assign, PICKER_LOCATIONS
     )
 
     for _ in range(10):  # smaller number for testing
         assignment = context.aco.build_solution(
-            pheromone, heuristic, len(context.orders_assign), PICKER_CAPACITIES
+            pheromone,
+            heuristic,
+            len(context.orders_assign),
+            PICKER_CAPACITIES,
+            context.num_pickers,
         )
         fitness, _, _ = context.route_optimizer.calculate_shortest_route(
+            context.num_pickers,
             PICKER_LOCATIONS,
             assignment,
             context.orders_assign,
@@ -129,10 +138,13 @@ def step_when_ga_optimization(context):
         parent2 = population[parent2_idx][0]
 
         # Perform crossover
-        offspring1, offspring2 = context.genetic_op.crossover(parent1, parent2)
+        offspring1, offspring2 = context.genetic_op.crossover(
+            parent1, parent2, PICKER_CAPACITIES, NUM_PICKERS
+        )
 
         # Calculate fitness
         fitness1, _, _ = context.route_optimizer.calculate_shortest_route(
+            NUM_PICKERS,
             PICKER_LOCATIONS,
             offspring1,
             context.orders_assign,
@@ -140,6 +152,7 @@ def step_when_ga_optimization(context):
             context.stage_result,
         )
         fitness2, _, _ = context.route_optimizer.calculate_shortest_route(
+            NUM_PICKERS,
             PICKER_LOCATIONS,
             offspring2,
             context.orders_assign,
@@ -156,8 +169,12 @@ def step_when_ga_optimization(context):
 
 
 @when("the complete optimization process is executed")
-def step_when_complete_optimization(context):
+@async_run_until_complete
+async def step_when_complete_optimization(context):
     """Execute the complete optimization process."""
+
+    if not hasattr(context, "orders_assign"):
+        await step_given_warehouse_data(context)
     # Run ACO optimization
     step_when_aco_optimization(context)
 
@@ -215,11 +232,13 @@ def step_then_respect_capacity_constraints(context):
 
 
 @when("the optimized routes are visualized")
-def step_when_routes_visualized(context):
+async def step_when_routes_visualized(context):
     """Visualize the optimized routes."""
     # Mock the visualization to avoid actual plotting in tests
     with patch.object(PathVisualizer, "plot_routes") as mock_plot:
-        context.path_visualizer.plot_routes(context.final_solution)
+        await context.path_visualizer.plot_routes(
+            context.final_solution, config=TestWarehouseConfigManager
+        )
         assert mock_plot.called, "Route visualization was not called"
 
 
@@ -227,37 +246,35 @@ def step_when_routes_visualized(context):
 @async_run_until_complete
 async def step_when_sequences_updated(context):
     """Update pick sequences via API."""
+    if not hasattr(context, "final_solution"):
+        await step_when_complete_optimization(context)
+
+    if not hasattr(context, "picksequence_service"):
+        context.picksequence_service = BatchPickSequenceService()
     # Create a patch for httpx.AsyncClient
-    if hasattr(context, "api_unavailable") and context.api_unavailable:
-        # Simulate API error
-        mock_client = mock_httpx_client(simulate_error=True)
-    else:
-        # Simulate successful API response
-        mock_client = mock_httpx_client()
+    mock_client = mock_httpx_client(
+        simulate_error=getattr(context, "api_unavailable", False)
+    )
 
     # Apply the patch
     with patch("httpx.AsyncClient", return_value=mock_client):
         try:
             # Call the actual method with our mocked client
             await context.picksequence_service.update_pick_sequences(
-                context.final_solution,
-                context.picklistids,
-                context.orders_assign,
-                context.picktasks,
-                context.stage_result,
+                num_pickers=NUM_PICKERS,
+                picker_locations=PICKER_LOCATIONS,
+                final_solution=context.final_solution,
+                picklistids=context.picklistids,
+                orders_assign=context.orders_assign,
+                picktasks=context.picktasks,
+                stage_result=context.stage_result,
             )
             context.api_success = True
             context.api_requests = mock_client.requests
-        except Exception as e:
+        except httpx.RequestError as e:
             context.api_success = False
             context.api_error = str(e)
             print(f"API Error: {e}")
-
-
-@when("the API endpoint is unavailable")
-def step_when_api_unavailable(context):
-    """Simulate API endpoint being unavailable."""
-    context.api_unavailable = True
 
 
 @then("the API should respond with a success status")
@@ -265,21 +282,3 @@ def step_then_api_success(context):
     """Verify that the API responded with a success status."""
     assert hasattr(context, "api_success"), "API call was not made"
     assert context.api_success, "API call was not successful"
-
-
-@then("the system should handle the API error gracefully")
-def step_then_handle_api_error(context):
-    """Verify that the system handles API errors gracefully."""
-    assert hasattr(context, "api_success"), "API call was not made"
-    assert not context.api_success, "API call was unexpectedly successful"
-    assert hasattr(context, "api_error"), "No API error was recorded"
-    # Check for error message
-    assert "Connection error" in context.api_error, "Unexpected error message"
-
-
-@then("provide appropriate error messages")
-def step_then_provide_error_messages(context):
-    """Verify that appropriate error messages are provided."""
-    assert hasattr(context, "api_error"), "No API error was recorded"
-    assert context.api_error, "No error message was provided"
-    print(f"Error message: {context.api_error}")

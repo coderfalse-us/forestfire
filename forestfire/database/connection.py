@@ -4,9 +4,9 @@ This module provides functionality for managing database connections
 and ensuring proper connection handling with context managers.
 """
 
-from contextlib import contextmanager
-from typing import Generator
-import psycopg2
+from contextlib import asynccontextmanager
+from typing import AsyncGenerator
+import asyncpg
 from .config import DatabaseConfig
 from .exceptions import DBConnectionError
 
@@ -19,7 +19,7 @@ class DatabaseConnectionManager:
     """
 
     _config = DatabaseConfig()
-    _connection = None
+    _pool = None
 
     @classmethod
     def get_config(cls):
@@ -40,24 +40,38 @@ class DatabaseConnectionManager:
         cls._config = config
 
     @classmethod
-    @contextmanager
-    def get_connection(
+    async def create_pool(
         cls,
-    ) -> Generator[psycopg2.extensions.connection, None, None]:
+    ):
+        if not cls._pool:
+            cls._pool = await asyncpg.create_pool(
+                host=cls._config.host,
+                port=cls._config.port,
+                database=cls._config.database,
+                user=cls._config.user,
+                password=cls._config.password,
+                min_size=5,
+                max_size=20,
+            )
+
+    @classmethod
+    @asynccontextmanager
+    async def get_connection(cls) -> AsyncGenerator[asyncpg.Connection, None]:
+        """Get a database connection from the pool"""
+        if not cls._pool:
+            await cls.create_pool()
+
         try:
-            if not cls._connection or cls._connection.closed:
-                cls._connection = psycopg2.connect(
-                    host=cls._config.host,
-                    port=cls._config.port,
-                    database=cls._config.database,
-                    user=cls._config.user,
-                    password=cls._config.password,
-                )
-            yield cls._connection
+            async with cls._pool.acquire() as connection:
+                yield connection
         except Exception as e:
             raise DBConnectionError(
                 f"Failed to connect to database: {e}"
             ) from e
-        finally:
-            if cls._connection and not cls._connection.closed:
-                cls._connection.close()
+
+    @classmethod
+    async def close_pool(cls):
+        """Close the connection pool"""
+        if cls._pool:
+            await cls._pool.close()
+            cls._pool = None

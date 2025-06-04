@@ -6,7 +6,6 @@ like executing queries and transactions with proper error handling.
 
 from abc import ABC
 from typing import Any, List
-import psycopg2
 from .connection import DatabaseConnectionManager
 from .exceptions import QueryError
 
@@ -18,22 +17,26 @@ class BaseRepository(ABC):
     with proper connection handling and error reporting.
     """
 
-    def execute_query(self, query: str, params: tuple = None) -> List[Any]:
-        with DatabaseConnectionManager.get_connection() as conn:
-            with conn.cursor() as cur:
-                try:
-                    cur.execute(query, params)
-                    return cur.fetchall() if cur.description else []
-                except psycopg2.Error as e:
-                    raise QueryError(f"Query execution failed: {e}") from e
+    async def execute_query(
+        self, query: str, params: tuple = None
+    ) -> List[Any]:
+        async with DatabaseConnectionManager.get_connection() as conn:
+            try:
+                # asyncpg uses different method names
+                if params:
+                    return await conn.fetch(query, *params)
+                return await conn.fetch(query)
+            except Exception as e:
+                raise QueryError(f"Query execution failed: {e}") from e
 
-    def execute_transaction(self, queries: List[tuple]) -> None:
-        with DatabaseConnectionManager.get_connection() as conn:
-            with conn.cursor() as cur:
+    async def execute_transaction(self, queries: List[tuple]) -> None:
+        async with DatabaseConnectionManager.get_connection() as conn:
+            async with conn.transaction() as cur:
                 try:
                     for query, params in queries:
-                        cur.execute(query, params)
-                    conn.commit()
+                        if params:
+                            await cur.execute(query, *params)
+                        else:
+                            await cur.execute(query)
                 except Exception as e:
-                    conn.rollback()
                     raise QueryError(f"Transaction failed: {e}") from e

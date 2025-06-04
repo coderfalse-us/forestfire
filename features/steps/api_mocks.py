@@ -123,9 +123,16 @@ class MockAsyncClient:
         )
 
 
-def mock_httpx_client(simulate_error=False, simulate_http_error=False):
-    """Create a mock HTTPX client with specified behavior."""
-    client = MockAsyncClient()
-    client.simulate_error = simulate_error
-    client.simulate_http_error = simulate_http_error
-    return client
+def mock_httpx_client(simulate_error=False):
+    """Create a mock httpx client."""
+    mock_client = MagicMock()
+
+    if simulate_error:
+        mock_client.__aenter__.return_value = mock_client
+        mock_client.put.side_effect = httpx.RequestError("Connection error")
+        mock_client.post.side_effect = httpx.RequestError("Connection error")
+    else:
+        mock_client.put.return_value.status_code = 200
+        mock_client.post.return_value.status_code = 200
+
+    return mock_client

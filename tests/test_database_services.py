@@ -13,6 +13,15 @@ from forestfire.database.services.batch_pick_seq_service import (
 from forestfire.database.services.picksequencemodel import PickSequenceUpdate
 from forestfire.database.exceptions import QueryError
 from forestfire.optimizer.models.route import Route
+from forestfire.utils.config import (
+    TEST_WAREHOUSE_NAME,
+    TEST_NUM_PICKERS,
+    TEST_PICKER_LOCATIONS,
+)
+from forestfire.database.services.picksequencemodel import (
+    ApiPayload,
+    PickTaskPayload,
+)
 
 # Configure pytest-asyncio for async tests only
 # We'll apply the mark to individual async tests instead of globally
@@ -32,7 +41,7 @@ class TestPicklistRepository:
         repo = PicklistRepository()
 
         # Act
-        result = repo.fetch_picklist_data()
+        result = repo.fetch_picklist_data(TEST_WAREHOUSE_NAME)
 
         # Assert
         assert result == mock_execute_query.return_value
@@ -47,7 +56,7 @@ class TestPicklistRepository:
 
         # Act/Assert
         with pytest.raises(QueryError):
-            repo.fetch_picklist_data()
+            repo.fetch_picklist_data(TEST_WAREHOUSE_NAME)
 
     @patch.object(PicklistRepository, "map_picklist_data")
     def test_get_optimized_data(self, mock_map_picklist_data):
@@ -66,7 +75,7 @@ class TestPicklistRepository:
 
         # Act
         (picktasks, orders_assign, stage_result, picklistids) = (
-            repo.get_optimized_data()
+            repo.get_optimized_data(TEST_WAREHOUSE_NAME)
         )
 
         # Assert
@@ -129,7 +138,13 @@ class TestBatchPickSequenceService:
 
         # Act
         await service.update_pick_sequences(
-            final_solution, picklistids, orders_assign, picktasks, stage_result
+            TEST_NUM_PICKERS,
+            TEST_PICKER_LOCATIONS,
+            final_solution,
+            picklistids,
+            orders_assign,
+            picktasks,
+            stage_result,
         )
 
         # Assert
@@ -211,12 +226,6 @@ class TestBatchPickSequenceService:
                 warehouse_id="warehouse1",
             )
         ]
-
-        # Mock the transform method to return a list of ApiPayload objects
-        from forestfire.database.services.picksequencemodel import (
-            ApiPayload,
-            PickTaskPayload,
-        )
 
         mock_api_data = [
             ApiPayload(

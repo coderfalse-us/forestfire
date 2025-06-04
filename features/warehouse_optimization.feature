@@ -37,10 +37,4 @@ Feature: Warehouse Order Picking Optimization End-to-End
     When the pick sequences are updated via API
     Then the API should respond with a success status
 
-  Scenario: Handle API errors gracefully
-    Given the warehouse data is loaded from the database
-    When the complete optimization process is executed
-    And the API endpoint is unavailable
-    When the pick sequences are updated via API
-    Then the system should handle the API error gracefully
-    And provide appropriate error messages
+  

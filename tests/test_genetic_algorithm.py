@@ -4,7 +4,10 @@ This module contains tests for the genetic algorithm operations used in
 warehouse order picking optimization.
 """
 
-from forestfire.utils.config import PICKER_CAPACITIES, NUM_PICKERS
+from forestfire.utils.config import (
+    TEST_PICKER_CAPACITIES as PICKER_CAPACITIES,
+    TEST_NUM_PICKERS as NUM_PICKERS,
+)
 
 
 class TestGeneticOperator:

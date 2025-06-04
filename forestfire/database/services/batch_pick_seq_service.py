@@ -16,7 +16,6 @@ from .picksequencemodel import (
 )
 from .picklist import PicklistRepository
 from forestfire.optimizer.services.routing import RouteOptimizer
-from forestfire.utils.config import PICKER_LOCATIONS
 
 
 class BatchPickSequenceService:
@@ -112,6 +111,9 @@ class BatchPickSequenceService:
 
         # Transform the updates to the required API format
         api_payloads = self._transform_updates_to_api_format(updates)
+        logger.info(
+            "Transformed {} updates into API payloads", len(api_payloads)
+        )
 
         # Disable SSL verification for development/testing
         # In production, use proper certificate verification
@@ -161,6 +163,8 @@ class BatchPickSequenceService:
 
     async def update_pick_sequences(
         self,
+        num_pickers: int,
+        picker_locations: List[Tuple[float, float]],
         final_solution: List[int],
         picklistids: List[str],  # pylint: disable=unused-argument
         orders_assign: List[List[Tuple[float, float]]],
@@ -168,11 +172,19 @@ class BatchPickSequenceService:
         stage_result: Dict[str, List[Tuple[float, float]]],
     ) -> None:
         try:
+            logger.info("Starting pick sequence updates")
+            logger.debug(
+                "Input params - pickers: {}, solution: {}, tasks: {}",
+                num_pickers,
+                final_solution,
+                len(picktasks),
+            )
             # Get optimized routes
             # pylint: disable=unused-variable
             _, routes, assignments = (
                 self.route_optimizer.calculate_shortest_route(
-                    PICKER_LOCATIONS,
+                    num_pickers,
+                    picker_locations,
                     final_solution,
                     orders_assign,
                     picktasks,
@@ -181,16 +193,18 @@ class BatchPickSequenceService:
             )
 
             # Get all picklist-picktask relationships in one query
+            set_schema = "SET search_path TO nifiapp"
             query = """
-            SET search_path TO nifiapp;
             SELECT p.id, p.picktaskid, p.xcoordinate, p.ycoordinate,
             p.accountid,p.businessunitid,p.warehouseid
             FROM picklist p
-            WHERE p.picktaskid = ANY(%s);
+            WHERE p.picktaskid = ANY($1);
             """
-
-            picklist_data = self.picklist_repo.baserepository.execute_query(
-                query, (picktasks,)
+            await self.picklist_repo.baserepository.execute_query(set_schema)
+            picklist_data = (
+                await self.picklist_repo.baserepository.execute_query(
+                    query, (picktasks,)
+                )
             )
 
             # Create mappings
@@ -204,16 +218,22 @@ class BatchPickSequenceService:
             for (
                 picklist_id,
                 picktask_id,
-                x,
-                y,
+                xcoordinate,
+                ycoordinate,
                 accountid,
                 businessunitid,
                 warehouseid,
             ) in picklist_data:
+                logger.info(
+                    "Processing row - picklist_id: {}, coords: ({}, {})",
+                    picklist_id,
+                    xcoordinate,
+                    ycoordinate,
+                )
                 if picktask_id in picktask_assignments:
                     picker_id = picktask_assignments[picktask_id]
                     batch_id = f"BATCH_{picker_id}"
-                    location = (float(x), float(y))
+                    location = ((xcoordinate), (ycoordinate))
 
                     if location not in location_to_picklists:
                         location_to_picklists[location] = []

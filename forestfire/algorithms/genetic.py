@@ -7,7 +7,7 @@ to optimize picker routes in a warehouse environment.
 import random
 import numpy as np
 from typing import List, Tuple
-from forestfire.utils.config import NUM_PICKERS, PICKER_CAPACITIES, PC
+from forestfire.utils.config import PC
 from forestfire.optimizer.services.routing import RouteOptimizer
 
 
@@ -18,7 +18,11 @@ class GeneticOperator:
         self.route_optimizer = route_optimizer
 
     def crossover(
-        self, x1: List[int], x2: List[int]
+        self,
+        x1: List[int],
+        x2: List[int],
+        picker_capacities: List[int],
+        num_pickers: int,
     ) -> Tuple[List[int], List[int]]:
         """Perform crossover between two parent solutions"""
         q = random.uniform(0, 1)
@@ -31,8 +35,12 @@ class GeneticOperator:
                 y1, y2 = self._uniform_crossover(x1, x2)
 
             # Ensure offspring satisfy picker capacity constraints
-            y1 = self._enforce_capacity_constraints(y1, PICKER_CAPACITIES)
-            y2 = self._enforce_capacity_constraints(y2, PICKER_CAPACITIES)
+            y1 = self._enforce_capacity_constraints(
+                y1, picker_capacities, num_pickers
+            )
+            y2 = self._enforce_capacity_constraints(
+                y2, picker_capacities, num_pickers
+            )
         else:
             y1 = x1[:]
             y2 = x2[:]
@@ -69,10 +77,13 @@ class GeneticOperator:
         return y1, y2
 
     def _enforce_capacity_constraints(
-        self, offspring: List[int], picker_capacities: List[int]
+        self,
+        offspring: List[int],
+        picker_capacities: List[int],
+        num_pickers: int,
     ) -> List[int]:
         """Ensure solution satisfies picker capacity constraints"""
-        assigned_counts = [0] * NUM_PICKERS
+        assigned_counts = [0] * num_pickers
         for picker_id in offspring:
             assigned_counts[picker_id] += 1
 
@@ -86,7 +97,7 @@ class GeneticOperator:
             if picker_id in over_capacity and over_capacity[picker_id] > 0:
                 valid_pickers = [
                     p
-                    for p in range(NUM_PICKERS)
+                    for p in range(num_pickers)
                     if assigned_counts[p] < picker_capacities[p]
                 ]
 
@@ -100,7 +111,7 @@ class GeneticOperator:
         return offspring
 
     def mutate_with_capacity(
-        self, x: List[int], picker_capacities: List[int]
+        self, x: List[int], picker_capacities: List[int], num_pickers: int
     ) -> List[int]:
         """Mutate solution while respecting capacity constraints"""
         y = x[:]
@@ -109,16 +120,16 @@ class GeneticOperator:
         while attempts > 0:
             j = np.random.randint(len(x))
             assigned_picker = y[j]
-            new_picker = np.random.randint(NUM_PICKERS)
+            new_picker = np.random.randint(num_pickers)
 
             y[j] = new_picker
 
             assigned_counts = [
-                y.count(picker_id) for picker_id in range(NUM_PICKERS)
+                y.count(picker_id) for picker_id in range(num_pickers)
             ]
             if all(
                 assigned_counts[picker_id] <= picker_capacities[picker_id]
-                for picker_id in range(NUM_PICKERS)
+                for picker_id in range(num_pickers)
             ):
                 return y
 
@@ -137,18 +148,20 @@ class GeneticOperator:
 
 
 # For backwards compatibility
-def crossover(x1: List[int], x2: List[int]) -> Tuple[List[int], List[int]]:
+def crossover(
+    x1: List[int], x2: List[int], picker_capacities: List[int], num_pickers: int
+) -> Tuple[List[int], List[int]]:
     """Legacy crossover function"""
     genetic_op = GeneticOperator(RouteOptimizer())
-    return genetic_op.crossover(x1, x2)
+    return genetic_op.crossover(x1, x2, picker_capacities, num_pickers)
 
 
 def mutate_with_capacity(
-    x: List[int], picker_capacities: List[int]
+    x: List[int], picker_capacities: List[int], num_pickers: int
 ) -> List[int]:
     """Legacy mutation function"""
     genetic_op = GeneticOperator(RouteOptimizer())
-    return genetic_op.mutate_with_capacity(x, picker_capacities)
+    return genetic_op.mutate_with_capacity(x, picker_capacities, num_pickers)
 
 
 def tournament_selection(

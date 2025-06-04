@@ -9,7 +9,6 @@ from typing import List, Tuple, Dict
 from ..models.route import Route
 from ..utils.geometry import WalkwayCalculator
 from .distance import DistanceCalculator
-from forestfire.utils.config import NUM_PICKERS
 
 
 class RouteOptimizer:
@@ -29,6 +28,7 @@ class RouteOptimizer:
 
     def calculate_shortest_route(
         self,
+        num_pickers: int,
         picker_locations: List[Tuple[float, float]],
         emptypop_position: List[int],
         orders_assign: List[List[Tuple[float, float]]],
@@ -46,12 +46,12 @@ class RouteOptimizer:
             order_indices[picker_index].append(index)
 
         final_result = self._get_staging_points(
-            order_indices, picktasks, stage_results
+            order_indices, picktasks, stage_results, num_pickers
         )
-        sorted_data = self._sort_locations(assignments)
-        r_flag = [0] * NUM_PICKERS
+        sorted_data = self._sort_locations(assignments, num_pickers)
+        r_flag = [0] * num_pickers
 
-        for p in range(NUM_PICKERS):
+        for p in range(num_pickers):
             if not sorted_data[p]:
                 continue
             sorted_data[p] = self._handle_entry_logic(
@@ -81,10 +81,11 @@ class RouteOptimizer:
         order_indices: List[List[int]],
         picktasks: List[str],
         stage_result: Dict[str, List[Tuple[float, float]]],
+        num_pickers: int,
     ) -> List[Tuple[float, float]]:
         """Get staging locations for the route"""
         final_result = []
-        for i in range(NUM_PICKERS):
+        for i in range(num_pickers):
             indices = order_indices[i]
             picktasks = list(picktasks)
             taskids = [picktasks[i] for i in indices]
@@ -93,12 +94,12 @@ class RouteOptimizer:
             return final_result
 
     def _sort_locations(
-        self, assignments: List[List[Tuple[float, float]]]
+        self, assignments: List[List[Tuple[float, float]]], num_pickers: int
     ) -> List[List[Tuple[float, float]]]:
         """Sort locations by aisle and position"""
-        sorted_data = [[] for _ in range(NUM_PICKERS)]
+        sorted_data = [[] for _ in range(num_pickers)]
         # Group locations by aisle for each picker
-        for i in range(NUM_PICKERS):
+        for i in range(num_pickers):
             aisles = {}
             locations = assignments[i]
             for loc in locations:

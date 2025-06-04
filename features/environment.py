@@ -51,7 +51,7 @@ def before_scenario(context, scenario):
     context = use_or_create_async_context(context)
 
     # Mock visualization to avoid actual plotting in tests
-    def mock_plot_routes(self, *args, **kwargs):
+    def mock_plot_routes(*_args, **_kwargs):
         return None
 
     # Apply the mock only for visualization

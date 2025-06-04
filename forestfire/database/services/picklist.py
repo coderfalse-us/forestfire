@@ -9,7 +9,6 @@ import logging
 from ..connection import DatabaseConnectionManager
 from ..repository import BaseRepository
 from ..exceptions import QueryError
-from forestfire.utils.config import WAREHOUSE_NAME
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +20,7 @@ class PicklistRepository:
         self.connection_manager = DatabaseConnectionManager()
         self.baserepository = BaseRepository()
 
-    def fetch_picklist_data(self) -> List[Tuple]:
+    async def fetch_picklist_data(self, warehouse_name: str) -> List[Tuple]:
         """
         Fetch all picklist data from the database
 
@@ -32,37 +31,40 @@ class PicklistRepository:
         SELECT p.*
         FROM nifiapp.picklist p
         JOIN synob_tabr.warehouses w ON p.warehouseid = w.id
-        WHERE w.name = %s;
+        WHERE w.name = $1;
         """
+        # asyncpg uses $1
         try:
-            return self.baserepository.execute_query(query, (WAREHOUSE_NAME,))
+            return await self.baserepository.execute_query(
+                query, (warehouse_name,)
+            )
 
         except Exception as e:
             logger.error("Error fetching picklist data: %s", e)
-            raise QueryError("Failed to fetch picklist data: %s" % e) from e
+            raise QueryError("Failed to fetch picklist data") from e
 
-    def fetch_distinct_picktasks(self) -> List[str]:
+    async def fetch_distinct_picktasks(self) -> List[str]:
         """
         Fetch distinct picktask IDs
 
         Returns:
             List[str]: List of unique picktask IDs
         """
+        set_schema = "SET search_path TO nifiapp"
         query = """
-        SET search_path TO nifiapp;
-        SELECT DISTINCT picktaskid FROM picklist;
+        SELECT DISTINCT picktaskid FROM picklist
         """
         try:
-            distinct_pictask = self.baserepository.execute_query(query)
+            await self.baserepository.execute_query(set_schema)
+            distinct_pictask = await self.baserepository.execute_query(query)
             return [row[0] for row in distinct_pictask]
         except Exception as e:
             logger.error("Error fetching distinct picktasks: %s", e)
-            raise QueryError(
-                "Failed to fetch distinct picktasks: %s" % e
-            ) from e
+            raise QueryError("Failed to fetch distinct picktasks") from e
 
-    def map_picklist_data(
+    async def map_picklist_data(
         self,
+        warehouse_name: str,
     ) -> Tuple[Dict[str, List[Tuple]], Dict[str, List[Tuple]], Dict[str, int]]:
         """
         Map picklist data by picktask ID
@@ -74,11 +76,11 @@ class PicklistRepository:
                 - Dict[str, int]: Picktask ID to database ID mapping
         """
         try:
-            rows = self.fetch_picklist_data()
+            rows = await self.fetch_picklist_data(warehouse_name)
             if not rows:
                 logger.error("No rows returned from fetch_picklist_data")
                 raise QueryError("No data found in picklist table")
-            picktasks = self.fetch_distinct_picktasks()
+            picktasks = await self.fetch_distinct_picktasks()
             if not picktasks:
                 logger.error(
                     "No picktasks returned from fetch_distinct_picktasks"
@@ -114,7 +116,7 @@ class PicklistRepository:
 
         except Exception as e:
             logger.error("Error mapping picklist data: %s", e)
-            raise QueryError("Failed to map picklist data: %s" % e) from e
+            raise QueryError("Failed to map picklist data") from e
 
     def update_batchid(self, batch_id: str, picklist_id: str) -> None:
         """
@@ -134,10 +136,11 @@ class PicklistRepository:
             self.baserepository.execute_query(query, (batch_id, picklist_id))
         except Exception as e:
             logger.error("Error updating batch ID: %s", e)
-            raise QueryError("Failed to update batch ID: %s" % e) from e
+            raise QueryError("Failed to update batch ID") from e
 
-    def get_optimized_data(
+    async def get_optimized_data(
         self,
+        warehouse_name: str,
     ) -> Tuple[List[str], List[List[Tuple]], Dict[str, List[Tuple]], List[int]]:
         """
         Get optimized picklist data for order assignment
@@ -150,7 +153,9 @@ class PicklistRepository:
                 - List[int]: Database IDs in order of task_keys
         """
         try:
-            staging, taskid, id_mapping = self.map_picklist_data()
+            staging, taskid, id_mapping = await self.map_picklist_data(
+                warehouse_name
+            )
 
             # Convert to required format for optimization
             task_keys = list(taskid.keys())
@@ -163,4 +168,4 @@ class PicklistRepository:
 
         except Exception as e:
             logger.error("Error getting optimized data: %s", e)
-            raise QueryError("Failed to get optimized data: %s" % e) from e
+            raise QueryError("Failed to get optimized data") from e

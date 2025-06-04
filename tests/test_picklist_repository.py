@@ -8,7 +8,7 @@ import pytest
 from unittest.mock import patch
 from forestfire.database.services.picklist import PicklistRepository
 from forestfire.database.exceptions import QueryError
-from forestfire.utils.config import WAREHOUSE_NAME
+from forestfire.utils.config import TEST_WAREHOUSE_NAME as WAREHOUSE_NAME
 
 
 class TestPicklistRepositoryComprehensive:
@@ -25,7 +25,7 @@ class TestPicklistRepositoryComprehensive:
         repo = PicklistRepository()
 
         # Act
-        result = repo.fetch_picklist_data()
+        result = repo.fetch_picklist_data(WAREHOUSE_NAME)
 
         # Assert
         assert result == mock_execute_query.return_value
@@ -139,7 +139,7 @@ class TestPicklistRepositoryComprehensive:
         repo = PicklistRepository()
 
         # Act
-        staging, taskid, id_mapping = repo.map_picklist_data()
+        staging, taskid, id_mapping = repo.map_picklist_data(WAREHOUSE_NAME)
 
         # Assert
         # Check that the dictionaries have the expected keys
@@ -173,7 +173,7 @@ class TestPicklistRepositoryComprehensive:
         repo = PicklistRepository()
 
         # Act
-        result = repo.get_optimized_data()
+        result = repo.get_optimized_data(WAREHOUSE_NAME)
         picktasks, orders_assign, stage_result, picklistids = result
 
         # Assert
@@ -201,7 +201,7 @@ class TestPicklistRepositoryComprehensive:
         repo = PicklistRepository()
 
         # Act
-        result = repo.get_optimized_data()
+        result = repo.get_optimized_data(WAREHOUSE_NAME)
         picktasks, orders_assign, stage_result, picklistids = result
 
         # Assert

@@ -9,7 +9,7 @@ from forestfire.optimizer.services.routing import RouteOptimizer
 from forestfire.algorithms.genetic import GeneticOperator
 from forestfire.algorithms.ant_colony import AntColonyOptimizer
 from forestfire.plots.graph import PathVisualizer
-from forestfire.utils.config import NUM_PICKERS
+from forestfire.utils.config import TEST_NUM_PICKERS as NUM_PICKERS
 
 
 @pytest.fixture

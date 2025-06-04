@@ -7,7 +7,7 @@ for solving the order picking problem in a warehouse environment.
 import numpy as np
 from typing import List, Tuple
 from forestfire.optimizer.services.routing import RouteOptimizer
-from forestfire.utils.config import NUM_PICKERS, ALPHA, BETA, RHO
+from forestfire.utils.config import ALPHA, BETA, RHO
 
 
 class AntColonyOptimizer:
@@ -41,15 +41,16 @@ class AntColonyOptimizer:
         heuristic: np.ndarray,
         orders_size: int,
         picker_capacities: List[int],
+        num_pickers: int,
     ) -> List[int]:
         """Build a solution using ACO principles"""
         assignment = [-1] * orders_size
-        picker_loads = [0] * NUM_PICKERS
+        picker_loads = [0] * num_pickers
         # Build solution
         for item in range(orders_size):
             valid_pickers = []
             prob = []
-            for picker in range(NUM_PICKERS):
+            for picker in range(num_pickers):
                 if picker_loads[picker] < picker_capacities[picker]:
                     valid_pickers.append(picker)
                     prob.append(

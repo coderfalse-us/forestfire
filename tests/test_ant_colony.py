@@ -5,7 +5,10 @@ warehouse order picking optimization.
 """
 
 import numpy as np
-from forestfire.utils.config import NUM_PICKERS, PICKER_CAPACITIES
+from forestfire.utils.config import (
+    TEST_NUM_PICKERS as NUM_PICKERS,
+    TEST_PICKER_CAPACITIES as PICKER_CAPACITIES,
+)
 
 
 class TestAntColonyOptimizer:
@@ -39,7 +42,11 @@ class TestAntColonyOptimizer:
 
         # Act
         assignment = ant_colony_optimizer.build_solution(
-            sample_pheromone, sample_heuristic, orders_size, PICKER_CAPACITIES
+            sample_pheromone,
+            sample_heuristic,
+            orders_size,
+            PICKER_CAPACITIES,
+            NUM_PICKERS,
         )
 
         # Assert
@@ -95,7 +102,11 @@ class TestAntColonyOptimizer:
 
         # Act
         assignment = ant_colony_optimizer.build_solution(
-            sample_pheromone, sample_heuristic, orders_size, limited_capacities
+            sample_pheromone,
+            sample_heuristic,
+            orders_size,
+            limited_capacities,
+            NUM_PICKERS,
         )
 
         # Assert

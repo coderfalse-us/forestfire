@@ -11,10 +11,9 @@ import matplotlib
 import matplotlib.pyplot as plt
 from forestfire.optimizer.services.routing import RouteOptimizer
 from forestfire.utils.config import (
-    NUM_PICKERS,
-    PICKER_LOCATIONS,
     ITEM_LOCATIONS,
 )
+from ..utils import WarehouseConfigManager
 from forestfire.database.services.picklist import PicklistRepository
 
 # Use Agg backend if no display available
@@ -53,13 +52,19 @@ class PathVisualizer:
         logger.info("Plot saved to: %s", filepath)
         return filepath
 
-    def plot_routes(self, final_solution):
+    async def plot_routes(self, final_solution, config: WarehouseConfigManager):
         """Plot optimized routes for each picker"""
         # Map orders to pickers
-        orders = {picker_id: [] for picker_id in range(NUM_PICKERS)}
-        (picktasks, orders_assign, stage_result, _) = (
-            self.picklist_repo.get_optimized_data()
-        )
+        num_pickers = config.NUM_PICKERS
+        picker_locations = config.PICKER_LOCATIONS
+        warehouse_name = config.WAREHOUSE_NAME
+        orders = {picker_id: [] for picker_id in range(num_pickers)}
+        (
+            picktasks,
+            orders_assign,
+            stage_result,
+            _,
+        ) = await self.picklist_repo.get_optimized_data(warehouse_name)
 
         for item_id, picker_id in enumerate(final_solution):
             orders[picker_id].append(item_id)
@@ -70,7 +75,8 @@ class PathVisualizer:
 
         # Generate optimized routes for plotting
         _, routes, assignments = self.route_optimizer.calculate_shortest_route(
-            PICKER_LOCATIONS,
+            num_pickers,
+            picker_locations,
             final_solution,
             orders_assign,
             picktasks,
@@ -80,24 +86,24 @@ class PathVisualizer:
         # Setup plot
         _, axes = plt.subplots(
             nrows=1,
-            ncols=len(PICKER_LOCATIONS),
+            ncols=len(picker_locations),
             figsize=(30, 6),
             sharex=True,
             sharey=True,
         )
 
         # Extract item coordinates for plotting
-        _, _ = zip(*PICKER_LOCATIONS)  # Unpack but not used directly
+        _, _ = zip(*picker_locations)  # Unpack but not used directly
         item_x, item_y = zip(*ITEM_LOCATIONS)
 
         # Plot routes for each picker
         for group, ax in enumerate(axes):
-            if group >= len(PICKER_LOCATIONS):
+            if group >= len(picker_locations):
                 continue
 
             # Plot picker start location
             ax.scatter(
-                *PICKER_LOCATIONS[group],
+                *picker_locations[group],
                 c="blue",
                 s=150,
                 label="Picker Start",
@@ -110,7 +116,7 @@ class PathVisualizer:
             # Plot optimized path
             if group < len(routes):
                 route = routes[group]
-                points = [PICKER_LOCATIONS[group]] + route.locations
+                points = [picker_locations[group]] + route.locations
 
                 if len(points) > 1:
                     x, y = zip(*points)
