@@ -4,16 +4,33 @@ This module contains tests for the path visualization functionality used in
 warehouse order picking optimization.
 """
 
+import pytest
 from unittest.mock import patch, MagicMock
 from forestfire.plots.graph import PathVisualizer
 from forestfire.optimizer.models.route import Route
 
 
+@pytest.fixture
+def sample_config():
+    """Fixture for warehouse configuration."""
+
+    class Config:
+        NUM_PICKERS = 3
+        PICKER_CAPACITIES = [5, 5, 5]
+        PICKER_LOCATIONS = [(0, 0), (10, 10), (20, 20)]
+        WAREHOUSE_NAME = "warehouse_1"
+
+    return Config()
+
+
 class TestPathVisualizer:
     """Test cases for the PathVisualizer class."""
 
+    @pytest.mark.asyncio
     @patch("forestfire.plots.graph.PathVisualizer.save_plot")
-    def test_plot_routes(self, mock_save_plot, path_visualizer):
+    async def test_plot_routes(
+        self, mock_save_plot, path_visualizer, sample_config
+    ):
         """Test plotting routes."""
         # Arrange
         solution = [0, 1, 2, 0, 1]
@@ -60,17 +77,18 @@ class TestPathVisualizer:
                 ["id1", "id2", "id3", "id4", "id5"],
             )
         )
-
+        config = sample_config
         # Act
-        result = path_visualizer.plot_routes(solution)
+        result = await path_visualizer.plot_routes(solution, config)
 
         # Assert
         assert result == "test_path.png"
         mock_save_plot.assert_called_once()
 
+    @pytest.mark.asyncio
     @patch("forestfire.plots.graph.PathVisualizer.save_plot")
-    def test_plot_routes_with_empty_solution(
-        self, mock_save_plot, path_visualizer
+    async def test_plot_routes_with_empty_solution(
+        self, mock_save_plot, path_visualizer, sample_config
     ):
         """Test plotting routes with an empty solution."""
         # Arrange
@@ -82,8 +100,10 @@ class TestPathVisualizer:
             return_value=([], [], {}, [])
         )
 
+        config = sample_config
+
         # Act
-        result = path_visualizer.plot_routes(solution)
+        result = await path_visualizer.plot_routes(solution, config)
 
         # Assert
         assert result == "test_path.png"

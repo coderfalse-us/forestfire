@@ -20,7 +20,9 @@ class TestGeneticOperator:
         parent2 = [1, 0, 2, 1, 0]
 
         # Act
-        offspring1, offspring2 = genetic_operator.crossover(parent1, parent2)
+        offspring1, offspring2 = genetic_operator.crossover(
+            parent1, parent2, PICKER_CAPACITIES, NUM_PICKERS
+        )
 
         # Assert
         assert len(offspring1) == len(parent1)
@@ -38,7 +40,7 @@ class TestGeneticOperator:
         # Act
         # pylint: disable=protected-access
         result = genetic_operator._enforce_capacity_constraints(
-            assignment, picker_capacities
+            assignment, picker_capacities, NUM_PICKERS
         )
 
         # Assert
@@ -55,7 +57,7 @@ class TestGeneticOperator:
 
         # Act
         result = genetic_operator.mutate_with_capacity(
-            assignment, PICKER_CAPACITIES
+            assignment, PICKER_CAPACITIES, NUM_PICKERS
         )
 
         # Assert

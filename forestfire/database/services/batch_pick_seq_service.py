@@ -29,8 +29,8 @@ class BatchPickSequenceService:
             "2025-18/api/picking/task/batchassign"
         )
         self.api_key = (
-            "1UZd-w7BTZ4b1EEaQv0e37AmRq3ZLN9tZboeYgs7jT0-CXmTHyS"
-            "7Ke90QfAJrd_7APcbyq8PfB93Gy_5csuCpDkwl8CHGz_n3Pf8p7NV"
+            "p2oZ-8oal2m1mW335rGJVfpOsSkkLT8nKP4z-I7u-0--X6G51-7"
+            "DSUWzHyHU4AOeydC7DdKsJypx9rOPGgOOVmSYQJinUb1ZTxqHmPUC"
         )
 
     def _transform_updates_to_api_format(
@@ -193,14 +193,12 @@ class BatchPickSequenceService:
             )
 
             # Get all picklist-picktask relationships in one query
-            set_schema = "SET search_path TO nifiapp"
             query = """
             SELECT p.id, p.picktaskid, p.xcoordinate, p.ycoordinate,
             p.accountid,p.businessunitid,p.warehouseid
-            FROM picklist p
+            FROM nifiapp.picklist p
             WHERE p.picktaskid = ANY($1);
             """
-            await self.picklist_repo.baserepository.execute_query(set_schema)
             picklist_data = (
                 await self.picklist_repo.baserepository.execute_query(
                     query, (picktasks,)

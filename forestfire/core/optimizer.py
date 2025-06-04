@@ -282,7 +282,7 @@ class WarehouseOptimizer:
         logger.info("\nFinal Best Solution: {}", final_solution)
 
         # Visualize the best solution
-        self.path_visualizer.plot_routes(final_solution, config)
+        await self.path_visualizer.plot_routes(final_solution, config)
         await self.batch_pick_sequence_service.update_pick_sequences(
             num_pickers,
             picker_locations,

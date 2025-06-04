@@ -4,11 +4,44 @@ This module contains tests for the ant colony optimization algorithm used in
 warehouse order picking optimization.
 """
 
+import pytest
 import numpy as np
 from forestfire.utils.config import (
     TEST_NUM_PICKERS as NUM_PICKERS,
     TEST_PICKER_CAPACITIES as PICKER_CAPACITIES,
 )
+from forestfire.algorithms.ant_colony import AntColonyOptimizer
+from forestfire.optimizer.services.routing import RouteOptimizer
+
+
+@pytest.fixture
+def ant_colony_optimizer():
+    """Create an AntColonyOptimizer instance for testing."""
+    return AntColonyOptimizer(route_optimizer=RouteOptimizer())
+
+
+@pytest.fixture
+def sample_orders_assign():
+    """Create sample order assignments for testing."""
+    return [
+        [(0, 0)],  # Order 0 location
+        [(10, 10)],  # Order 1 location
+        [(20, 20)],  # Order 2 location
+        [(30, 30)],  # Order 3 location
+        [(40, 40)],  # Order 4 location
+    ]
+
+
+@pytest.fixture
+def sample_pheromone():
+    """Create a sample pheromone matrix for testing."""
+    return np.ones((5, NUM_PICKERS))
+
+
+@pytest.fixture
+def sample_heuristic():
+    """Create a sample heuristic matrix for testing."""
+    return np.ones((5, NUM_PICKERS))
 
 
 class TestAntColonyOptimizer:

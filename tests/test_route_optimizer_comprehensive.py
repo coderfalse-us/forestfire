@@ -4,7 +4,6 @@ This module contains comprehensive tests for the RouteOptimizer class
 used for route optimization in the warehouse order picking optimization.
 """
 
-from unittest.mock import patch
 from forestfire.optimizer.services.routing import RouteOptimizer
 from forestfire.optimizer.models.route import Route
 
@@ -53,7 +52,6 @@ class TestRouteOptimizerComprehensive:
         # Assert
         assert cost == 0  # Empty path, so cost is 0
 
-    @patch("forestfire.optimizer.services.routing.NUM_PICKERS", 2)
     def test_calculate_shortest_route_with_valid_assignment(self):
         """Test calculating shortest route with a valid assignment."""
         # Arrange
@@ -105,7 +103,6 @@ class TestRouteOptimizerComprehensive:
         assert len(paths) == len(picker_locations)
         assert all(isinstance(path, list) for path in paths)
 
-    @patch("forestfire.optimizer.services.routing.NUM_PICKERS", 2)
     def test_calculate_shortest_route_with_empty_assignment(self):
         """Test calculating shortest route with an empty assignment."""
         # Arrange
@@ -115,7 +112,7 @@ class TestRouteOptimizerComprehensive:
         orders_assign = []
         picktasks = []
         stage_result = {}
-        num_pickers = None
+        num_pickers = 2
 
         # Act
         total_cost, routes, paths = optimizer.calculate_shortest_route(
@@ -134,7 +131,6 @@ class TestRouteOptimizerComprehensive:
         assert all(len(route.assigned_orders or []) == 0 for route in routes)
         assert len(paths) == len(picker_locations)
 
-    @patch("forestfire.optimizer.services.routing.NUM_PICKERS", 2)
     def test_calculate_shortest_route_with_single_picker(self):
         """Test calculating shortest route with all orders to one picker."""
         # Arrange
@@ -179,7 +175,6 @@ class TestRouteOptimizerComprehensive:
         for i in range(1, len(picker_locations)):
             assert len(routes[i].assigned_orders or []) == 0
 
-    @patch("forestfire.optimizer.services.routing.NUM_PICKERS", 2)
     def test_calculate_shortest_route_with_complex_paths(self):
         """Test route calculation with complex paths and staging areas."""
         # Arrange
@@ -227,7 +222,6 @@ class TestRouteOptimizerComprehensive:
         assert len(paths[0]) > 0
         assert len(paths[1]) > 0
 
-    @patch("forestfire.optimizer.services.routing.NUM_PICKERS", 2)
     def test_calculate_shortest_route_with_multiple_pickers(self):
         """Test calculating shortest route with multiple pickers."""
         # Arrange

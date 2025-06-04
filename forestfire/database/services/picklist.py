@@ -50,12 +50,10 @@ class PicklistRepository:
         Returns:
             List[str]: List of unique picktask IDs
         """
-        set_schema = "SET search_path TO nifiapp"
         query = """
-        SELECT DISTINCT picktaskid FROM picklist
+        SELECT DISTINCT picktaskid FROM nifiapp.picklist
         """
         try:
-            await self.baserepository.execute_query(set_schema)
             distinct_pictask = await self.baserepository.execute_query(query)
             return [row[0] for row in distinct_pictask]
         except Exception as e:
@@ -117,26 +115,6 @@ class PicklistRepository:
         except Exception as e:
             logger.error("Error mapping picklist data: %s", e)
             raise QueryError("Failed to map picklist data") from e
-
-    def update_batchid(self, batch_id: str, picklist_id: str) -> None:
-        """
-        Update batch ID for a picktask
-
-        Args:
-            batch_id (str): New batch ID
-            picktask_id (str): Picktask ID to update
-        """
-        query = """
-        SET search_path TO nifiapp;
-        UPDATE picklist
-        SET batchid = %s
-        WHERE picktaskid = %s;
-        """
-        try:
-            self.baserepository.execute_query(query, (batch_id, picklist_id))
-        except Exception as e:
-            logger.error("Error updating batch ID: %s", e)
-            raise QueryError("Failed to update batch ID") from e
 
     async def get_optimized_data(
         self,

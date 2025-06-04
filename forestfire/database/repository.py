@@ -31,12 +31,12 @@ class BaseRepository(ABC):
 
     async def execute_transaction(self, queries: List[tuple]) -> None:
         async with DatabaseConnectionManager.get_connection() as conn:
-            async with conn.transaction() as cur:
+            async with conn.transaction():
                 try:
                     for query, params in queries:
                         if params:
-                            await cur.execute(query, *params)
+                            await conn.execute(query, *params)
                         else:
-                            await cur.execute(query)
+                            await conn.execute(query)
                 except Exception as e:
                     raise QueryError(f"Transaction failed: {e}") from e

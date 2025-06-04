@@ -30,8 +30,9 @@ from forestfire.database.services.picksequencemodel import (
 class TestPicklistRepository:
     """Test cases for the PicklistRepository class."""
 
+    @pytest.mark.asyncio
     @patch("forestfire.database.repository.BaseRepository.execute_query")
-    def test_fetch_picklist_data(self, mock_execute_query):
+    async def test_fetch_picklist_data(self, mock_execute_query):
         """Test fetching picklist data."""
         # Arrange
         mock_execute_query.return_value = [
@@ -41,14 +42,15 @@ class TestPicklistRepository:
         repo = PicklistRepository()
 
         # Act
-        result = repo.fetch_picklist_data(TEST_WAREHOUSE_NAME)
+        result = await repo.fetch_picklist_data(TEST_WAREHOUSE_NAME)
 
         # Assert
         assert result == mock_execute_query.return_value
         mock_execute_query.assert_called_once()
 
+    @pytest.mark.asyncio
     @patch("forestfire.database.repository.BaseRepository.execute_query")
-    def test_fetch_picklist_data_error(self, mock_execute_query):
+    async def test_fetch_picklist_data_error(self, mock_execute_query):
         """Test handling errors when fetching picklist data."""
         # Arrange
         mock_execute_query.side_effect = Exception("Database error")
@@ -56,10 +58,11 @@ class TestPicklistRepository:
 
         # Act/Assert
         with pytest.raises(QueryError):
-            repo.fetch_picklist_data(TEST_WAREHOUSE_NAME)
+            await repo.fetch_picklist_data(TEST_WAREHOUSE_NAME)
 
+    @pytest.mark.asyncio
     @patch.object(PicklistRepository, "map_picklist_data")
-    def test_get_optimized_data(self, mock_map_picklist_data):
+    async def test_get_optimized_data(self, mock_map_picklist_data):
         """Test getting optimized data."""
         # Arrange
         # Mock the map_picklist_data method to return test data
@@ -74,9 +77,12 @@ class TestPicklistRepository:
         repo = PicklistRepository()
 
         # Act
-        (picktasks, orders_assign, stage_result, picklistids) = (
-            repo.get_optimized_data(TEST_WAREHOUSE_NAME)
-        )
+        (
+            picktasks,
+            orders_assign,
+            stage_result,
+            picklistids,
+        ) = await repo.get_optimized_data(TEST_WAREHOUSE_NAME)
 
         # Assert
         assert len(picktasks) == 2

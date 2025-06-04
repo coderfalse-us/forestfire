@@ -14,8 +14,9 @@ from forestfire.utils.config import TEST_WAREHOUSE_NAME as WAREHOUSE_NAME
 class TestPicklistRepositoryComprehensive:
     """Comprehensive test cases for the PicklistRepository class."""
 
+    @pytest.mark.asyncio
     @patch("forestfire.database.repository.BaseRepository.execute_query")
-    def test_fetch_picklist_data_with_warehouse(self, mock_execute_query):
+    async def test_fetch_picklist_data_with_warehouse(self, mock_execute_query):
         """Test fetching picklist data with warehouse filter."""
         # Arrange
         mock_execute_query.return_value = [
@@ -25,7 +26,7 @@ class TestPicklistRepositoryComprehensive:
         repo = PicklistRepository()
 
         # Act
-        result = repo.fetch_picklist_data(WAREHOUSE_NAME)
+        result = await repo.fetch_picklist_data(WAREHOUSE_NAME)
 
         # Assert
         assert result == mock_execute_query.return_value
@@ -34,20 +35,21 @@ class TestPicklistRepositoryComprehensive:
         SELECT p.*
         FROM nifiapp.picklist p
         JOIN synob_tabr.warehouses w ON p.warehouseid = w.id
-        WHERE w.name = %s;
+        WHERE w.name = $1;
         """,
             (WAREHOUSE_NAME,),
         )
 
+    @pytest.mark.asyncio
     @patch("forestfire.database.repository.BaseRepository.execute_query")
-    def test_fetch_distinct_picktasks(self, mock_execute_query):
+    async def test_fetch_distinct_picktasks(self, mock_execute_query):
         """Test fetching distinct picktasks."""
         # Arrange
         mock_execute_query.return_value = [("task1",), ("task2",)]
         repo = PicklistRepository()
 
         # Act
-        result = repo.fetch_distinct_picktasks()
+        result = await repo.fetch_distinct_picktasks()
 
         # Assert
         assert result == ["task1", "task2"]
@@ -55,8 +57,9 @@ class TestPicklistRepositoryComprehensive:
         # Check that the query contains DISTINCT
         assert "DISTINCT" in mock_execute_query.call_args[0][0]
 
+    @pytest.mark.asyncio
     @patch("forestfire.database.repository.BaseRepository.execute_query")
-    def test_fetch_distinct_picktasks_error(self, mock_execute_query):
+    async def test_fetch_distinct_picktasks_error(self, mock_execute_query):
         """Test handling errors when fetching distinct picktasks."""
         # Arrange
         mock_execute_query.side_effect = Exception("Database error")
@@ -64,52 +67,20 @@ class TestPicklistRepositoryComprehensive:
 
         # Act/Assert
         with pytest.raises(QueryError) as excinfo:
-            repo.fetch_distinct_picktasks()
+            await repo.fetch_distinct_picktasks()
 
         assert "Failed to fetch distinct picktasks" in str(excinfo.value)
 
-    @patch("forestfire.database.repository.BaseRepository.execute_query")
-    def test_update_batchid(self, mock_execute_query):
-        """Test updating batch ID."""
-        # Arrange
-        mock_execute_query.return_value = []
-        repo = PicklistRepository()
-        picklist_id = "test_picklist_id"
-        batch_id = "test_batch_id"
-
-        # Act
-        repo.update_batchid(batch_id, picklist_id)
-
-        # Assert
-        mock_execute_query.assert_called_once()
-        # Check that the query is an UPDATE
-        assert "UPDATE" in mock_execute_query.call_args[0][0]
-        # Check that the parameters are correct
-        assert mock_execute_query.call_args[0][1] == (batch_id, picklist_id)
-
-    @patch("forestfire.database.repository.BaseRepository.execute_query")
-    def test_update_batchid_error(self, mock_execute_query):
-        """Test handling errors when updating batch ID."""
-        # Arrange
-        mock_execute_query.side_effect = Exception("Database error")
-        repo = PicklistRepository()
-        picklist_id = "test_picklist_id"
-        batch_id = "test_batch_id"
-
-        # Act/Assert
-        with pytest.raises(QueryError) as excinfo:
-            repo.update_batchid(batch_id, picklist_id)
-
-        assert "Failed to update batch ID" in str(excinfo.value)
-
+    @pytest.mark.asyncio
     @patch(
-        "forestfire.database.services.picklist.PicklistRepository.fetch_picklist_data"
+        "forestfire.database.services.picklist."
+        "PicklistRepository.fetch_picklist_data"
     )
     @patch(
         "forestfire.database.services.picklist.PicklistRepository"
         ".fetch_distinct_picktasks"
     )
-    def test_map_picklist_data(
+    async def test_map_picklist_data(
         self, mock_fetch_distinct_picktasks, mock_fetch_picklist_data
     ):
         """Test mapping picklist data."""
@@ -139,7 +110,9 @@ class TestPicklistRepositoryComprehensive:
         repo = PicklistRepository()
 
         # Act
-        staging, taskid, id_mapping = repo.map_picklist_data(WAREHOUSE_NAME)
+        staging, taskid, id_mapping = await repo.map_picklist_data(
+            WAREHOUSE_NAME
+        )
 
         # Assert
         # Check that the dictionaries have the expected keys
@@ -163,17 +136,21 @@ class TestPicklistRepositoryComprehensive:
         assert len(taskid["task1"]) > 0
         assert id_mapping["task1"] == "id1"
 
+    @pytest.mark.asyncio
     @patch(
-        "forestfire.database.services.picklist.PicklistRepository.map_picklist_data"
+        "forestfire.database.services.picklist."
+        "PicklistRepository.map_picklist_data"
     )
-    def test_get_optimized_data_with_empty_data(self, mock_map_picklist_data):
+    async def test_get_optimized_data_with_empty_data(
+        self, mock_map_picklist_data
+    ):
         """Test getting optimized data with empty input."""
         # Arrange
         mock_map_picklist_data.return_value = ({}, {}, {})
         repo = PicklistRepository()
 
         # Act
-        result = repo.get_optimized_data(WAREHOUSE_NAME)
+        result = await repo.get_optimized_data(WAREHOUSE_NAME)
         picktasks, orders_assign, stage_result, picklistids = result
 
         # Assert
@@ -182,10 +159,12 @@ class TestPicklistRepositoryComprehensive:
         assert not stage_result
         assert not picklistids
 
+    @pytest.mark.asyncio
     @patch(
-        "forestfire.database.services.picklist.PicklistRepository.map_picklist_data"
+        "forestfire.database.services.picklist."
+        "PicklistRepository.map_picklist_data"
     )
-    def test_get_optimized_data_with_multiple_tasks(
+    async def test_get_optimized_data_with_multiple_tasks(
         self, mock_map_picklist_data
     ):
         """Test getting optimized data with multiple tasks."""
@@ -201,7 +180,7 @@ class TestPicklistRepositoryComprehensive:
         repo = PicklistRepository()
 
         # Act
-        result = repo.get_optimized_data(WAREHOUSE_NAME)
+        result = await repo.get_optimized_data(WAREHOUSE_NAME)
         picktasks, orders_assign, stage_result, picklistids = result
 
         # Assert
