@@ -64,8 +64,10 @@ class PathVisualizer:
                 stage_result,
                 _,
             ) = await self.picklist_repo.get_optimized_data(warehouse_name)
-        except Exception as _:
-            logger.warning("Failed to get data from database, using mock data")
+        except (ValueError, KeyError, IOError) as e:
+            logger.warning(
+                "Failed to get data from database: %s. Using mock data", str(e)
+            )
             # Use mock data for visualization
             picktasks = ["mock_task_1", "mock_task_2"]
             orders_assign = [[(0, 0), (10, 10)], [(20, 20), (30, 30)]]

@@ -7,6 +7,7 @@ the application for optimization algorithms and warehouse layout.
 from dataclasses import dataclass
 from typing import List, Tuple
 from pydantic import BaseModel
+# pylint: disable=invalid-name
 
 MAX_IT = 50
 N_POP = 150

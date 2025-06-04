@@ -4,6 +4,7 @@ import pytest
 from unittest.mock import patch, MagicMock
 from forestfire.core.optimizer import WarehouseOptimizer
 from forestfire.utils.config import WarehouseConfigManager, WarehouseConfig
+# pylint: disable=redefined-outer-name
 
 
 @pytest.fixture
@@ -18,7 +19,7 @@ def test_warehouse_config():
 
 
 @pytest.fixture
-def optimizer(test_warehouse_config):
+def optimizer():
     """Create WarehouseOptimizer instance with test configuration."""
     optimizer = WarehouseOptimizer()
     return optimizer

@@ -6,6 +6,7 @@ used for route optimization in the warehouse order picking optimization.
 
 from forestfire.optimizer.services.routing import RouteOptimizer
 from forestfire.optimizer.models.route import Route
+# pylint: disable=protected-access
 
 
 class TestRouteOptimizerComprehensive:
@@ -18,7 +19,6 @@ class TestRouteOptimizerComprehensive:
         path = [(0, 0), (10, 10), (20, 20), (30, 30)]
 
         # Act
-        # The method is protected (_calculate_route_cost)
         cost = optimizer._calculate_route_cost(path)
 
         # Assert
@@ -33,7 +33,6 @@ class TestRouteOptimizerComprehensive:
         path = [(10, 10)]
 
         # Act
-        # The method is protected (_calculate_route_cost)
         cost = optimizer._calculate_route_cost(path)
 
         # Assert
@@ -46,7 +45,6 @@ class TestRouteOptimizerComprehensive:
         path = []
 
         # Act
-        # The method is protected (_calculate_route_cost)
         cost = optimizer._calculate_route_cost(path)
 
         # Assert

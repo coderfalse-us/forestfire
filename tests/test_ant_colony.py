@@ -12,6 +12,7 @@ from forestfire.utils.config import (
 )
 from forestfire.algorithms.ant_colony import AntColonyOptimizer
 from forestfire.optimizer.services.routing import RouteOptimizer
+# pylint: disable=redefined-outer-name
 
 
 @pytest.fixture
