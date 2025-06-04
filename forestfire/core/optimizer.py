@@ -294,3 +294,6 @@ class WarehouseOptimizer:
         )
 
         return final_solution
+
+
+# uvicorn forestfire.api.app:app --reload
