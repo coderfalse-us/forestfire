@@ -7,6 +7,7 @@ the application for optimization algorithms and warehouse layout.
 from dataclasses import dataclass
 from typing import List, Tuple
 from pydantic import BaseModel
+
 # pylint: disable=invalid-name
 
 MAX_IT = 50
@@ -45,6 +46,8 @@ TEST_WAREHOUSE_NAME = "DEV-PK-WAREHOUSE"
 
 
 class WarehouseConfig(BaseModel):
+    """Configuration settings for the warehouse order picking optimization."""
+
     num_pickers: int
     picker_capacities: List[int]
     picker_locations: List[Tuple[int, int]]

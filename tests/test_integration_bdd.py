@@ -26,6 +26,7 @@ from forestfire.database.services.picklist import PicklistRepository
 from forestfire.database.services.picksequencemodel import ApiPayload
 from forestfire.optimizer.models.route import Route
 from forestfire.database.services.picksequencemodel import PickSequenceUpdate
+
 # pylint: disable=redefined-outer-name
 # pylint: disable=protected-access
 

@@ -152,9 +152,11 @@ class BatchPickSequenceService:
                     logger.error(
                         "API returned error status: {}, Response: {}",
                         e,
-                        e.response.text
-                        if hasattr(e, "response")
-                        else "No response",
+                        (
+                            e.response.text
+                            if hasattr(e, "response")
+                            else "No response"
+                        ),
                     )
                     raise
                 except Exception as e:
@@ -171,6 +173,7 @@ class BatchPickSequenceService:
         picktasks: List[str],
         stage_result: Dict[str, List[Tuple[float, float]]],
     ) -> None:
+        """Update pick sequences based on optimized routes."""
         try:
             logger.info("Starting pick sequence updates")
             logger.debug(

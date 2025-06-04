@@ -1,3 +1,6 @@
+"""Utility functions for geometry calculations"""
+
+
 class WalkwayCalculator:
     """Utility class for walkway calculations"""
 

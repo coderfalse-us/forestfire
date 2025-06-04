@@ -4,6 +4,7 @@ import pytest
 from unittest.mock import patch, MagicMock
 from forestfire.core.optimizer import WarehouseOptimizer
 from forestfire.utils.config import WarehouseConfigManager, WarehouseConfig
+
 # pylint: disable=redefined-outer-name
 
 

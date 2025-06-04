@@ -12,6 +12,8 @@ from forestfire.database.exceptions import QueryError
 
 
 class DummyAsyncContextManager:
+    """Dummy async context manager for testing."""
+
     async def __aenter__(self):
         return self
 
@@ -68,13 +70,6 @@ class TestBaseRepositoryComprehensive:
             await repo.execute_query(query)
         assert "Query execution failed" in str(excinfo.value)
         mock_conn.fetch.assert_called_once()
-
-    class DummyAsyncContextManager:
-        async def __aenter__(self):
-            return None
-
-        async def __aexit__(self, *a):
-            pass
 
     @pytest.mark.asyncio
     @patch(

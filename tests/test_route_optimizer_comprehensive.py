@@ -6,6 +6,7 @@ used for route optimization in the warehouse order picking optimization.
 
 from forestfire.optimizer.services.routing import RouteOptimizer
 from forestfire.optimizer.models.route import Route
+
 # pylint: disable=protected-access
 
 

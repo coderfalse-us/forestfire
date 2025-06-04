@@ -43,6 +43,7 @@ class DatabaseConnectionManager:
     async def create_pool(
         cls,
     ):
+        """Create a connection pool if it does not exist."""
         if not cls._pool:
             cls._pool = await asyncpg.create_pool(
                 host=cls._config.host,

@@ -8,6 +8,7 @@ import pytest
 from unittest.mock import patch, MagicMock
 from forestfire.plots.graph import PathVisualizer
 from forestfire.optimizer.models.route import Route
+
 # pylint: disable=redefined-outer-name
 
 
