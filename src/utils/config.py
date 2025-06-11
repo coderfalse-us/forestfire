@@ -1,0 +1,234 @@
+"""Configuration settings for warehouse order picking optimization.
+
+This module contains constants and configuration settings used throughout
+the application for optimization algorithms and warehouse layout.
+"""
+
+from dataclasses import dataclass
+from typing import List, Tuple
+from pydantic import BaseModel
+
+# pylint: disable=invalid-name
+
+MAX_IT = 50
+N_POP = 150
+PC = 0.90
+PM = 0.04
+NM = round(N_POP * PM)
+NC = 2 * round((N_POP * PC) / 2)
+NUM_ANTS = 25
+TOURNAMENT_SIZE = 5
+ALPHA = 1.0
+BETA = 2.0
+RHO = 0.5
+Q = 100
+STEP_BETWEEN_ROWS = 10
+LEFT_WALKWAY = 15
+RIGHT_WALKWAY = 105
+ROWS = 100
+COLS = 100
+ITEM_LOCATIONS = []
+TEST_NUM_PICKERS = 10
+TEST_PICKER_CAPACITIES = [10] * TEST_NUM_PICKERS
+TEST_PICKER_LOCATIONS = [
+    (6, 118),
+    (6, 47),
+    (14, 95),
+    (12, 22),
+    (3, 23),
+    (114, 76),
+    (119, 77),
+    (106, 31),
+    (113, 0),
+    (101, 43),
+]
+TEST_WAREHOUSE_NAME = "DEV-PK-WAREHOUSE"
+
+
+class WarehouseConfig(BaseModel):
+    """Configuration settings for the warehouse order picking optimization."""
+
+    num_pickers: int
+    picker_capacities: List[int]
+    picker_locations: List[Tuple[int, int]]
+    warehouse_name: str
+
+
+@dataclass
+class WarehouseConfigManager:
+    """Manages warehouse configuration settings."""
+
+    def __init__(self, config: WarehouseConfig):
+        self.NUM_PICKERS = config.num_pickers
+        self.PICKER_CAPACITIES = config.picker_capacities
+        self.PICKER_LOCATIONS = [tuple(loc) for loc in config.picker_locations]
+        self.WAREHOUSE_NAME = config.warehouse_name
+
+
+@dataclass
+class TestWarehouseConfigManager:
+    """Manages warehouse configuration settings."""
+
+    def __init__(self):
+        self.NUM_PICKERS = 10
+        self.PICKER_CAPACITIES = [10] * self.NUM_PICKERS
+        self.PICKER_LOCATIONS = [
+            (10, 118),
+            (6, 47),
+            (14, 95),
+            (12, 22),
+            (3, 23),
+            (114, 76),
+            (119, 77),
+            (106, 31),
+            (113, 0),
+            (101, 43),
+        ]
+        self.WAREHOUSE_NAME = "DEV-PK-WAREHOUSE"
+
+
+# ROWS = 100
+# COLS = 100
+# NUM_ITEMS = 100
+# NUM_PICKERS = 10
+# MAX_IT = 50
+# N_POP = 150
+# PC = 0.90
+# PM = 0.04
+# NM = round(N_POP * PM)
+# NC = 2 * round((N_POP * PC) / 2)
+# TOURNAMENT_SIZE = 5
+# ALPHA = 1.0
+# BETA = 2.0
+# RHO = 0.5
+# Q = 100
+# NUM_ANTS = 25
+# STEP_BETWEEN_ROWS = 10
+# LEFT_WALKWAY = 15
+# RIGHT_WALKWAY = 105
+# PICKER_CAPACITIES = [10] * NUM_PICKERS
+# PICKER_LOCATIONS = [
+#     (6, 118),
+#     (6, 47),
+#     (14, 95),
+#     (12, 22),
+#     (3, 23),
+#     (114, 76),
+#     (119, 77),
+#     (106, 31),
+#     (113, 0),
+#     (101, 43),
+# ]
+# ITEM_LOCATIONS = [
+#     # Row 0
+#     (89, 0),
+#     (59, 0),
+#     (85, 0),
+#     (79, 0),
+#     (30, 0),
+#     (33, 0),
+#     (88, 0),
+#     (58, 0),
+#     (51, 0),
+#     (48, 0),
+#     # Row 10
+#     (54, 10),
+#     (56, 10),
+#     (54, 10),
+#     (45, 10),
+#     (21, 10),
+#     (82, 10),
+#     (71, 10),
+#     (92, 10),
+#     (74, 10),
+#     (61, 10),
+#     # Row 20
+#     (55, 20),
+#     (69, 20),
+#     (87, 20),
+#     (71, 20),
+#     (43, 20),
+#     (33, 20),
+#     (56, 20),
+#     (70, 20),
+#     (91, 20),
+#     (33, 20),
+#     # Row 30
+#     (79, 30),
+#     (40, 30),
+#     (40, 30),
+#     (74, 30),
+#     (21, 30),
+#     (66, 30),
+#     (23, 30),
+#     (63, 30),
+#     (23, 30),
+#     (29, 30),
+#     # Row 40
+#     (80, 40),
+#     (67, 40),
+#     (77, 40),
+#     (50, 40),
+#     (57, 40),
+#     (54, 40),
+#     (90, 40),
+#     (85, 40),
+#     (32, 40),
+#     (70, 40),
+#     # Row 50
+#     (75, 50),
+#     (62, 50),
+#     (65, 50),
+#     (59, 50),
+#     (65, 50),
+#     (100, 50),
+#     (51, 50),
+#     (43, 50),
+#     (67, 50),
+#     (39, 50),
+#     # Row 60
+#     (95, 60),
+#     (98, 60),
+#     (85, 60),
+#     (94, 60),
+#     (78, 60),
+#     (33, 60),
+#     (77, 60),
+#     (77, 60),
+#     (91, 60),
+#     (28, 60),
+#     # Row 70
+#     (43, 70),
+#     (31, 70),
+#     (46, 70),
+#     (94, 70),
+#     (82, 70),
+#     (31, 70),
+#     (79, 70),
+#     (61, 70),
+#     (96, 70),
+#     (70, 70),
+#     # Row 80
+#     (35, 80),
+#     (63, 80),
+#     (56, 80),
+#     (22, 80),
+#     (79, 80),
+#     (24, 80),
+#     (97, 80),
+#     (57, 80),
+#     (99, 80),
+#     (91, 80),
+#     # Row 90
+#     (69, 90),
+#     (23, 90),
+#     (96, 90),
+#     (20, 90),
+#     (57, 90),
+#     (100, 90),
+#     (96, 90),
+#     (65, 90),
+#     (57, 90),
+#     (31, 90),
+# ]
+# WAREHOUSE_NAME = "DEV-PK-WAREHOUSE"

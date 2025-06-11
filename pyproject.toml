@@ -7,6 +7,7 @@ requires-python = ">=3.12"
 dependencies = [
     "asyncpg>=0.30.0",
     "behave>=1.2.6",
+    "black>=25.1.0",
     "colorama>=0.4.6",
     "dotenv>=0.9.9",
     "httpx>=0.28.1",
@@ -28,11 +29,23 @@ dev = [
     "ruff>=0.11.8",
 ]
 
+[tool.ruff.lint.pydocstyle]
+# Use Google-style docstrings
+convention = "google"
+
 [tool.black]
 line-length = 80
+
+[tool.ruff.format]
+# Quotes
+quote-style = "single"
+# Indentation
+indent-style = "space"
+# Prefer spaces in comments
+line-ending = "auto"
 
 [tool.ruff.lint]
 # Add the `line-too-long` rule to the enforced rule set. By default, Ruff omits rules that
 # overlap with the use of a formatter, like Black, but we can override this behavior by
 # explicitly adding the rule.
-extend-select = ["E501","W291", "W292","N802", "N803", "N806", "N801", "N813","D100", "D101", "D102", "D103"]
+extend-select = ["W291", "W292","N802", "N803", "N806", "N801", "N813","D100", "D101", "D102", "D103"]
