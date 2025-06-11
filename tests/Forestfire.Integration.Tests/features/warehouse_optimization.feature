@@ -23,7 +23,7 @@ Feature: Warehouse Order Picking Optimization End-to-End
     And the picker capacities are set to:
       | picker_id | capacity |
       | 0         | 8        |
-      | 1         | 12       |
+      | 1         | 10       |
       | 2         | 10       |
       | 3         | 9        |
       | 4         | 11       |

@@ -63,7 +63,7 @@ def before_scenario(context, scenario):
         context.mock_plot.start()
 
 
-def after_scenario(context, scenario):
+def after_scenario(context, scenario):  # pylint: disable=unused-argument
     """Clean up after each scenario."""
     # Stop mocks if they were started
     if hasattr(context, "mock_plot"):
