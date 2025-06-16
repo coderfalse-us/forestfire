@@ -145,28 +145,3 @@ class GeneticOperator:
         tournament_contestants = random.sample(population, tournament_size)
         winner = sorted(tournament_contestants, key=lambda x: x[1])[0]
         return winner[0]
-
-
-# For backwards compatibility
-def crossover(
-    x1: List[int], x2: List[int], picker_capacities: List[int], num_pickers: int
-) -> Tuple[List[int], List[int]]:
-    """Legacy crossover function"""
-    genetic_op = GeneticOperator(RouteOptimizer())
-    return genetic_op.crossover(x1, x2, picker_capacities, num_pickers)
-
-
-def mutate_with_capacity(
-    x: List[int], picker_capacities: List[int], num_pickers: int
-) -> List[int]:
-    """Legacy mutation function"""
-    genetic_op = GeneticOperator(RouteOptimizer())
-    return genetic_op.mutate_with_capacity(x, picker_capacities, num_pickers)
-
-
-def tournament_selection(
-    population: List[Tuple[List[int], float]], tournament_size: int
-) -> List[int]:
-    """Legacy tournament selection function"""
-    genetic_op = GeneticOperator(RouteOptimizer())
-    return genetic_op.tournament_selection(population, tournament_size)

@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Code formatters are essential tools in modern software development that automatically format code according to predefined style rules. They help maintain consistent code style across a project, improve readability, and eliminate debates about formatting preferences. This document provides an overview of popular Python code formatters, with a special focus on Ruff, which is the formatter used in the ForestFire project.
+Code formatters are essential tools in modern software development that automatically format code according to predefined style rules. They help maintain consistent code style across a project, improve readability, and eliminate debates about formatting preferences. This document provides an overview of popular Python code formatters, with a special focus on Black and Ruff, which are the formatters used in the ForestFire project.
 
 ## Why Use Code Formatters?
 
@@ -75,82 +75,77 @@ Code formatters are essential tools in modern software development that automati
 - Only handles import statements
 - Must be used alongside other formatters for complete code formatting
 
-## Ruff: The Modern Python Formatter and Linter
+## Formatters Used in the ForestFire Project
 
-### Overview
+The ForestFire project employs a hybrid approach using both Black and Ruff to benefit from the strengths of each tool:
 
-**Ruff** is a fast, Rust-based Python linter and formatter that aims to replace multiple Python tools (like Black, isort, pycodestyle, flake8, etc.) with a single, high-performance solution. It's designed to be a drop-in replacement for existing tools while offering significant performance improvements.
+### 1. Black for Code Formatting
 
-### Key Features of Ruff
+Black serves as our primary code formatter, enforcing consistent style across all Python files in the project.
 
-#### 1. Exceptional Performance
+**Our Black Configuration:**
+```toml
+[tool.black]
+line-length = 80
+```
 
-- **Blazing Fast**: Ruff is 10-100x faster than traditional Python linters and formatters
-- **Rust Implementation**: Built with Rust for memory safety and performance
-- **Incremental Formatting**: Can efficiently format only changed files
+We've configured Black with a line length of 80 characters, which is slightly more restrictive than Black's default of 88 characters. This ensures our code remains readable across smaller screens and when viewing multiple files side-by-side.
 
-#### 2. Comprehensive Functionality
+Key benefits of using Black in our project:
+- **Deterministic Formatting**: Black ensures consistent code style regardless of who wrote the code
+- **Minimal Configuration**: We only need to specify line length, as Black handles all other style decisions
+- **Industry Standard**: Black is widely adopted in the Python community, making our codebase familiar to new contributors
+- **IDE Integration**: Excellent support in VS Code, PyCharm, and other editors
 
-- **Formatter and Linter**: Combines formatting and linting in a single tool
-- **Import Sorting**: Includes isort-compatible import sorting
-- **Rule Selection**: Supports over 700 built-in rules
-- **Auto-fixes**: Can automatically fix many issues it identifies
+### 2. Ruff for Linting and Additional Formatting
 
-#### 3. Compatibility
+While Black handles the core formatting responsibilities, we use Ruff for linting and specialized formatting tasks:
 
-- **Black-Compatible**: Can produce Black-compatible output
-- **Configuration Compatibility**: Supports configuration from pyproject.toml and other standard files
-- **IDE Integration**: Works with popular IDEs and editors
+**Our Ruff Configuration:**
+```toml
+[tool.ruff.format]
+# Quotes
+quote-style = "single"
+# Indentation
+indent-style = "space"
+# Prefer spaces in comments
+line-ending = "auto"
 
-#### 4. Configurability
+[tool.ruff.lint]
+# Add rules to the enforced rule set
+extend-select = ["W291", "W292","N802", "N803", "N806", "N801", "N813","D100", "D101", "D102", "D103"]
+```
 
-- **Flexible Configuration**: Extensive configuration options while maintaining sensible defaults
-- **Rule Selection**: Enable/disable specific rules or rule categories
-- **Line Length**: Configurable line length and other formatting options
+With Ruff, we enforce:
+- Single quotes for strings
+- Space indentation
+- Automatic handling of line endings
+- Documentation requirements through docstring rules
+- Naming convention rules
+- Whitespace rules
 
-### Using Ruff in the ForestFire Project
+### How Black and Ruff Work Together
 
-Our project leverages Ruff for code formatting and linting with the following configuration:
+In our development workflow:
 
-1. **Configuration in pyproject.toml**:
-   ```toml
-   [tool.ruff]
-   # Set the maximum line length to 80.
-   line-length = 80
+1. **Black is run first** to handle the core formatting concerns (line length, indentation, etc.)
+2. **Ruff is run second** to apply additional formatting preferences and perform linting
 
-   [tool.ruff.lint]
-   # Add the `line-too-long` rule to the enforced rule set.
-   extend-select = ["E501"]
-   ```
+This sequence ensures that:
+- The basic structure of the code follows Black's deterministic style
+- Additional preferences (like quote style) are consistently applied
+- Code quality issues are identified and can be automatically fixed where possible
 
-2. **Pre-commit Integration**:
-   ```yaml
-   repos:
-     - repo: https://github.com/astral-sh/ruff-pre-commit
-       rev: v0.3.0
-       hooks:
-         - id: ruff
-         - id: ruff-format
-   ```
+## Using Our Formatting Tools
 
-### Benefits of Using Ruff in Our Project
-
-1. **Development Speed**: Faster formatting and linting means less time waiting and more time coding
-2. **Consistency**: Ensures uniform code style across the entire codebase
-3. **Modern Tooling**: Support for the latest Python features and best practices
-4. **Simplified Workflow**: Single tool for formatting, linting, and import sorting
-5. **Performance**: Reduced resource usage and faster CI/CD pipelines
-6. **Pre-commit Integration**: Automatic formatting and linting before commits
-
-## Common Formatter Commands
-
-### Ruff Commands
+### Command Line Usage
 
 ```bash
-# Format a file
-ruff format file.py
+# Format with Black
+black .
 
-# Format all Python files in a directory
+# Format and lint with Ruff
+ruff check --fix .
 ruff format .
 
 # Format and fix linting issues
@@ -187,37 +182,61 @@ Most modern code editors support integration with Python formatters:
 Pre-commit hooks ensure code is formatted before being committed:
 
 ```yaml
-# .pre-commit-config.yaml
 repos:
+  - repo: https://github.com/psf/black
+    rev: 25.1.0
+    hooks:
+      - id: black
+        
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.3.0
     hooks:
       - id: ruff
+        args: [--fix]
       - id: ruff-format
 ```
 
-### 3. CI/CD Integration
+### IDE Integration
 
-Add formatting checks to CI/CD pipelines to ensure all code meets the project's style requirements:
+For Visual Studio Code, we recommend the following settings in `.vscode/settings.json`:
 
-```yaml
-# Example GitHub Actions workflow
-jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
-        with:
-          python-version: '3.12'
-      - name: Install dependencies
-        run: pip install ruff
-      - name: Check formatting
-        run: ruff format --check .
+```json
+{
+  "editor.formatOnSave": true,
+  "python.formatting.provider": "black",
+  "python.linting.enabled": true,
+  "python.linting.flake8Enabled": false,
+  "python.linting.ruffEnabled": true,
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit",
+      "source.fixAll": "explicit"
+    }
+  }
+}
 ```
+
+## Benefits of Our Dual-Formatter Approach
+
+1. **Best of Both Worlds**: We get Black's consistency and Ruff's flexibility
+2. **Comprehensive Coverage**: Format code style and catch linting issues in one workflow
+3. **Performance**: Both tools are optimized for speed, minimizing developer wait time
+4. **Modern Standards**: Stay aligned with current Python best practices
+5. **Clear Separation of Concerns**: Black handles core formatting, while Ruff handles specialized formatting and linting
+
+## Common Commands Reference
+
+| Task | Command |
+|------|---------|
+| Format all files with Black | `black .` |
+| Check Black formatting without changing | `black --check .` |
+| Format with Ruff | `ruff format .` |
+| Lint with Ruff | `ruff check .` |
+| Lint and fix with Ruff | `ruff check --fix .` |
+| Complete formatting process | `black . && ruff check --fix . && ruff format .`
 
 ## Conclusion
 
-Code formatters are crucial tools in modern Python development. While there are several options available, each with its own strengths and weaknesses, our project benefits significantly from using Ruff due to its performance, comprehensive functionality, and modern feature set.
-
-By using Ruff, we ensure consistent code style, faster development cycles, and a streamlined workflow that enhances productivity across the team.
+Our hybrid approach using both Black and Ruff provides a robust code formatting and linting solution that ensures consistency, readability, and quality across the ForestFire codebase. By combining these powerful tools, we enjoy the benefits of Black's deterministic formatting with Ruff's flexible linting capabilities, resulting in clean, maintainable, and professional-quality code.

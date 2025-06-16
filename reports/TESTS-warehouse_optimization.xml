@@ -1,0 +1,64 @@
+<testsuite name="warehouse_optimization.Warehouse Order Picking Optimization End-to-End" tests="2" errors="0" failures="0" skipped="0" time="7.338107" timestamp="2025-06-11T13:54:52.150181" hostname="FFINUSCLCOK070"><testcase classname="warehouse_optimization.Warehouse Order Picking Optimization End-to-End" name="Complete optimization workflow with API integration" status="passed" time="5.627474"><system-out>
+<![CDATA[
+@scenario.begin
+  Scenario: Complete optimization workflow with API integration
+    Given the warehouse configuration is loaded ... passed in 0.001s
+      | num_pickers | picker_capacities |
+      | 10          | 10                |
+    Given the warehouse data is loaded from the database ... passed in 4.736s
+    When the ACO optimization process is executed ... passed in 0.034s
+    Then the ACO solutions should be valid ... passed in 0.001s
+    When the genetic algorithm optimization is executed with the ACO solutions ... passed in 0.003s
+    Then the final solution should be valid and optimized ... passed in 0.000s
+    When the optimized routes are visualized ... passed in 0.002s
+    And the pick sequences are updated via API ... passed in 0.850s
+    Then the API should respond with a success status ... passed in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+
+Captured stdout:
+Final solution: [np.int64(0), np.int64(7), np.int64(1), np.int64(0), np.int64(5), np.int64(3), np.int64(1), np.int64(5), np.int64(2), np.int64(0), np.int64(5), np.int64(8), np.int64(3), np.int64(3), np.int64(5), np.int64(6), np.int64(1), np.int64(2), np.int64(3), np.int64(5), np.int64(7), np.int64(7), np.int64(1), np.int64(0), np.int64(6), np.int64(2), np.int64(9), np.int64(7), np.int64(9), np.int64(0), np.int64(7), np.int64(3), np.int64(7), np.int64(9), np.int64(2), np.int64(9), np.int64(0), np.int64(9), np.int64(5), np.int64(3), np.int64(7), np.int64(6), np.int64(5), np.int64(3), np.int64(1), np.int64(2), np.int64(0), np.int64(0), np.int64(2)]
+Fitness: 3126.8534605512396
+
+]]>
+</system-out><system-err>
+<![CDATA[
+Captured stderr:
+C:\Users\aadithya.vinayak\Desktop\ML\forestfire\.venv\Lib\site-packages\behave\matchers.py:98: RuntimeWarning: coroutine 'step_when_routes_visualized' was never awaited
+  self.func(context, *args, **kwargs)
+RuntimeWarning: Enable tracemalloc to get the object allocation traceback
+C:\Users\aadithya.vinayak\Desktop\ML\forestfire\src\database\services\batch_pick_seq_service.py:143: RuntimeWarning: coroutine 'AsyncMockMixin._execute_mock_call' was never awaited
+  response.raise_for_status()
+RuntimeWarning: Enable tracemalloc to get the object allocation traceback
+
+]]>
+</system-err></testcase><testcase classname="warehouse_optimization.Warehouse Order Picking Optimization End-to-End" name="Optimization with different picker capacities" status="passed" time="1.710633"><system-out>
+<![CDATA[
+@scenario.begin
+  Scenario: Optimization with different picker capacities
+    Given the warehouse configuration is loaded ... passed in 0.001s
+      | num_pickers | picker_capacities |
+      | 10          | 10                |
+    Given the warehouse data is loaded from the database ... passed in 1.115s
+    And the picker capacities are set to ... passed in 0.000s
+      | picker_id | capacity |
+      | 0         | 8        |
+      | 1         | 10       |
+      | 2         | 10       |
+      | 3         | 9        |
+      | 4         | 11       |
+      | 5         | 10       |
+      | 6         | 10       |
+      | 7         | 9        |
+      | 8         | 11       |
+      | 9         | 10       |
+    When the complete optimization process is executed ... passed in 0.019s
+    Then the final solution should respect picker capacity constraints ... passed in 0.001s
+    When the pick sequences are updated via API ... passed in 0.574s
+    Then the API should respond with a success status ... passed in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase></testsuite>

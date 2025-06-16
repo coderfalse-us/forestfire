@@ -77,13 +77,3 @@ class AntColonyOptimizer:
             if assignment[item] != -1:
                 pheromone[item][assignment[item]] *= 1 - RHO
                 pheromone[item][assignment[item]] += 1 / fitness_score
-
-
-# For backwards compatibility
-def calculate_heuristic(
-    orders_assign: List[List[Tuple[float, float]]],
-    picker_locations: List[Tuple[float, float]],
-) -> np.ndarray:
-    """Legacy heuristic calculation function"""
-    aco = AntColonyOptimizer(RouteOptimizer())
-    return aco.calculate_heuristic(orders_assign, picker_locations)

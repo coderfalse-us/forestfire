@@ -184,6 +184,9 @@ behave -v
 
 # Generate JUnit report
 behave --junit
+
+# Generate coverage Report
+coverage report -m
 ```
 
 ## Extending the Test Suite

@@ -49,10 +49,13 @@ def before_scenario(context, scenario):
     """Set up before each scenario."""
     # Create or get async context for this scenario
     context = use_or_create_async_context(context)
+    context.path_visualizer = PathVisualizer()
 
     # Mock visualization to avoid actual plotting in tests
-    def mock_plot_routes(*_args, **_kwargs):
-        return None
+    async def mock_plot_routes(*args, **kwargs):
+        return "test_path.png"
+
+    context.path_visualizer.plot_routes = mock_plot_routes
 
     # Apply the mock only for visualization
     if not scenario.name.lower().startswith("complete optimization workflow"):

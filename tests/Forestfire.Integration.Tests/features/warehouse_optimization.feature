@@ -8,14 +8,26 @@ Feature: Warehouse Order Picking Optimization End-to-End
       | num_pickers | picker_capacities |
       | 10          | 10                |
 
+  Scenario: Direct API endpoint integration testing
+    Given the API server is running
+    When a request is sent to the health endpoint
+    Then the API should respond with a healthy status
+    When an optimization request is sent with the following configuration:
+      | num_pickers | picker_capacities | warehouse_name |
+      | 3           | [5, 5, 5]         | test_warehouse |
+    Then the API should return a valid optimization solution
+    When an invalid optimization request is sent
+    Then the API should respond with an appropriate error
+
   Scenario: Complete optimization workflow with API integration
     Given the warehouse data is loaded from the database
     When the ACO optimization process is executed
     Then the ACO solutions should be valid
     When the genetic algorithm optimization is executed with the ACO solutions
     Then the final solution should be valid and optimized
-    When the optimized routes are visualized
-    And the pick sequences are updated via API
+    When the optimized routes are visualized with actual plotting logic
+    Then the optimized routes should be saved to a file
+    When the pick sequences are updated via API
     Then the API should respond with a success status
 
   Scenario: Optimization with different picker capacities

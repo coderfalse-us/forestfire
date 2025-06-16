@@ -26,6 +26,7 @@ The system minimizes total distance traveled by pickers in a warehouse by select
   - Tournament selection for selecting parents.
 - **Ant Colony Optimization:** Assigns items intelligently by considering heuristic and pheromone values.
 - **Database Querying:** Extract warehouse data such as tasks, items, and staging areas from PostgreSQL tables.
+- **RESTful API:** Expose optimization capabilities via a powerful Litestar-powered API.
 - **Visualization:** Visualize picker paths and assignments in graphs using `matplotlib`.
 
 ---
@@ -41,7 +42,7 @@ The system minimizes total distance traveled by pickers in a warehouse by select
 2. **Install dependencies**:
    We use uv, a fast Python package installer and resolver, for dependency management:
    ```bash
-   # Install uv if you don't have it
+   # Install uv 
    pip install uv
 
    # Create and activate a virtual environment
@@ -59,11 +60,12 @@ The system minimizes total distance traveled by pickers in a warehouse by select
    Key dependencies:
    - `numpy`: For efficient array operations and calculations
    - `matplotlib`: For visualizing picker assignments and routing paths
-   - `psycopg2`: For PostgreSQL database connectivity
+   - `asyncpg`: For asynchronous PostgreSQL database connectivity
    - `pytest`: For running unit tests
    - `pytest-cov`: For measuring test coverage
    - `behave`: For Behavior-Driven Development testing
    - `pydantic`: For data validation and settings management
+   - `litestar`: For building the API service with high performance
 
 3. **Database configuration**:
    Update the PostgreSQL connection details in `forestfire/database/config.py`:
@@ -98,6 +100,7 @@ The system minimizes total distance traveled by pickers in a warehouse by select
 
    # Check test coverage
    python -m pytest --cov=forestfire --cov-report=html
+   coverage report -m
    ```
 
 ---
@@ -150,6 +153,11 @@ The system minimizes total distance traveled by pickers in a warehouse by select
        - `picklist.py`: Repository for picklist data
        - `batch_pick_seq_service.py`: Service for batch pick sequences
 
+   - **`api/`**: Litestar API service components
+     - `controller.py`: API endpoint controllers
+     - `app.py`: Litestar application setup -- starting point
+     - `schemas.py`: API model configuration
+
    - **`optimizer/`**: Core optimization logic
      - `models/`: Data models
        - `route.py`: Route representation
@@ -172,11 +180,8 @@ The system minimizes total distance traveled by pickers in a warehouse by select
    - `steps/`: Step definitions for BDD tests
    - `environment.py`: Test environment setup for BDD
 
-4. **`main.py`**:
-   Entry point that orchestrates the optimization process.
-
-5. **`requirements.txt`**:
-   List of dependencies used in the project.
+4. **`pyproject.toml`**:
+   Required dependencies and linting rules.
 
 6. **`README.md`**:
    Documentation (this file).
@@ -195,8 +200,82 @@ The system minimizes total distance traveled by pickers in a warehouse by select
 4. **`PicklistRepository`**:
    Fetches and processes picklist data from the database.
 
-5. **`PathVisualizer`**:
+5. **`OptimizationController`**:
+   Litestar controller for optimization API endpoints.
+
+6. **`PathVisualizer`**:
    Visualizes picker routes and assignments.
+
+---
+
+## API Service (Litestar)
+
+ForestFire now includes a modern, high-performance API built with Litestar that exposes optimization capabilities to external systems.
+
+### API Features
+
+- **Asynchronous**: Fully asynchronous API with high throughput and low latency
+- **OpenAPI Documentation**: Auto-generated API documentation with Swagger UI
+- **Type Safety**: Leverages Pydantic for request/response validation
+- **Authentication**: Configurable authentication middleware
+- **CORS Support**: Cross-Origin Resource Sharing configured for frontend integration
+
+### API Endpoints
+
+- **GET `/api/health`**: Health check endpoint for monitoring
+- **GET `/api/warehouse/layout`**: Get warehouse layout information
+- **POST `/api/optimize`**: Submit a route optimization request
+- **GET `/api/optimize/jobs/{job_id}`**: Get status and results of an optimization job
+- **GET `/api/swagger`**: OpenAPI documentation (Swagger UI)
+
+### Starting the API Server
+
+```bash
+# Using uvicorn
+uvicorn src.api.app:app --reload
+
+```
+
+The server will start on `http://localhost:8000` by default. You can configure the host and port with environment variables:
+
+```bash
+uvicorn src.api.app:app --host{new-host} --reload
+```
+
+### API Example
+
+Submitting an optimization job:
+
+```bash
+curl -X POST http://localhost:8000/optimize/ \
+  -H "Content-Type: application/json" \
+  -d '{
+    "num_pickers": 10,
+    "picker_capacities": [10, 2, 10, 10, 10, 10, 10, 7, 10, 10],
+    "picker_locations": [
+        [10, 0],
+        [10, 0],
+        [10, 0],
+        [10, 0],
+        [10, 0],
+        [10, 0],
+        [10, 0],
+        [10, 0],
+        [10, 0],
+        [10, 0]
+    ],
+    "warehouse_name": "DEV-PK-WAREHOUSE"
+}'
+```
+
+Response:
+```json
+{
+  "status": "success",
+   "solution": [2,7,2,8,4,6,1,0,9,4],
+   "message": "Optimization and API updates completed"
+}
+```
 
 ---
 
@@ -213,12 +292,19 @@ The system minimizes total distance traveled by pickers in a warehouse by select
    python main.py
    ```
 
-2. **View Outputs**:
+2. **Start the API Server**:
+   ```bash
+   uvicorn src.api.app:app --reload
+   ```
+   
+   Access the API documentation at `http://localhost:8000/schema`
+
+3. **View Outputs**:
    - Picker assignments for items
    - Total distance traveled after optimization
    - Visual plots of picker paths in the `output` directory
 
-3. **Modify Parameters**:
+4. **Modify Parameters**:
    Customize parameters in `forestfire/utils/config.py`:
    - `NUM_PICKERS`: Number of pickers in the warehouse
    - `PICKER_CAPACITIES`: Capacity constraints for each picker
@@ -274,6 +360,8 @@ The system minimizes total distance traveled by pickers in a warehouse by select
 6. **Modern Dependency Management:** Adopted uv for faster and more reliable package management.
 7. **Type Safety:** Added Pydantic models for data validation and settings management.
 8. **Documentation:** Enhanced project documentation with MkDocs and Material theme.
+9. **API Integration:** Implemented a Litestar API server to expose optimization capabilities via RESTful endpoints.
+10. **Asynchronous Database:** Migrated from psycopg2 to asyncpg for fully asynchronous database operations.
 
 ## Future Work
 
@@ -282,9 +370,10 @@ The system minimizes total distance traveled by pickers in a warehouse by select
 3. **Real-Time Integration:** Connect to warehouse systems for real-time item locations and route updates.
 4. **Improved Crossover & Mutation:** Implement more sophisticated crossovers and adaptive mutation rates.
 5. **Performance Optimization:** Enhance algorithm performance for larger warehouses and more complex scenarios.
+6. **WebSocket Support:** Add real-time updates for long-running optimization jobs via WebSockets.
+7. **Frontend Dashboard:** Develop a web dashboard for visualizing and managing optimization jobs.
 
 ---
-
 
 ## Contact & Support
 
