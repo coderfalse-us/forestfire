@@ -49,32 +49,41 @@ class PathVisualizer:
         logger.info("Plot saved to: %s", filepath)
         return filepath
 
-    async def plot_routes(self, final_solution, config: WarehouseConfigManager):
+    async def plot_routes(
+        self,
+        final_solution,
+        config: WarehouseConfigManager,
+        optimization_data=None,
+    ):
         """Plot optimized routes for each picker"""
         # Map orders to pickers
         num_pickers = config.NUM_PICKERS
         picker_locations = config.PICKER_LOCATIONS
         warehouse_name = config.WAREHOUSE_NAME
         orders = {picker_id: [] for picker_id in range(num_pickers)}
-        try:
-            # Get data from database
-            (
-                picktasks,
-                orders_assign,
-                stage_result,
-                _,
-            ) = await self.picklist_repo.get_optimized_data(warehouse_name)
-        except (ValueError, KeyError, IOError) as e:
-            logger.warning(
-                "Failed to get data from database: %s. Using mock data", str(e)
-            )
-            # Use mock data for visualization
-            picktasks = ["mock_task_1", "mock_task_2"]
-            orders_assign = [[(0, 0), (10, 10)], [(20, 20), (30, 30)]]
-            stage_result = {
-                "mock_task_1": [(40, 40)],
-                "mock_task_2": [(50, 50)],
-            }
+        if optimization_data:
+            picktasks, orders_assign, stage_result, _ = optimization_data
+        else:
+            try:
+                # Get data from database
+                (
+                    picktasks,
+                    orders_assign,
+                    stage_result,
+                    _,
+                ) = await self.picklist_repo.get_optimized_data(warehouse_name)
+            except (ValueError, KeyError, IOError) as e:
+                logger.warning(
+                    "Failed to get data from database: %s. Using mock data",
+                    str(e),
+                )
+                # Use mock data for visualization
+                picktasks = ["mock_task_1", "mock_task_2"]
+                orders_assign = [[(0, 0), (10, 10)], [(20, 20), (30, 30)]]
+                stage_result = {
+                    "mock_task_1": [(40, 40)],
+                    "mock_task_2": [(50, 50)],
+                }
 
         for item_id, picker_id in enumerate(final_solution):
             orders[picker_id].append(item_id)

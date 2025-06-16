@@ -229,12 +229,10 @@ class WarehouseOptimizer:
         )
 
         # Fetch data from the database
-        (
-            picktasks,
-            orders_assign,
-            stage_result,
-            picklistids,
-        ) = await self.picklist_repository.get_optimized_data(warehouse_name)
+        optimization_data = await self.picklist_repository.get_optimized_data(
+            warehouse_name
+        )
+        picktasks, orders_assign, stage_result, picklistids = optimization_data
 
         # Initialize population
         initial_population = self.initialize_population(
@@ -282,7 +280,9 @@ class WarehouseOptimizer:
         logger.info("\nFinal Best Solution: {}", final_solution)
 
         # Visualize the best solution
-        await self.path_visualizer.plot_routes(final_solution, config)
+        await self.path_visualizer.plot_routes(
+            final_solution, config, optimization_data
+        )
         await self.batch_pick_sequence_service.update_pick_sequences(
             num_pickers,
             picker_locations,
