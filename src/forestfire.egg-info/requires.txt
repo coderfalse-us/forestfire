@@ -1,0 +1,17 @@
+asyncpg>=0.30.0
+behave>=1.2.6
+black>=25.1.0
+colorama>=0.4.6
+dotenv>=0.9.9
+httpx>=0.28.1
+litestar>=2.16.0
+loguru>=0.7.3
+matplotlib>=3.10.1
+mkdocs>=1.6.1
+mkdocs-material>=9.6.13
+numpy>=2.2.5
+pre-commit>=4.2.0
+psycopg2>=2.9.10
+pydantic>=2.11.4
+pytest-asyncio>=1.0.0
+uvicorn>=0.34.2

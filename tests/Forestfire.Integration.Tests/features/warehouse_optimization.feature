@@ -49,4 +49,18 @@ Feature: Warehouse Order Picking Optimization End-to-End
     When the pick sequences are updated via API
     Then the API should respond with a success status
 
+  Scenario: Invalid input data handling
+    Given invalid picker capacity values:
+      | picker_id | capacity |
+      | 0         | -1       |
+      | 1         | 0        |
+    When the optimization process is executed with invalid data
+    Then validation errors should be raised
+  
+  Scenario: Database connection failure
+    Given the database connection is unavailable
+    When an attempt is made to fetch picklist data
+    Then a database error should be raised
+    And the error should be logged with appropriate details
+    
   
