@@ -26,7 +26,7 @@ class BatchPickSequenceService:
         self.route_optimizer = RouteOptimizer()
         self.api_url = (
             "https://picking-api.wms-core-pg.npaz.ohl.com/"
-            "2025-26/api/picking/task/batchassign"
+            "2025-2600/api/picking/task/batchassign"
         )
         self.api_key = "riwKTxvgMlIiDuDRcOoXh3IwaVtci_UvFWKe_UYv4hizFhSW7Maq8xDhLCIIceIu2LGK9HCeXu8k_DCE4e52CFEEQqU0ja-Tkiyb-Myn"
 
@@ -256,7 +256,7 @@ class BatchPickSequenceService:
                     continue
 
                 batch_id = f"BATCH_{route.picker_id}"
-                sequence_tracking.setdefault(batch_id, 1)
+                sequence_tracking.setdefault(batch_id, 50)
                 processed_items = set()
 
                 for loc in route.locations:

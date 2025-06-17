@@ -10,7 +10,7 @@ from pydantic import BaseModel
 
 # pylint: disable=invalid-name
 
-MAX_IT = 50
+MAX_IT = 100
 N_POP = 150
 PC = 0.90
 PM = 0.04

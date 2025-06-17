@@ -234,6 +234,8 @@ class WarehouseOptimizer:
         )
         picktasks, orders_assign, stage_result, picklistids = optimization_data
 
+        orders_assign = orders_assign[: sum(picker_capacities)]
+
         # Initialize population
         initial_population = self.initialize_population(
             num_pickers, len(orders_assign), picker_capacities
