@@ -35,10 +35,25 @@ class TestPicklistRepository:
     async def test_fetch_picklist_data(self, mock_execute_query):
         """Test fetching picklist data."""
         # Arrange
-        mock_execute_query.return_value = [
-            (1, "task1", 10, 20),
-            (2, "task2", 30, 40),
+        mock_records = [
+            {
+                "id": 1,
+                "picktask_id": "task1",
+                "pick_loc_x": 10,
+                "pick_loc_y": 20,
+                "stage_loc_x": 30,
+                "stage_loc_y": 40,
+            },
+            {
+                "id": 2,
+                "picktask_id": "task2",
+                "pick_loc_x": 30,
+                "pick_loc_y": 40,
+                "stage_loc_x": 50,
+                "stage_loc_y": 60,
+            },
         ]
+        mock_execute_query.return_value = mock_records
         repo = PicklistRepository()
 
         # Act

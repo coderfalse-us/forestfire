@@ -181,6 +181,12 @@ def step_then_api_error_response(context):
 @when("the ACO optimization process is executed")
 def step_when_aco_optimization(context):
     """Execute the ACO optimization process."""
+    if not hasattr(context, "current_capacities"):
+        context.current_capacities = (
+            context.custom_capacities
+            if hasattr(context, "custom_capacities")
+            else PICKER_CAPACITIES
+        )
     # Run ACO optimization
     context.aco_solutions = []
     pheromone = np.ones((len(context.orders_assign), context.num_pickers))
@@ -193,7 +199,7 @@ def step_when_aco_optimization(context):
             pheromone,
             heuristic,
             len(context.orders_assign),
-            PICKER_CAPACITIES,
+            context.current_capacities,
             context.num_pickers,
         )
         fitness, _, _ = context.route_optimizer.calculate_shortest_route(
@@ -215,6 +221,8 @@ def step_then_valid_aco_solutions(context):
     """Verify that ACO solutions are valid."""
     assert len(context.aco_solutions) > 0, "No ACO solutions generated"
 
+    capacities = getattr(context, "current_capacities", PICKER_CAPACITIES)
+
     for solution, fitness in context.aco_solutions:
         # Check solution length
         assert len(solution) == len(
@@ -233,13 +241,19 @@ def step_then_valid_aco_solutions(context):
         picker_counts = [solution.count(i) for i in range(NUM_PICKERS)]
         assert all(
             count <= capacity
-            for count, capacity in zip(picker_counts, PICKER_CAPACITIES)
+            for count, capacity in zip(picker_counts, capacities)
         ), "Picker capacity constraints violated"
 
 
 @when("the genetic algorithm optimization is executed with the ACO solutions")
 def step_when_ga_optimization(context):
     """Execute the genetic algorithm optimization with ACO solutions."""
+    if not hasattr(context, "current_capacities"):
+        context.current_capacities = (
+            context.custom_capacities
+            if hasattr(context, "custom_capacities")
+            else PICKER_CAPACITIES
+        )
     # Sort population by fitness
     population = sorted(context.aco_solutions, key=lambda x: x[1])
 
@@ -253,7 +267,7 @@ def step_when_ga_optimization(context):
 
         # Perform crossover
         offspring1, offspring2 = context.genetic_op.crossover(
-            parent1, parent2, PICKER_CAPACITIES, NUM_PICKERS
+            parent1, parent2, context.current_capacities, NUM_PICKERS
         )
 
         # Calculate fitness
@@ -289,6 +303,13 @@ async def step_when_complete_optimization(context):
 
     if not hasattr(context, "orders_assign"):
         await step_given_warehouse_data(context)
+
+    capacities = (
+        context.custom_capacities
+        if hasattr(context, "custom_capacities")
+        else PICKER_CAPACITIES
+    )
+    context.current_capacities = capacities
     # Run ACO optimization
     step_when_aco_optimization(context)
 

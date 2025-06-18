@@ -18,17 +18,24 @@ class BaseRepository(ABC):
     """
 
     async def execute_query(
-        self, query: str, params: tuple = None
+        self, query: str, params: tuple = (), record_class: Any = None
     ) -> List[Any]:
         """Execute a query and return the result."""
         async with DatabaseConnectionManager.get_connection() as conn:
             try:
                 # asyncpg uses different method names
-                if params:
+                if record_class:
+                    return await conn.fetch(
+                        query, *params, record_class=record_class
+                    )
+                elif params:
                     return await conn.fetch(query, *params)
-                return await conn.fetch(query)
+                else:
+                    return await conn.fetch(query)
             except Exception as e:
-                raise QueryError(f"Query execution failed: {e}") from e
+                raise QueryError(
+                    f"Query execution failed for query '{query}' with params '{params}': {e}"
+                ) from e
 
     async def execute_transaction(self, queries: List[tuple]) -> None:
         """Execute a series of queries as a transaction."""

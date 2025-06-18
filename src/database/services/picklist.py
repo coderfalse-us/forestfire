@@ -28,16 +28,24 @@ class PicklistRepository:
             List[Tuple]: All picklist records
         """
         query = """
-        SELECT p.*
+        SELECT
+            p.id AS id,
+            p.picktaskid AS picktask_id,
+            p.xcoordinate AS pick_loc_x,
+            p.ycoordinate AS pick_loc_y,
+            p.stage_x AS stage_loc_x,
+            p.stage_y AS stage_loc_y
         FROM nifiapp.picklist p
         JOIN synob_tabr.warehouses w ON p.warehouseid = w.id
         WHERE w.name = $1;
         """
         # asyncpg uses $1
         try:
-            return await self.baserepository.execute_query(
+            results = await self.baserepository.execute_query(
                 query, (warehouse_name,)
             )
+            # Convert to dictionaries after fetching
+            return [dict(record) for record in results]
 
         except Exception as e:
             logger.error("Error fetching picklist data: %s", e)
@@ -85,24 +93,33 @@ class PicklistRepository:
                 )
                 raise QueryError("No distinct picktasks found")
 
-            task_result: Dict[str, List[Tuple]] = {}
-            stage_result: Dict[str, List[Tuple]] = {}
-            id_mapping: Dict[str, int] = {}  # New mapping for database IDs
+            task_result = {}
+            stage_result = {}
+            id_mapping = {}
 
             for picktaskid in picktasks:
-                # Filter pick locations and get IDs
+                # Filter using dictionary keys instead of numeric indices
                 filtered_values = [
-                    (row[21], row[22]) for row in rows if row[3] == picktaskid
+                    (row["pick_loc_x"], row["pick_loc_y"])
+                    for row in rows
+                    if row["picktask_id"] == picktaskid
                 ]
 
-                # Get database ID for picktask
+                # Get database ID using dict key
                 db_id = next(
-                    (row[0] for row in rows if row[3] == picktaskid), None
+                    (
+                        row["id"]
+                        for row in rows
+                        if row["picktask_id"] == picktaskid
+                    ),
+                    None,
                 )
 
-                # Filter staging locations
+                # Filter staging locations using dict keys
                 staging_loc = [
-                    (row[67], row[68]) for row in rows if row[3] == picktaskid
+                    (row["stage_loc_x"], row["stage_loc_y"])
+                    for row in rows
+                    if row["picktask_id"] == picktaskid
                 ]
 
                 task_result[picktaskid] = filtered_values

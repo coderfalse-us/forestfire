@@ -19,10 +19,31 @@ class TestPicklistRepositoryComprehensive:
     async def test_fetch_picklist_data_with_warehouse(self, mock_execute_query):
         """Test fetching picklist data with warehouse filter."""
         # Arrange
-        mock_execute_query.return_value = [
-            (1, "task1", 10, 20, "account1", "business1", "warehouse1"),
-            (2, "task2", 30, 40, "account1", "business1", "warehouse1"),
+        mock_records = [
+            {
+                "id": 1,
+                "picktask_id": "task1",
+                "pick_loc_x": 10,
+                "pick_loc_y": 20,
+                "stage_loc_x": 30,
+                "stage_loc_y": 40,
+                "accountid": "account1",
+                "businessunitid": "business1",
+                "warehouseid": "warehouse1",
+            },
+            {
+                "id": 2,
+                "picktask_id": "task2",
+                "pick_loc_x": 30,
+                "pick_loc_y": 40,
+                "stage_loc_x": 50,
+                "stage_loc_y": 60,
+                "accountid": "account2",
+                "businessunitid": "business2",
+                "warehouseid": "warehouse2",
+            },
         ]
+        mock_execute_query.return_value = mock_records
         repo = PicklistRepository()
 
         # Act
@@ -32,7 +53,13 @@ class TestPicklistRepositoryComprehensive:
         assert result == mock_execute_query.return_value
         mock_execute_query.assert_called_once_with(
             """
-        SELECT p.*
+        SELECT
+            p.id AS id,
+            p.picktaskid AS picktask_id,
+            p.xcoordinate AS pick_loc_x,
+            p.ycoordinate AS pick_loc_y,
+            p.stage_x AS stage_loc_x,
+            p.stage_y AS stage_loc_y
         FROM nifiapp.picklist p
         JOIN synob_tabr.warehouses w ON p.warehouseid = w.id
         WHERE w.name = $1;
@@ -92,14 +119,14 @@ class TestPicklistRepositoryComprehensive:
         # Create mock rows with the required structure
         mock_rows = []
         for i in range(3):
-            # Create a row with enough elements
-            row = [None] * 70  # Create a list with 70 elements
-            row[0] = f"id{i + 1}"  # Database ID
-            row[3] = f"task{(i % 2) + 1}"  # picktaskid (task1 or task2)
-            row[21] = 10 + i * 10  # x coordinate for pick location
-            row[22] = 20 + i * 10  # y coordinate for pick location
-            row[67] = 50 + i * 10  # x coordinate for staging location
-            row[68] = 60 + i * 10  # y coordinate for staging location
+            row = {
+                "id": f"id{i + 1}",
+                "picktask_id": f"task{(i % 2) + 1}",
+                "pick_loc_x": 10 + i * 10,
+                "pick_loc_y": 20 + i * 10,
+                "stage_loc_x": 50 + i * 10,
+                "stage_loc_y": 60 + i * 10,
+            }
             mock_rows.append(row)
 
         mock_fetch_picklist_data.return_value = mock_rows
